@@ -21,5 +21,7 @@ export function generateMock(schema: any, options?: JSFOptions): any {
     return JSONSchemaFaker.generate(schema)
 }
 
-export { defaultConfig, defineConfig } from './config';
+export {defaultConfig, defineConfig} from './config';
+export type {BuildersPlugin} from "./types";
+
 

@@ -1,3 +1,5 @@
+import {DefinePlugin} from "@hey-api/openapi-ts";
+
 export interface Config {
     /**
      * Plugin name. Must be unique.
@@ -16,3 +18,5 @@ export interface Config {
      */
     myOption?: boolean;
 }
+
+export type BuildersPlugin = DefinePlugin<Config>

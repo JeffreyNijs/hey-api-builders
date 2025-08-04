@@ -1,4 +1,4 @@
-import {BuildersPlugin} from "./types";
+import type {BuildersPlugin} from "./types";
 
 function resolveRefs(schema: any, allSchemas: Record<string, any>): any {
     if (!schema) return schema;
@@ -31,14 +31,6 @@ function sanitizeMethodName(prop: string) {
         .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
         .replace(/[^a-zA-Z0-9]/g, '')
         .replace(/^(.)/, (m) => m.toUpperCase());
-}
-
-function getBuilderOptionsType(builderClassName: string) {
-    return `_${builderClassName}Options`;
-}
-
-function getBuilderOptionsTypeDef(builderOptionsType: string) {
-    return `type ${builderOptionsType} = {\n  useDefault?: boolean;\n  useExamples?: boolean;\n  alwaysIncludeOptionals?: boolean;\n  optionalsProbability?: number | false;\n  omitNulls?: boolean;\n};\n`;
 }
 
 // Helper to create a unique name for a schema constant

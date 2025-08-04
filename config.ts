@@ -1,5 +1,5 @@
-import {definePluginConfig, Plugin} from "@hey-api/openapi-ts";
-import {Config, BuildersPlugin} from "./types";
+import {definePluginConfig} from "@hey-api/openapi-ts";
+import type {BuildersPlugin} from "./types";
 import { handler } from "./plugin";
 
 export const defaultConfig: BuildersPlugin['Config'] = {

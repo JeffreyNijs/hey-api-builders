@@ -1,4 +1,5 @@
-import {JSONSchemaFaker} from 'json-schema-faker'
+import {JSONSchemaFaker, Schema} from 'json-schema-faker'
+import type { JSONSchema, BuilderOptions } from './utils'
 
 export interface JSFOptions {
     useDefaultValue?: boolean
@@ -9,7 +10,7 @@ export interface JSFOptions {
     requiredOnly?: boolean
 }
 
-export function generateMock(schema: any, options?: JSFOptions): any {
+export function generateMock<T = unknown>(schema: Schema, options?: JSFOptions): T {
     JSONSchemaFaker.option({
         useDefaultValue: options?.useDefaultValue ?? false,
         useExamplesValue: options?.useExamplesValue ?? false,
@@ -18,10 +19,9 @@ export function generateMock(schema: any, options?: JSFOptions): any {
         omitNulls: options?.omitNulls ?? false,
         requiredOnly: options?.requiredOnly ?? true,
     })
-    return JSONSchemaFaker.generate(schema)
+    return JSONSchemaFaker.generate(schema) as T
 }
 
-export {defaultConfig, defineConfig} from './config';
-export type {BuildersPlugin} from "./types";
-
-
+export { defaultConfig, defineConfig } from './config';
+export type { BuildersPlugin } from "./types";
+export type { JSONSchema, BuilderOptions };

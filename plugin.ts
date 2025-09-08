@@ -1,118 +1,71 @@
-import type { BuildersPlugin } from "./types";
-import {
-  JSONSchema,
-  SchemaMap,
-  RegisteredSchema,
-  RegistrationContext,
-  resolveRefs,
-  generateWithMethods,
-  registerSchemaDef,
-  normalizeObjectProperties,
-  normalizeTopLevelEnum,
-  isInternalEnumSchema, BuildersHandler
-} from './utils';
+import { collectSchemas, generateWithMethods } from './utils';
+import type { BuildersHandler } from './utils';
 
 export const handler: BuildersHandler = ({ plugin }) => {
-  const schemas: SchemaMap = {};
+  const rawSchemas: Record<string, any> = {};
+  plugin.forEach('schema', (event) => { rawSchemas[event.name] = event.schema; });
+  const metas = collectSchemas(rawSchemas);
+  const file = plugin.createFile({ id: plugin.name, path: plugin.output });
 
-  plugin.forEach('schema', (event) => {
-    const { name, schema } = event
-    if (schema && typeof schema === 'object') {
-      schemas[name] = schema;
-    }
-  });
+  let out = '';
+  out += 'import { generateMock } from "hey-api-builders"\n';
+  out += 'import type { BuilderSchema } from "hey-api-builders"\n';
+  out += 'import type * as types from "./types.gen"\n\n';
+  out += 'type BuilderOptions = {\n';
+  out += '  useDefault?: boolean;\n';
+  out += '  useExamples?: boolean;\n';
+  out += '  alwaysIncludeOptionals?: boolean;\n';
+  out += '  optionalsProbability?: number | false;\n';
+  out += '  omitNulls?: boolean;\n';
+  out += '}\n\n';
 
-  const file = plugin.createFile({
-    id: plugin.name,
-    path: plugin.output,
-  });
-
-  let outputContent = 'import { generateMock } from "hey-api-builders";\n';
-  outputContent += 'import type * as types from "./types.gen";\n\n';
-  outputContent += 'type BuilderOptions = {\n  useDefault?: boolean;\n  useExamples?: boolean;\n  alwaysIncludeOptionals?: boolean;\n  optionalsProbability?: number | false;\n  omitNulls?: boolean;\n};\n\n';
-
-  // Registration context for deduplication
-  const ctx: RegistrationContext = {
-    schemaDefs: {},
-    schemaDefNames: {},
-    schemaDefHashes: {},
-    schemaDefIndex: 1,
-  };
-
-  const builderSchemas: RegisteredSchema[] = [];
-
-  for (const [schemaName, rawSchema] of Object.entries(schemas)) {
-    if (!rawSchema || typeof rawSchema !== 'object') continue;
-
-    const resolvedSchema = resolveRefs(rawSchema, schemas) as JSONSchema;
-    const typeName = schemaName.replace(/Schema$/, '').trim();
-    const builderClassName = `${typeName}Builder`;
-
-    // Detect top-level enum (internal representation) and normalize before registration
-    let schemaForConst = normalizeTopLevelEnum(resolvedSchema);
-    const isEnum = isInternalEnumSchema(resolvedSchema);
-
-    // If not a top-level enum, normalize nested object properties
-    if (!isEnum) {
-      normalizeObjectProperties(schemaForConst);
-    }
-
-    const schemaConst = registerSchemaDef(schemaForConst, typeName, ctx);
-    builderSchemas.push({ typeName, builderClassName, isEnum, schemaConst });
+  const schemaEntries: string[] = [];
+  for (const m of metas) {
+    schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`); // no pretty-print to reduce size
   }
+  out += 'const schemas = {\n' + schemaEntries.join(',\n') + '\n} satisfies Record<string, BuilderSchema>\n\n';
 
-  // Emit all schema constants as a single object (typed as const for property access)
-  outputContent += 'const schemas = ' + JSON.stringify(ctx.schemaDefs, null, 2) + ' as const;\n\n';
-
-  // Emit builder classes
-  for (const { typeName, builderClassName, isEnum, schemaConst } of builderSchemas) {
-    if (isEnum) {
-      outputContent += `
-export class ${builderClassName} {
-  private options: BuilderOptions = {};
-  
-  setOptions(options: BuilderOptions): this { 
-    this.options = options || {}; 
-    return this; 
-  }
-  
-  build(): types.${typeName} {
-    return generateMock<types.${typeName}>(schemas.${schemaConst}, {
-      useDefaultValue: this.options.useDefault,
-      useExamplesValue: this.options.useExamples,
-      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,
-      optionalsProbability: this.options.optionalsProbability,
-      omitNulls: this.options.omitNulls,
-    });
-  }
-}
-`;
+  for (const m of metas) {
+    if (m.isEnum) {
+      out += `export class ${m.typeName}Builder {\n`;
+      out += `  private options: BuilderOptions = {}\n`;
+      out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
+      out += `  build(): types.${m.typeName} {\n`;
+      out += `    return generateMock<types.${m.typeName}>(schemas.${m.constName}, {\n`;
+      out += `      useDefaultValue: this.options.useDefault,\n`;
+      out += `      useExamplesValue: this.options.useExamples,\n`;
+      out += `      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,\n`;
+      out += `      optionalsProbability: this.options.optionalsProbability,\n`;
+      out += `      omitNulls: this.options.omitNulls\n`;
+      out += `    })\n`;
+      out += `  }\n`;
+      out += `}\n\n`;
     } else {
-      const withMethods = generateWithMethods(ctx.schemaDefs[schemaConst], typeName);
-      outputContent += `
-export class ${builderClassName} {
-  private overrides: Partial<types.${typeName}> = {};
-  private options: BuilderOptions = {};
-  
-  setOptions(options: BuilderOptions): this { 
-    this.options = options || {}; 
-    return this; 
-  }
-${withMethods ? withMethods + '\n' : ''}  
-  build(): types.${typeName} {
-    const mock = generateMock<types.${typeName}>(schemas.${schemaConst}, {
-      useDefaultValue: this.options.useDefault,
-      useExamplesValue: this.options.useExamples,
-      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,
-      optionalsProbability: this.options.optionalsProbability,
-      omitNulls: this.options.omitNulls,
-    });
-    return { ...mock, ...this.overrides };
-  }
-}
-`;
+      const withMethods = generateWithMethods(m.schema as any, m.typeName);
+      out += `export class ${m.typeName}Builder {\n`;
+      out += `  private overrides: Partial<types.${m.typeName}> = {}\n`;
+      out += `  private options: BuilderOptions = {}\n`;
+      out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
+      if (withMethods) out += withMethods + '\n';
+      out += `  build(): types.${m.typeName} {\n`;
+      out += `    const mock = generateMock<types.${m.typeName}>(schemas.${m.constName}, {\n`;
+      out += `      useDefaultValue: this.options.useDefault,\n`;
+      out += `      useExamplesValue: this.options.useExamples,\n`;
+      out += `      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,\n`;
+      out += `      optionalsProbability: this.options.optionalsProbability,\n`;
+      out += `      omitNulls: this.options.omitNulls\n`;
+      out += `    })\n`;
+      out += `    for (const k in this.overrides) {\n`;
+      out += `      if (Object.prototype.hasOwnProperty.call(this.overrides, k)) {\n`;
+      out += `        // @ts-ignore\n`;
+      out += `        (mock as any)[k] = this.overrides[k];\n`;
+      out += `      }\n`;
+      out += `    }\n`;
+      out += `    return mock\n`;
+      out += `  }\n`;
+      out += `}\n\n`;
     }
   }
 
-  file.add(outputContent);
+  file.add(out);
 };

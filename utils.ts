@@ -34,10 +34,36 @@ export function irToSchema(
     return target ? irToSchema(target, all, seen) : {};
   }
 
-  if (Array.isArray((ir as any).enum)) {
-    const out: Schema = { enum: (ir as any).enum };
-    if (ir.type) out.type = ir.type as any;
-    return out;
+  // Handle enum schemas properly
+  if (isEnum(ir)) {
+    // Standard OpenAPI/JSON Schema enum array
+    if (Array.isArray((ir as any).enum)) {
+      const enumValues = (ir as any).enum;
+      const anyOfSchemas = enumValues.map((value: any) => ({ const: value }));
+      return { anyOf: anyOfSchemas };
+    }
+
+    // Handle internal enum representation (type: 'enum' with items)
+    if ((ir as any).type === 'enum' && Array.isArray((ir as any).items)) {
+      const enumValues = (ir as any).items
+        .filter((item: any) => item && typeof item === 'object' && 'const' in item)
+        .map((item: any) => item.const);
+
+      if (enumValues.length > 0) {
+        const anyOfSchemas = enumValues.map((value: any) => ({ const: value }));
+        return { anyOf: anyOfSchemas };
+      }
+    }
+
+    // Handle items with const values (alternative enum representation)
+    if (!(ir as any).enum && Array.isArray((ir as any).items)) {
+      const items = (ir as any).items;
+      if (items.length > 0 && items.every((it: any) => it && typeof it === 'object' && 'const' in it)) {
+        const enumValues = items.map((it: any) => it.const);
+        const anyOfSchemas = enumValues.map((value: any) => ({ const: value }));
+        return { anyOf: anyOfSchemas };
+      }
+    }
   }
 
   const out: Schema = {};
@@ -116,6 +142,22 @@ function normalizeSchema(node: any): any {
     }
     delete node.items;
     delete node.logicalOperator;
+  }
+
+  // Detect union types represented as array items masquerading as tuples
+  if (
+    node.type === 'array' &&
+    Array.isArray(node.items) &&
+    node.items.length > 0 &&
+    node.items.every(
+      (item: any) =>
+        item && typeof item === 'object' && 'type' in item &&
+        (item.type === 'string' || item.type === 'null' || item.type === 'number' || item.type === 'integer' || item.type === 'boolean' || item.type === 'object')
+    )
+  ) {
+    node.anyOf = node.items;
+    delete node.type;
+    delete node.items;
   }
 
   if (node.properties && typeof node.properties === 'object') {

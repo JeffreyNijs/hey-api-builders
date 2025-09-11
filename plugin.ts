@@ -1,8 +1,9 @@
 import { collectSchemas, generateWithMethods } from './utils';
 import type { BuildersHandler } from './utils';
+import type { IR } from '@hey-api/openapi-ts';
 
 export const handler: BuildersHandler = ({ plugin }) => {
-  const rawSchemas: Record<string, any> = {};
+  const rawSchemas: Record<string, IR.SchemaObject> = {};
   plugin.forEach('schema', (event) => { rawSchemas[event.name] = event.schema; });
   const metas = collectSchemas(rawSchemas);
   const file = plugin.createFile({ id: plugin.name, path: plugin.output });
@@ -41,7 +42,7 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  }\n`;
       out += `}\n\n`;
     } else {
-      const withMethods = generateWithMethods(m.schema as any, m.typeName);
+      const withMethods = generateWithMethods(m.schema, m.typeName);
       out += `export class ${m.typeName}Builder {\n`;
       out += `  private overrides: Partial<types.${m.typeName}> = {}\n`;
       out += `  private options: BuilderOptions = {}\n`;
@@ -57,8 +58,9 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `    })\n`;
       out += `    for (const k in this.overrides) {\n`;
       out += `      if (Object.prototype.hasOwnProperty.call(this.overrides, k)) {\n`;
-      out += `        // @ts-ignore\n`;
-      out += `        (mock as any)[k] = this.overrides[k];\n`;
+      out += `        const typedMock = mock as Record<string, unknown>;\n`;
+      out += `        const typedOverrides = this.overrides as Record<string, unknown>;\n`;
+      out += `        typedMock[k] = typedOverrides[k];\n`;
       out += `      }\n`;
       out += `    }\n`;
       out += `    return mock\n`;

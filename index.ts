@@ -26,4 +26,3 @@ export function generateMock<T = unknown>(schema: Schema, options?: JSFOptions):
 export { defaultConfig, defineConfig } from './config';
 export type { BuildersPlugin } from "./types";
 export type { Schema as BuilderSchema, BuilderOptions };
-

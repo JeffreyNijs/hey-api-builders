@@ -1,15 +1,12 @@
 import type { IR } from '@hey-api/openapi-ts';
 import type { Schema } from 'json-schema-faker';
 import type {
-  BuildersPlugin,
-  BuilderOptions,
   GeneratedSchemaMeta,
   EnumSchemaObject,
   EnumItem,
   JsonValue,
   ExtendedSchema,
   NormalizedSchemaNode,
-  BuildersHandler
 } from './types';
 
 export function irToSchema(

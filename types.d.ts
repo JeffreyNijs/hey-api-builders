@@ -23,7 +23,6 @@ export interface Config {
 
 export type BuildersPlugin = DefinePlugin<Config>
 
-// Schema-related types moved from utils.ts
 export interface BuilderOptions {
   useDefault?: boolean;
   useExamples?: boolean;

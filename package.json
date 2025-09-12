@@ -1,6 +1,6 @@
 {
   "name": "hey-api-builders",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "A custom plugin for @hey-api/openapi-ts that wraps JSON Schema Faker to generate builders.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

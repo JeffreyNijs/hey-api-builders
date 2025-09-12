@@ -53,15 +53,9 @@ Example usage:
 ```typescript
 import { UserBuilder, createUserBuilder } from './client/builders';
 
-// Using the builder class directly
 const user = new UserBuilder()
   .withName('Alice')
   .withEmail('alice@example.com')
-  .build();
-
-// Or using the factory function
-const user2 = createUserBuilder()
-  .withName('Bob')
   .build();
 ```
 
@@ -86,7 +80,6 @@ defineBuildersConfig({
 - For each schema, a builder class is generated with:
   - `with<Property>(value)` methods for each property.
   - A `build()` method that generates a mock object using JSON Schema Faker, applying any overrides you set.
-- Factory functions (`create<SchemaName>Builder`) are also generated for convenience.
 
 ## Contributing
 

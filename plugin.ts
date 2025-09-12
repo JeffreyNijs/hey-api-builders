@@ -22,7 +22,7 @@ export const handler: BuildersHandler = ({ plugin }) => {
 
   const schemaEntries: string[] = [];
   for (const m of metas) {
-    schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`); // no pretty-print to reduce size
+    schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`);
   }
   out += 'const schemas = {\n' + schemaEntries.join(',\n') + '\n} satisfies Record<string, BuilderSchema>\n\n';
 

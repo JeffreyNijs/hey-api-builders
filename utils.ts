@@ -1,4 +1,3 @@
-// Minimal utilities: map IR.SchemaObject -> JSON Schema Faker Schema + helpers
 import type { IR } from '@hey-api/openapi-ts';
 import type { BuildersPlugin } from './types';
 import type { Schema } from 'json-schema-faker';
@@ -19,7 +18,6 @@ export interface GeneratedSchemaMeta {
   isObject: boolean;
 }
 
-// Define types for schema objects with enum properties
 interface EnumSchemaObject {
   enum?: JsonValue[];
   type?: string | 'enum';
@@ -40,10 +38,8 @@ interface EnumItem {
   description?: string;
 }
 
-// Define JSON-compatible values for enum constants
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
-// Define extended schema types for internal processing
 interface ExtendedSchema {
   type?: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer' | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
   properties?: Record<string, Schema>;
@@ -55,11 +51,9 @@ interface ExtendedSchema {
   oneOf?: Schema[];
   enum?: JsonValue[];
   nullable?: boolean;
-  // Allow any additional properties from JSON Schema
   [key: string]: unknown;
 }
 
-// Define normalized schema node for processing
 interface NormalizedSchemaNode {
   type?: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer' | 'enum' | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
   items?: NormalizedSchemaNode | NormalizedSchemaNode[];
@@ -71,7 +65,6 @@ interface NormalizedSchemaNode {
   enum?: JsonValue[];
   logicalOperator?: string;
   const?: JsonValue;
-  // Allow any additional properties
   [key: string]: unknown;
 }
 
@@ -90,18 +83,15 @@ export function irToSchema(
     return target ? irToSchema(target, all, seen) : {};
   }
 
-  // Handle enum schemas properly
   if (isEnum(ir)) {
     const enumIr = ir as EnumSchemaObject;
 
-    // Standard OpenAPI/JSON Schema enum array
     if (Array.isArray(enumIr.enum)) {
       const enumValues = enumIr.enum;
       const anyOfSchemas = enumValues.map((value: JsonValue) => ({ const: value }));
       return { anyOf: anyOfSchemas };
     }
 
-    // Handle internal enum representation (type: 'enum' with items)
     if (enumIr.type === 'enum' && Array.isArray(enumIr.items)) {
       const enumValues = (enumIr.items as EnumItem[])
         .filter((item: EnumItem) => item && typeof item === 'object' && 'const' in item)
@@ -113,7 +103,6 @@ export function irToSchema(
       }
     }
 
-    // Handle items with const values (alternative enum representation)
     if (!enumIr.enum && Array.isArray(enumIr.items)) {
       const items = enumIr.items as EnumItem[];
       if (items.length > 0 && items.every((it: EnumItem) => it && typeof it === 'object' && 'const' in it)) {
@@ -184,7 +173,6 @@ function normalizeSchema(node: NormalizedSchemaNode | ExtendedSchema | Schema): 
 
   const workingNode = { ...node } as NormalizedSchemaNode;
 
-  // Transform internal enum representation (type: 'enum') into standard JSON Schema
   if (workingNode.type === 'enum') {
     let enumValues: JsonValue[] = [];
     if (Array.isArray(workingNode.items)) {
@@ -198,21 +186,18 @@ function normalizeSchema(node: NormalizedSchemaNode | ExtendedSchema | Schema): 
       const primitiveTypes = new Set(enumValues.map(v => (v === null ? 'null' : typeof v)));
       let inferred: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer' = primitiveTypes.size === 1 ? [...primitiveTypes][0] as 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' : 'string';
       if (inferred === 'number') {
-        // decide integer vs number
         if (enumValues.every(v => typeof v === 'number' && Number.isInteger(v))) inferred = 'integer';
       }
       if (inferred === 'object') inferred = 'string';
       workingNode.type = inferred;
       workingNode.enum = enumValues;
     } else {
-      // no explicit values -> degrade gracefully to string
       workingNode.type = 'string';
     }
     delete workingNode.items;
     delete workingNode.logicalOperator;
   }
 
-  // Detect union types represented as array items masquerading as tuples
   if (
     workingNode.type === 'array' &&
     Array.isArray(workingNode.items) &&
@@ -249,12 +234,9 @@ function sanitizeSchema(node: NormalizedSchemaNode): Schema {
 
   const workingNode = { ...node } as Record<string, unknown>;
 
-  // Remove unsupported 'unknown' type so downstream JSON Schema libs treat it as any
   if (workingNode.type === 'unknown') delete workingNode.type;
-  // Sanitize enum arrays (ensure at least string type if none)
   if (!workingNode.type && Array.isArray(workingNode.enum)) workingNode.type = 'string';
 
-  // Recurse into structural members
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     const properties = workingNode.properties as Record<string, NormalizedSchemaNode>;
     for (const k of Object.keys(properties)) {
@@ -284,11 +266,8 @@ export function isEnum(ir: IR.SchemaObject): boolean {
   if (!ir || typeof ir !== 'object') return false;
   const enumIr = ir as EnumSchemaObject;
 
-  // Standard OpenAPI/JSON Schema enum array
   if (Array.isArray(enumIr.enum)) return true;
-  // Internal representation: explicit type 'enum'
   if (enumIr.type === 'enum') return true;
-  // Heuristic: items[] each having a 'const' (and maybe description) with no other structural keywords
   if (!enumIr.enum && Array.isArray(enumIr.items)) {
     const items = enumIr.items as EnumItem[];
     if (items.length > 0 && items.every((it: EnumItem) => it && typeof it === 'object' && 'const' in it)) {

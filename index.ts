@@ -1,6 +1,6 @@
 import {JSONSchemaFaker} from 'json-schema-faker'
 import type { Schema} from 'json-schema-faker'
-import type { BuilderOptions } from './utils'
+import type { BuilderOptions } from './types'
 
 export interface JSFOptions {
     useDefaultValue?: boolean

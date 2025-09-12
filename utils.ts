@@ -1,72 +1,16 @@
 import type { IR } from '@hey-api/openapi-ts';
-import type { BuildersPlugin } from './types';
 import type { Schema } from 'json-schema-faker';
-
-export interface BuilderOptions {
-  useDefault?: boolean;
-  useExamples?: boolean;
-  alwaysIncludeOptionals?: boolean;
-  optionalsProbability?: number | false;
-  omitNulls?: boolean;
-}
-
-export interface GeneratedSchemaMeta {
-  typeName: string;
-  constName: string;
-  isEnum: boolean;
-  schema: Schema;
-  isObject: boolean;
-}
-
-interface EnumSchemaObject {
-  enum?: JsonValue[];
-  type?: string | 'enum';
-  items?: EnumItem[] | IR.SchemaObject | IR.SchemaObject[];
-  nullable?: boolean;
-  $ref?: string;
-  properties?: Record<string, IR.SchemaObject>;
-  required?: string[];
-  additionalProperties?: boolean | IR.SchemaObject;
-  allOf?: IR.SchemaObject[];
-  anyOf?: IR.SchemaObject[];
-  oneOf?: IR.SchemaObject[];
-  [key: string]: unknown;
-}
-
-interface EnumItem {
-  const: JsonValue;
-  description?: string;
-}
-
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
-
-interface ExtendedSchema {
-  type?: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer' | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
-  properties?: Record<string, Schema>;
-  required?: string[];
-  additionalProperties?: boolean | Schema;
-  items?: Schema | Schema[];
-  allOf?: Schema[];
-  anyOf?: Schema[];
-  oneOf?: Schema[];
-  enum?: JsonValue[];
-  nullable?: boolean;
-  [key: string]: unknown;
-}
-
-interface NormalizedSchemaNode {
-  type?: 'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer' | 'enum' | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
-  items?: NormalizedSchemaNode | NormalizedSchemaNode[];
-  properties?: Record<string, NormalizedSchemaNode>;
-  additionalProperties?: boolean | NormalizedSchemaNode;
-  allOf?: NormalizedSchemaNode[];
-  anyOf?: NormalizedSchemaNode[];
-  oneOf?: NormalizedSchemaNode[];
-  enum?: JsonValue[];
-  logicalOperator?: string;
-  const?: JsonValue;
-  [key: string]: unknown;
-}
+import type {
+  BuildersPlugin,
+  BuilderOptions,
+  GeneratedSchemaMeta,
+  EnumSchemaObject,
+  EnumItem,
+  JsonValue,
+  ExtendedSchema,
+  NormalizedSchemaNode,
+  BuildersHandler
+} from './types';
 
 export function irToSchema(
   ir: IR.SchemaObject,
@@ -307,5 +251,3 @@ export function generateWithMethods(schema: Schema, typeName: string): string {
     .map(p => `  with${toPascal(p)}(value: types.${typeName}["${p}"]): this { this.overrides["${p}"] = value; return this; }`)
     .join('\n');
 }
-
-export type BuildersHandler = BuildersPlugin['Handler'];

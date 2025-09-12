@@ -1,5 +1,5 @@
 import { collectSchemas, generateWithMethods } from './utils';
-import type { BuildersHandler } from './utils';
+import type { BuildersHandler } from './types';
 import type { IR } from '@hey-api/openapi-ts';
 
 export const handler: BuildersHandler = ({ plugin }) => {

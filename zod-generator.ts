@@ -257,7 +257,20 @@ class ZodMockGenerator {
 
     const itemSchema = itemTypeMatch[1];
 
-    // Check for array constraints
+    // Check if we have specific items in overrides - if so, use that length
+    if (Array.isArray(overrides.items)) {
+      return overrides.items.map((item) => {
+        // If the override item is a primitive value, return it directly
+        if (item !== null && typeof item === 'object') {
+          return this.generateFromSchemaString(itemSchema, item as Record<string, unknown>);
+        } else {
+          // For primitive values, return them directly
+          return item;
+        }
+      });
+    }
+
+    // Check for array constraints only if no specific items are provided
     const minMatch = zodSchemaString.match(/\.min\((\d+)\)/);
     const maxMatch = zodSchemaString.match(/\.max\((\d+)\)/);
 
@@ -265,9 +278,8 @@ class ZodMockGenerator {
     const maxLength = maxMatch?.[1] ? parseInt(maxMatch[1]) : 3;
     const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
 
-    return Array.from({ length }, (_, index) => {
-      const itemOverrides = Array.isArray(overrides.items) ? overrides.items[index] || {} : {};
-      return this.generateFromSchemaString(itemSchema, itemOverrides as Record<string, unknown>);
+    return Array.from({ length }, () => {
+      return this.generateFromSchemaString(itemSchema, {});
     });
   }
 

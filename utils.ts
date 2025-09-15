@@ -135,8 +135,27 @@ function normalizeSchema(node: NormalizedSchemaNode | ExtendedSchema | Schema): 
     } else {
       workingNode.type = 'string';
     }
+    // Clean up enum-specific properties
     delete workingNode.items;
     delete workingNode.logicalOperator;
+  }
+
+  // Handle arrays with enum items
+  if (Array.isArray(workingNode.items)) {
+    // Check if all items are enum-like (have type: "enum")
+    const hasEnumItems = workingNode.items.some((item: NormalizedSchemaNode) =>
+      item && typeof item === 'object' && item.type === 'enum'
+    );
+
+    if (hasEnumItems) {
+      // Process enum items and convert them
+      workingNode.items = workingNode.items.map((item: NormalizedSchemaNode) => {
+        if (item && typeof item === 'object' && item.type === 'enum') {
+          return normalizeSchema(item);
+        }
+        return item;
+      });
+    }
   }
 
   if (
@@ -175,8 +194,20 @@ function sanitizeSchema(node: NormalizedSchemaNode): Schema {
 
   const workingNode = { ...node } as Record<string, unknown>;
 
+  // Handle type: "enum" by removing it and setting appropriate type
+  if (workingNode.type === 'enum') {
+    delete workingNode.type;
+    // If we have enum values, infer the type from them
+    if (Array.isArray(workingNode.enum)) {
+      workingNode.type = 'string'; // Default to string for enums
+    }
+  }
+
   if (workingNode.type === 'unknown') delete workingNode.type;
   if (!workingNode.type && Array.isArray(workingNode.enum)) workingNode.type = 'string';
+
+  // Clean up any remaining enum-specific properties that shouldn't be in JSON Schema
+  delete workingNode.logicalOperator;
 
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     const properties = workingNode.properties as Record<string, NormalizedSchemaNode>;

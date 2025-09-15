@@ -1,6 +1,6 @@
 {
   "name": "hey-api-builders",
-  "version": "0.5.9",
+  "version": "0.6.0",
   "description": "A custom plugin for @hey-api/openapi-ts that wraps JSON Schema Faker to generate builders.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,8 @@
     "openapi-ts",
     "plugin",
     "mock",
-    "hey-api"
+    "hey-api",
+    "zod"
   ],
   "author": "JeffreyNijs",
   "license": "MIT",
@@ -28,10 +29,17 @@
     "json-schema-faker": "0.5.8"
   },
   "peerDependencies": {
-    "@hey-api/openapi-ts": "^0.77.0"
+    "@hey-api/openapi-ts": "^0.77.0",
+    "zod": "^3.20.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "22.13.4",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "zod": "^3.23.8"
   }
 }

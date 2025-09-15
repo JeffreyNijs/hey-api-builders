@@ -21,6 +21,9 @@ importers:
       typescript:
         specifier: 5.7.3
         version: 5.7.3
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
 packages:
 
@@ -304,6 +307,9 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
 snapshots:
 
   '@hey-api/json-schema-ref-parser@1.0.6':
@@ -572,3 +578,5 @@ snapshots:
   wordwrap@1.0.0: {}
 
   yallist@4.0.0: {}
+
+  zod@3.25.76: {}

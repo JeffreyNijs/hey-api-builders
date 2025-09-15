@@ -19,6 +19,18 @@ export interface Config {
      * @default false
      */
     myOption?: boolean;
+    /**
+     * Generate Zod schemas alongside builders for validation
+     *
+     * @default false
+     */
+    generateZod?: boolean;
+    /**
+     * Use Zod for mock generation instead of JSON Schema Faker
+     *
+     * @default false
+     */
+    useZodForMocks?: boolean;
 }
 
 export type BuildersPlugin = DefinePlugin<Config>

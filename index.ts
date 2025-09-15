@@ -25,5 +25,6 @@ export function generateMock<T = unknown>(schema: unknown, options?: JSFOptions)
 }
 
 export { defaultConfig, defineConfig } from './config';
+export { generateMockFromZodSchema } from './zod-generator';
 export type { BuildersPlugin } from "./types";
 export type { Schema as BuilderSchema, BuilderOptions };

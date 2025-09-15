@@ -1,5 +1,5 @@
 import { collectSchemas, generateWithMethods } from './utils';
-import { generateZodSchema, generateMockFromZodSchema } from './zod-generator';
+import { generateZodSchema } from './zod-generator';
 import type { BuildersHandler } from './types';
 import type { IR } from '@hey-api/openapi-ts';
 
@@ -20,7 +20,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
 
   if (useZodForMocks) {
     out += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
-    out += 'import type { BuilderSchema } from "hey-api-builders"\n';
   } else {
     out += 'import { generateMock } from "hey-api-builders"\n';
     out += 'import type { BuilderSchema } from "hey-api-builders"\n';

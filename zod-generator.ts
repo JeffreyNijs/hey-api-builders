@@ -152,7 +152,7 @@ class ZodMockGenerator {
 
       // Match property: type pattern, handling quoted property names
       const match = trimmed.match(/^(\w+|"[^"]+"|'[^']+'):\s*(.+)$/s);
-      if (match) {
+      if (match && match[1] && match[2]) {
         const key = match[1].replace(/['"]/g, ''); // Remove quotes
         const schema = match[2].trim();
         properties.push([key, schema]);
@@ -253,7 +253,7 @@ class ZodMockGenerator {
 
   private generateArrayMock(zodSchemaString: string, overrides: Record<string, unknown>): unknown[] {
     const itemTypeMatch = zodSchemaString.match(/z\.array\(([^)]+)\)/);
-    if (!itemTypeMatch) return [];
+    if (!itemTypeMatch || !itemTypeMatch[1]) return [];
 
     const itemSchema = itemTypeMatch[1];
 
@@ -261,8 +261,8 @@ class ZodMockGenerator {
     const minMatch = zodSchemaString.match(/\.min\((\d+)\)/);
     const maxMatch = zodSchemaString.match(/\.max\((\d+)\)/);
 
-    const minLength = minMatch ? parseInt(minMatch[1]) : 1;
-    const maxLength = maxMatch ? parseInt(maxMatch[1]) : 3;
+    const minLength = minMatch?.[1] ? parseInt(minMatch[1]) : 1;
+    const maxLength = maxMatch?.[1] ? parseInt(maxMatch[1]) : 3;
     const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
 
     return Array.from({ length }, (_, index) => {
@@ -273,7 +273,7 @@ class ZodMockGenerator {
 
   private generateEnumMock(zodSchemaString: string): unknown {
     const enumMatch = zodSchemaString.match(/z\.enum\(\[([^\]]+)\]\)/);
-    if (!enumMatch) return null;
+    if (!enumMatch || !enumMatch[1]) return null;
 
     const enumValues = enumMatch[1].split(',').map(val => {
       const trimmed = val.trim();
@@ -313,8 +313,8 @@ class ZodMockGenerator {
     const minMatch = zodSchemaString.match(/\.min\((\d+)\)/);
     const maxMatch = zodSchemaString.match(/\.max\((\d+)\)/);
 
-    const minLength = minMatch ? parseInt(minMatch[1]) : 5;
-    const maxLength = maxMatch ? parseInt(maxMatch[1]) : 15;
+    const minLength = minMatch?.[1] ? parseInt(minMatch[1]) : 5;
+    const maxLength = maxMatch?.[1] ? parseInt(maxMatch[1]) : 15;
     const targetLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
 
     return this.generateRandomString(targetLength);
@@ -327,11 +327,11 @@ class ZodMockGenerator {
     const gtMatch = zodSchemaString.match(/\.gt\(([^)]+)\)/);
     const ltMatch = zodSchemaString.match(/\.lt\(([^)]+)\)/);
 
-    let min = minMatch ? parseFloat(minMatch[1]) : (isInt ? 0 : 0.0);
-    let max = maxMatch ? parseFloat(maxMatch[1]) : (isInt ? 100 : 100.0);
+    let min = minMatch && minMatch[1] ? parseFloat(minMatch[1]) : (isInt ? 0 : 0.0);
+    let max = maxMatch && maxMatch[1] ? parseFloat(maxMatch[1]) : (isInt ? 100 : 100.0);
 
-    if (gtMatch) min = parseFloat(gtMatch[1]) + (isInt ? 1 : 0.001);
-    if (ltMatch) max = parseFloat(ltMatch[1]) - (isInt ? 1 : 0.001);
+    if (gtMatch && gtMatch[1]) min = parseFloat(gtMatch[1]) + (isInt ? 1 : 0.001);
+    if (ltMatch && ltMatch[1]) max = parseFloat(ltMatch[1]) - (isInt ? 1 : 0.001);
 
     const value = Math.random() * (max - min) + min;
     return isInt ? Math.floor(value) : Math.round(value * 100) / 100;
@@ -343,10 +343,13 @@ class ZodMockGenerator {
 
   private generateUnionMock(zodSchemaString: string, overrides: Record<string, unknown>): unknown {
     const unionMatch = zodSchemaString.match(/z\.union\(\[([^\]]+)\]\)/);
-    if (!unionMatch) return null;
+    if (!unionMatch || !unionMatch[1]) return null;
 
     const unionTypes = this.parseUnionTypes(unionMatch[1]);
+    if (unionTypes.length === 0) return null;
+
     const randomType = unionTypes[Math.floor(Math.random() * unionTypes.length)];
+    if (!randomType) return null; // Fix: Check if randomType is defined
 
     return this.generateFromSchemaString(randomType, overrides);
   }
@@ -386,9 +389,14 @@ class ZodMockGenerator {
   }
 
   private generateEmail(): string {
-    const firstName = ZodMockGenerator.FIRST_NAMES[Math.floor(Math.random() * ZodMockGenerator.FIRST_NAMES.length)];
-    const lastName = ZodMockGenerator.LAST_NAMES[Math.floor(Math.random() * ZodMockGenerator.LAST_NAMES.length)];
-    const domain = ZodMockGenerator.EMAIL_DOMAINS[Math.floor(Math.random() * ZodMockGenerator.EMAIL_DOMAINS.length)];
+    const firstNames = ZodMockGenerator.FIRST_NAMES;
+    const lastNames = ZodMockGenerator.LAST_NAMES;
+    const domains = ZodMockGenerator.EMAIL_DOMAINS;
+
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)] || 'user';
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)] || 'example';
+    const domain = domains[Math.floor(Math.random() * domains.length)] || 'example.com';
+
     return `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}`;
   }
 
@@ -404,7 +412,7 @@ class ZodMockGenerator {
     const start = new Date(2020, 0, 1);
     const end = new Date();
     const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    return randomDate.toISOString().split('T')[0];
+    return randomDate.toISOString().split('T')[0] as string
   }
 
   private generateDateTime(): string {
@@ -421,7 +429,7 @@ class ZodMockGenerator {
     const pattern = regexMatch[1];
 
     // Handle common patterns
-    if (pattern.includes('\\+?[1-9]\\d{1,14}')) {
+    if (pattern?.includes('\\+?[1-9]\\d{1,14}')) {
       // Phone number pattern
       return `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`;
     }
@@ -440,7 +448,7 @@ class ZodMockGenerator {
   }
 }
 
-function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGeneratorOptions, isRoot = true): string {
+function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGeneratorOptions): string {
   if (!schema || typeof schema !== 'object') {
     return 'z.unknown()';
   }
@@ -468,7 +476,7 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     const types = schema.type.filter(t => t !== 'null');
     const isNullable = schema.type.includes('null');
 
-    if (types.length === 1) {
+    if (types.length > 0 && types[0]) {
       let zodType = generateZodForSingleType(types[0], schema, options);
       if (isNullable) {
         zodType += '.nullable()';
@@ -612,11 +620,11 @@ function generateZodArray(schema: ExtendedSchema, options: ZodGeneratorOptions):
   if (schema.items) {
     if (Array.isArray(schema.items)) {
       // Tuple
-      const tupleTypes = schema.items.map(item => generateZodSchemaInternal(item as ExtendedSchema, options, false));
+      const tupleTypes = schema.items.map(item => generateZodSchemaInternal(item as ExtendedSchema, options));
       return `z.tuple([${tupleTypes.join(', ')}])`;
     } else {
       // Array
-      itemType = generateZodSchemaInternal(schema.items as ExtendedSchema, options, false);
+      itemType = generateZodSchemaInternal(schema.items as ExtendedSchema, options);
     }
   }
 
@@ -642,7 +650,7 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
 
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`;
-    let propType = generateZodSchemaInternal(propSchema as ExtendedSchema, options, false);
+    let propType = generateZodSchemaInternal(propSchema as ExtendedSchema, options);
 
     if (!required.has(key)) {
       propType += '.optional()';
@@ -657,7 +665,7 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
   if (schema.additionalProperties === false) {
     zodType += '.strict()';
   } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-    const additionalType = generateZodSchemaInternal(schema.additionalProperties as ExtendedSchema, options, false);
+    const additionalType = generateZodSchemaInternal(schema.additionalProperties as ExtendedSchema, options);
     zodType += `.catchall(${additionalType})`;
   }
 

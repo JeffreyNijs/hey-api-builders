@@ -175,7 +175,10 @@ function normalizeSchema(node: NormalizedSchemaNode | ExtendedSchema | Schema): 
 
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     for (const key of Object.keys(workingNode.properties)) {
-      workingNode.properties[key] = normalizeSchema(workingNode.properties[key]);
+      const prop = workingNode.properties[key];
+      if (prop !== undefined) {
+        workingNode.properties[key] = normalizeSchema(prop);
+      }
     }
   }
   if (workingNode.items) {
@@ -212,7 +215,10 @@ function sanitizeSchema(node: NormalizedSchemaNode): Schema {
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     const properties = workingNode.properties as Record<string, NormalizedSchemaNode>;
     for (const k of Object.keys(properties)) {
-      properties[k] = sanitizeSchema(properties[k]) as NormalizedSchemaNode;
+      const prop = properties[k];
+      if (prop !== undefined) {
+        properties[k] = sanitizeSchema(prop) as NormalizedSchemaNode;
+      }
     }
   }
   if (workingNode.additionalProperties && typeof workingNode.additionalProperties === 'object') {
@@ -262,12 +268,21 @@ export function safeTypeName(name: string): string {
 export function collectSchemas(all: Record<string, IR.SchemaObject>): GeneratedSchemaMeta[] {
   const metas: GeneratedSchemaMeta[] = [];
   for (const [name, irSchema] of Object.entries(all)) {
-    const typeName = safeTypeName(name.replace(/Schema$/, ''));
+    // Use the name as-is from the schema, just remove "Schema" suffix if present
+    let typeName = name.replace(/Schema$/, '');
+
+    // Fix common naming issues: UITheme -> UiTheme, APIKey -> ApiKey, etc.
+    typeName = typeName.replace(/^UI([A-Z])/g, 'Ui$1'); // UITheme -> UiTheme
+    typeName = typeName.replace(/^API([A-Z])/g, 'Api$1'); // APIKey -> ApiKey
+    typeName = typeName.replace(/^HTTP([A-Z])/g, 'Http$1'); // HTTPResponse -> HttpResponse
+    typeName = typeName.replace(/^URL([A-Z])/g, 'Url$1'); // URLConfig -> UrlConfig
+    typeName = typeName.replace(/^ID([A-Z])/g, 'Id$1'); // IDType -> IdType
+
     const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema as IR.SchemaObject, all)));
     const schemaWithType = jsf as ExtendedSchema;
     const t = schemaWithType.type;
     const isObject = t === 'object' || (Array.isArray(t) && t.includes('object'));
-    metas.push({ typeName, constName: `${typeName}Schema`, isEnum: isEnum(irSchema as IR.SchemaObject), schema: jsf, isObject });
+    metas.push({ typeName, constName: `${safeTypeName(typeName)}Schema`, isEnum: isEnum(irSchema as IR.SchemaObject), schema: jsf, isObject });
   }
   return metas;
 }

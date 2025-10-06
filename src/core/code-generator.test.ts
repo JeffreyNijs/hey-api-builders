@@ -4,6 +4,9 @@ import {
   generateImports,
   generateBuilderOptionsType,
   generateSchemaConstants,
+  generateProperty,
+  generateMethod,
+  indent,
 } from './code-generator';
 import type { Schema } from '../types';
 
@@ -328,6 +331,66 @@ describe('Code Generator', () => {
 
       const result = generateSchemaConstants(metas);
       expect(result).toContain('pattern');
+    });
+  });
+
+  describe('generateProperty', () => {
+    it('generates a private property declaration', () => {
+      const result = generateProperty('overrides', 'Partial<User>', '{}');
+      expect(result).toBe('  private overrides: Partial<User> = {}\n');
+    });
+
+    it('generates property with different types', () => {
+      const result = generateProperty('options', 'BuilderOptions', '{}');
+      expect(result).toContain('private options');
+      expect(result).toContain('BuilderOptions');
+    });
+  });
+
+  describe('generateMethod', () => {
+    it('generates a method declaration', () => {
+      const body = '    return this.value;\n';
+      const result = generateMethod('getValue', 'string', body);
+      
+      expect(result).toContain('getValue()');
+      expect(result).toContain(': string {');
+      expect(result).toContain('return this.value');
+    });
+
+    it('generates method with complex body', () => {
+      const body = '    const result = doSomething();\n    return result;\n';
+      const result = generateMethod('build', 'User', body);
+      
+      expect(result).toContain('build()');
+      expect(result).toContain(': User {');
+    });
+  });
+
+  describe('indent', () => {
+    it('indents single line code', () => {
+      const code = 'const x = 1;';
+      const result = indent(code, 2);
+      expect(result).toBe('  const x = 1;');
+    });
+
+    it('indents multi-line code', () => {
+      const code = 'const x = 1;\nconst y = 2;';
+      const result = indent(code, 4);
+      expect(result).toBe('    const x = 1;\n    const y = 2;');
+    });
+
+    it('preserves empty lines', () => {
+      const code = 'const x = 1;\n\nconst y = 2;';
+      const result = indent(code, 2);
+      expect(result).toBe('  const x = 1;\n\n  const y = 2;');
+    });
+
+    it('handles code with existing indentation', () => {
+      const code = '  const x = 1;\n  const y = 2;';
+      const result = indent(code, 2);
+      // Should add 2 more spaces
+      expect(result).toContain('    const x = 1;');
+      expect(result).toContain('    const y = 2;');
     });
   });
 });

@@ -183,6 +183,89 @@ describe('Schema Transformer', () => {
       const result = irToSchema('string' as unknown as IR.SchemaObject, {});
       expect(result).toEqual({});
     });
+
+    it('handles enum with type enum and items', () => {
+      const ir = {
+        type: 'enum',
+        items: [
+          { const: 'value1' },
+          { const: 'value2' },
+          { const: 'value3' },
+        ],
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(3);
+    });
+
+    it('handles enum with items but no enum property', () => {
+      const ir = {
+        items: [
+          { const: 'red' },
+          { const: 'blue' },
+          { const: 'green' },
+        ],
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(3);
+    });
+
+    it('handles nullable arrays with union types', () => {
+      const ir = {
+        type: ['string', 'null'],
+        nullable: true,
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result.type).toEqual(['string', 'null']);
+    });
+
+    it('handles array items as single schema', () => {
+      const ir: IR.SchemaObject = {
+        type: 'array',
+        items: { type: 'string' },
+      };
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('items');
+      expect(result.items).toHaveProperty('type', 'string');
+    });
+
+    it('handles allOf composition', () => {
+      const ir = {
+        allOf: [
+          { type: 'object', properties: { a: { type: 'string' } } },
+          { type: 'object', properties: { b: { type: 'number' } } },
+        ],
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('allOf');
+      expect(result.allOf).toHaveLength(2);
+    });
+
+    it('handles anyOf composition', () => {
+      const ir = {
+        anyOf: [{ type: 'string' }, { type: 'number' }],
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(2);
+    });
+
+    it('handles oneOf composition', () => {
+      const ir = {
+        oneOf: [{ type: 'boolean' }, { type: 'string' }],
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('oneOf');
+      expect(result.oneOf).toHaveLength(2);
+    });
   });
 
   describe('normalizeSchema', () => {
@@ -214,6 +297,123 @@ describe('Schema Transformer', () => {
 
       expect(result.properties).toBeDefined();
       expect(result.properties?.nested).toHaveProperty('type', 'string');
+    });
+
+    it('normalizes enum type with items', () => {
+      const schema = {
+        type: 'enum' as const,
+        items: [{ const: 'value1' }, { const: 'value2' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual(['value1', 'value2']);
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes enum type with number items', () => {
+      const schema = {
+        type: 'enum' as const,
+        items: [{ const: 1 }, { const: 2 }, { const: 3 }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual([1, 2, 3]);
+      expect(result.type).toBe('integer');
+    });
+
+    it('normalizes enum type with mixed types to string', () => {
+      const schema = {
+        type: 'enum' as const,
+        items: [{ const: 'text' }, { const: 123 }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual(['text', 123]);
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes enum type with no valid items', () => {
+      const schema = {
+        type: 'enum' as const,
+        items: [],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes array with enum items', () => {
+      const schema = {
+        type: 'object' as const,
+        properties: {
+          values: {
+            type: 'array' as const,
+            items: [
+              { type: 'enum' as const, items: [{ const: 'a' }] },
+              { type: 'enum' as const, items: [{ const: 'b' }] },
+            ],
+          },
+        },
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.properties?.values).toBeDefined();
+    });
+
+    it('normalizes array with mixed type items to anyOf', () => {
+      const schema = {
+        type: 'array' as const,
+        items: [{ type: 'string' as const }, { type: 'number' as const }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+      expect(result).not.toHaveProperty('type');
+    });
+
+    it('normalizes nested items in array', () => {
+      const schema = {
+        type: 'object' as const,
+        properties: {
+          data: {
+            type: 'array' as const,
+            items: { type: 'string' as const },
+          },
+        },
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.properties?.data).toBeDefined();
+    });
+
+    it('normalizes allOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        allOf: [{ type: 'string' as const }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.allOf).toBeDefined();
+    });
+
+    it('normalizes anyOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        anyOf: [{ type: 'string' as const }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+    });
+
+    it('normalizes oneOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        oneOf: [{ type: 'string' as const }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.oneOf).toBeDefined();
     });
   });
 
@@ -269,6 +469,70 @@ describe('Schema Transformer', () => {
       const result = sanitizeSchema(schema);
 
       expect(result.items).toBeDefined();
+    });
+
+    it('sets type to string when enum exists without type', () => {
+      const schema = {
+        enum: ['a', 'b', 'c'],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.type).toBe('string');
+    });
+
+    it('sanitizes additionalProperties', () => {
+      const schema = {
+        type: 'object' as const,
+        additionalProperties: {
+          type: 'unknown' as const,
+        },
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.additionalProperties).toBeDefined();
+    });
+
+    it('sanitizes array items when items is array', () => {
+      const schema = {
+        type: 'array' as const,
+        items: [{ type: 'enum' as const, enum: ['val1'] }, { type: 'string' as const }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.items).toBeDefined();
+      if (Array.isArray(result.items)) {
+        expect(result.items[0]).not.toHaveProperty('type', 'enum');
+      }
+    });
+
+    it('sanitizes allOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        allOf: [{ type: 'enum' as const, enum: ['val'] }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.allOf).toBeDefined();
+    });
+
+    it('sanitizes anyOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        anyOf: [{ type: 'unknown' as const }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+    });
+
+    it('sanitizes oneOf schemas', () => {
+      const schema = {
+        type: 'object' as const,
+        oneOf: [{ type: 'enum' as const, enum: ['x'] }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.oneOf).toBeDefined();
     });
   });
 

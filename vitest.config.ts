@@ -8,7 +8,26 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'json-summary', 'html'],
-      exclude: ['node_modules/', 'dist/', '**/*.d.ts', '**/*.config.*', '**/index.ts'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/index.ts',
+        // Exclude root-level re-export files
+        'config.ts',
+        'plugin.ts',
+        'static-mock-generator.ts',
+        'utils.ts',
+        'zod-generator.ts',
+      ],
+      include: ['src/**/*.ts'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
   },
 });

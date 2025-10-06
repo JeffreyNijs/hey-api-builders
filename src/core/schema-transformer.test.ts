@@ -187,11 +187,7 @@ describe('Schema Transformer', () => {
     it('handles enum with type enum and items', () => {
       const ir = {
         type: 'enum',
-        items: [
-          { const: 'value1' },
-          { const: 'value2' },
-          { const: 'value3' },
-        ],
+        items: [{ const: 'value1' }, { const: 'value2' }, { const: 'value3' }],
       } as unknown as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
@@ -201,11 +197,7 @@ describe('Schema Transformer', () => {
 
     it('handles enum with items but no enum property', () => {
       const ir = {
-        items: [
-          { const: 'red' },
-          { const: 'blue' },
-          { const: 'green' },
-        ],
+        items: [{ const: 'red' }, { const: 'blue' }, { const: 'green' }],
       } as unknown as IR.SchemaObject;
       const result = irToSchema(ir, {});
 

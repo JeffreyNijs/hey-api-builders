@@ -351,7 +351,7 @@ describe('Code Generator', () => {
     it('generates a method declaration', () => {
       const body = '    return this.value;\n';
       const result = generateMethod('getValue', 'string', body);
-      
+
       expect(result).toContain('getValue()');
       expect(result).toContain(': string {');
       expect(result).toContain('return this.value');
@@ -360,7 +360,7 @@ describe('Code Generator', () => {
     it('generates method with complex body', () => {
       const body = '    const result = doSomething();\n    return result;\n';
       const result = generateMethod('build', 'User', body);
-      
+
       expect(result).toContain('build()');
       expect(result).toContain(': User {');
     });

@@ -49,6 +49,11 @@ export interface Schema {
 }
 
 /**
+ * Mock generation strategy
+ */
+export type MockStrategy = 'runtime' | 'zod' | 'static';
+
+/**
  * Plugin configuration options
  */
 export interface Config {
@@ -75,19 +80,23 @@ export interface Config {
    */
   generateZod?: boolean;
   /**
-   * Use Zod for mock generation instead of JSON Schema Faker
+   * Strategy for generating mock data in builders
+   * - 'runtime': Use custom lightweight runtime mock generation (default)
+   * - 'zod': Use Zod schemas for mock generation
+   * - 'static': Generate hardcoded static mock values
    *
-   * @default false
+   * @default 'runtime'
    */
-  useZodForMocks?: boolean;
+  mockStrategy?: MockStrategy;
   /**
-   * Generate static mock builders without runtime dependencies
-   * When enabled, generates hardcoded mock values based on schema types
-   * instead of using JSON Schema Faker or Zod at runtime
+   * Custom identifier to add to builder class names.
+   * Useful when generating multiple builder sets with different strategies.
    *
-   * @default false
+   * Example: With builderIdentifier: 'Static', generates 'UserStaticBuilder' instead of 'UserBuilder'
+   *
+   * @default undefined (no identifier)
    */
-  useStaticMocks?: boolean;
+  builderIdentifier?: string;
 }
 
 /**

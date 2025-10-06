@@ -111,7 +111,7 @@ describe('handler integration tests', () => {
     const mockPlugin = {
       name: 'hey-api-builders',
       output: 'builders',
-      config: { useStaticMocks: true },
+      config: { mockStrategy: 'static' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Item', schema: itemSchema });
@@ -146,7 +146,7 @@ describe('handler integration tests', () => {
     const mockPlugin = {
       name: 'hey-api-builders',
       output: 'builders',
-      config: { useZodForMocks: true },
+      config: { mockStrategy: 'zod' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Order', schema: orderSchema });

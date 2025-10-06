@@ -1,4 +1,4 @@
-import type { GeneratedSchemaMeta } from '../types';
+import type { GeneratedSchemaMeta, MockStrategy } from '../types';
 import type { Schema } from '../types';
 import { generateZodSchema } from './zod-schema-generator';
 import { generateStaticMockCode } from './static-mock-generator';
@@ -9,8 +9,15 @@ import { generateWithMethods } from '../core/code-generator';
  */
 
 export interface BuilderGeneratorOptions {
-  useStaticMocks: boolean;
-  useZodForMocks: boolean;
+  mockStrategy: MockStrategy;
+  builderIdentifier: string;
+}
+
+/**
+ * Generates the builder class name with optional identifier
+ */
+function getBuilderClassName(typeName: string, identifier: string): string {
+  return identifier ? `${typeName}${identifier}Builder` : `${typeName}Builder`;
 }
 
 /**
@@ -21,15 +28,16 @@ export function generateEnumBuilder(
   options: BuilderGeneratorOptions
 ): string {
   const { typeName, schema } = meta;
-  const { useStaticMocks, useZodForMocks } = options;
+  const { mockStrategy, builderIdentifier } = options;
+  const className = getBuilderClassName(typeName, builderIdentifier);
 
-  let code = `export class ${typeName}Builder {\n`;
+  let code = `export class ${className} {\n`;
   code += `  private options: BuilderOptions = {}\n`;
   code += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n\n`;
 
-  if (useStaticMocks) {
+  if (mockStrategy === 'static') {
     code += generateStaticEnumBuild(typeName, schema);
-  } else if (useZodForMocks) {
+  } else if (mockStrategy === 'zod') {
     code += generateZodEnumBuild(typeName, schema);
   } else {
     code += generateCustomEnumBuild(typeName, meta.constName);
@@ -47,9 +55,10 @@ export function generateObjectBuilder(
   options: BuilderGeneratorOptions
 ): string {
   const { typeName, schema, constName } = meta;
-  const { useStaticMocks, useZodForMocks } = options;
+  const { mockStrategy, builderIdentifier } = options;
+  const className = getBuilderClassName(typeName, builderIdentifier);
 
-  let code = `export class ${typeName}Builder {\n`;
+  let code = `export class ${className} {\n`;
   code += `  private overrides: Partial<types.${typeName}> = {}\n`;
   code += `  private options: BuilderOptions = {}\n`;
   code += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
@@ -61,9 +70,9 @@ export function generateObjectBuilder(
 
   code += '\n';
 
-  if (useStaticMocks) {
+  if (mockStrategy === 'static') {
     code += generateStaticObjectBuild(typeName, schema);
-  } else if (useZodForMocks) {
+  } else if (mockStrategy === 'zod') {
     code += generateZodObjectBuild(typeName, schema);
   } else {
     code += generateCustomObjectBuild(typeName, constName);

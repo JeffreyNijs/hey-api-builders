@@ -28,14 +28,21 @@ describe('config', () => {
     it('should return config with custom options', () => {
       const config = defineConfig({
         generateZod: true,
-        useStaticMocks: true,
+        mockStrategy: 'static',
       });
       expect(config).toBeDefined();
     });
 
-    it('should return config with useZodForMocks option', () => {
+    it('should return config with mockStrategy zod', () => {
       const config = defineConfig({
-        useZodForMocks: true,
+        mockStrategy: 'zod',
+      });
+      expect(config).toBeDefined();
+    });
+
+    it('should return config with mockStrategy runtime', () => {
+      const config = defineConfig({
+        mockStrategy: 'runtime',
       });
       expect(config).toBeDefined();
     });
@@ -48,8 +55,7 @@ describe('config', () => {
     it('should return config with all options', () => {
       const config = defineConfig({
         generateZod: true,
-        useZodForMocks: true,
-        useStaticMocks: false,
+        mockStrategy: 'zod',
       });
       expect(config).toBeDefined();
     });

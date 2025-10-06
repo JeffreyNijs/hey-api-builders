@@ -290,7 +290,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      expect(result.length).toBeGreaterThanOrEqual(20);
+      expect((result as string).length).toBeGreaterThanOrEqual(20);
     });
 
     it('respects maxLength for strings', () => {
@@ -300,7 +300,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      expect(result.length).toBeLessThanOrEqual(5);
+      expect((result as string).length).toBeLessThanOrEqual(5);
     });
 
     it('handles pattern for strings with placeholder', () => {
@@ -352,7 +352,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      expect(!isNaN(Date.parse(result))).toBe(true);
+      expect(!isNaN(Date.parse(result as string))).toBe(true);
     });
 
     it('handles date format', () => {
@@ -362,7 +362,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      expect(/^\d{4}-\d{2}-\d{2}$/.test(result)).toBe(true);
+      expect(/^\d{4}-\d{2}-\d{2}$/.test(result as string)).toBe(true);
     });
 
     it('handles time format', () => {
@@ -372,7 +372,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      expect(/^\d{2}:\d{2}:\d{2}/.test(result)).toBe(true);
+      expect(/^\d{2}:\d{2}:\d{2}/.test(result as string)).toBe(true);
     });
 
     it('applies overrides to nested properties', () => {
@@ -429,9 +429,11 @@ describe('Custom Mock Runtime', () => {
         },
         required: ['level1'],
       };
-      const result = generateMock<any>(schema);
-      expect(result.level1.level2.level3).toBeDefined();
-      expect(typeof result.level1.level2.level3).toBe('string');
+      const result = generateMock<Record<string, unknown>>(schema);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect((result.level1 as any).level2.level3).toBeDefined();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(typeof (result.level1 as any).level2.level3).toBe('string');
     });
 
     it('handles array within object within array', () => {
@@ -456,7 +458,7 @@ describe('Custom Mock Runtime', () => {
 
     it('returns null for unknown schema type', () => {
       const schema = {
-        type: 'unknown-type' as any,
+        type: 'unknown-type' as unknown as 'string',
       };
       const result = generateMock(schema);
       expect(result).toBeNull();
@@ -486,7 +488,7 @@ describe('Custom Mock Runtime', () => {
         multipleOf: 5,
       };
       const result = generateMock(schema);
-      expect(result % 5).toBe(0);
+      expect((result as number) % 5).toBe(0);
     });
 
     it('merges mock data correctly', () => {

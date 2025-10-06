@@ -194,8 +194,10 @@ describe('Schema Transformer', () => {
     });
 
     it('handles null or undefined input', () => {
-      const result1 = normalizeSchema(null as unknown as any);
-      const result2 = normalizeSchema(undefined as unknown as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result1 = normalizeSchema(null as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result2 = normalizeSchema(undefined as any);
 
       expect(result1).toBeNull();
       expect(result2).toBeUndefined();
@@ -228,6 +230,7 @@ describe('Schema Transformer', () => {
     });
 
     it('removes unknown type', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const schema = { type: 'unknown' } as any;
       const result = sanitizeSchema(schema);
 
@@ -237,8 +240,9 @@ describe('Schema Transformer', () => {
     it('removes logicalOperator property', () => {
       const schema = {
         type: 'string' as const,
-        logicalOperator: 'AND',
-      } as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        logicalOperator: 'AND' as any,
+      };
       const result = sanitizeSchema(schema);
 
       expect(result).not.toHaveProperty('logicalOperator');
@@ -259,6 +263,7 @@ describe('Schema Transformer', () => {
     it('sanitizes arrays', () => {
       const schema = {
         type: 'array' as const,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items: { type: 'unknown' } as any,
       };
       const result = sanitizeSchema(schema);
@@ -377,7 +382,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles oneOf schemas', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         Mixed: {
           oneOf: [{ type: 'string' }, { type: 'number' }],
         },
@@ -388,7 +394,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles anyOf schemas', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         Flexible: {
           anyOf: [{ type: 'string' }, { type: 'boolean' }],
         },
@@ -399,7 +406,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles allOf schemas', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         Combined: {
           allOf: [
             { type: 'object', properties: { a: { type: 'string' } } },
@@ -413,7 +421,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles array schemas with min/max items', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         LimitedArray: {
           type: 'array',
           items: { type: 'string' },
@@ -428,7 +437,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles number schemas with constraints', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         ConstrainedNumber: {
           type: 'number',
           minimum: 0,
@@ -494,7 +504,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles schemas with nullable', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         Nullable: {
           type: 'string',
           nullable: true,
@@ -519,7 +530,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles schemas with readOnly flag', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         ReadOnly: {
           type: 'object',
           properties: {
@@ -533,7 +545,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles schemas with writeOnly flag', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         WriteOnly: {
           type: 'object',
           properties: {
@@ -547,7 +560,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles schemas with examples', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         WithExamples: {
           type: 'string',
           examples: ['example1', 'example2'],
@@ -586,7 +600,8 @@ describe('Schema Transformer', () => {
     });
 
     it('handles complex nested structures', () => {
-      const schemas: Record<string, IR.SchemaObject> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const schemas: Record<string, any> = {
         Complex: {
           type: 'object',
           properties: {

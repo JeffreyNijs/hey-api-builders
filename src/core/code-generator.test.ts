@@ -234,6 +234,7 @@ describe('Code Generator', () => {
       const result = generateImports({
         useStaticMocks: true,
         useZodForMocks: false,
+        generateZod: false,
       });
 
       expect(result).toContain('import type * as types from "./types.gen"');

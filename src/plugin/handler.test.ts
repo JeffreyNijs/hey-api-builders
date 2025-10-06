@@ -1,6 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import type { IR } from '@hey-api/openapi-ts';
 import { handler } from './handler';
+import type { BuildersHandler } from '../types';
+
+interface SchemaEvent {
+  name: string;
+  schema: IR.SchemaObject;
+}
 
 describe('handler integration tests', () => {
   it('should generate complete output with multiple schemas', () => {
@@ -14,7 +20,8 @@ describe('handler integration tests', () => {
       required: ['id', 'name', 'email'],
     };
 
-    const statusSchema: IR.SchemaObject = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const statusSchema: any = {
       type: 'string',
       enum: ['active', 'inactive', 'pending'],
     };
@@ -30,7 +37,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: {},
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'User', schema: userSchema });
           callback({ name: 'Status', schema: statusSchema });
@@ -39,7 +46,7 @@ describe('handler integration tests', () => {
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     // Verify complete output structure
     expect(output).toContain('import');
@@ -71,7 +78,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: { generateZod: true },
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Product', schema: productSchema });
         }
@@ -79,7 +86,7 @@ describe('handler integration tests', () => {
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('zodSchemas');
     expect(output).toContain('z.object');
@@ -107,7 +114,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: { useStaticMocks: true },
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Item', schema: itemSchema });
         }
@@ -115,7 +122,7 @@ describe('handler integration tests', () => {
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).not.toContain('schemas');
     expect(output).toContain('class ItemBuilder');
@@ -142,7 +149,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: { useZodForMocks: true },
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Order', schema: orderSchema });
         }
@@ -150,7 +157,7 @@ describe('handler integration tests', () => {
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('zodSchemas');
     expect(output).toContain('generateMockFromZodSchema');
@@ -158,7 +165,8 @@ describe('handler integration tests', () => {
   });
 
   it('should handle enum schemas correctly', () => {
-    const roleSchema: IR.SchemaObject = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const roleSchema: any = {
       type: 'string',
       enum: ['admin', 'user', 'guest'],
     };
@@ -174,7 +182,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: {},
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Role', schema: roleSchema });
         }
@@ -182,7 +190,7 @@ describe('handler integration tests', () => {
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('class RoleBuilder');
     expect(output).toContain('admin');
@@ -202,13 +210,13 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: {},
-      forEach: vi.fn((type: string, callback: (event: any) => void) => {
+      forEach: vi.fn((_type: string, _callback: (event: unknown) => void) => {
         // No schemas
       }),
       createFile: vi.fn(() => mockFile),
     };
 
-    handler({ plugin: mockPlugin as any });
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('import');
     expect(output).toContain('type BuilderOptions');

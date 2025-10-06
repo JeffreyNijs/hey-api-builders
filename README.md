@@ -5,19 +5,20 @@
 [![npm version](https://badge.fury.io/js/hey-api-builders.svg)](https://badge.fury.io/js/hey-api-builders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**hey-api-builders** is a custom plugin for the [Hey API](https://heyapi.dev/openapi-ts/) ecosystem that generates TypeScript builder classes for mock data based on your OpenAPI schemas. By leveraging [JSON Schema Faker](https://github.com/json-schema-faker/json-schema-faker), [Zod](https://zod.dev/), or static mock generation, this plugin automates the creation of flexible mock data builders, making testing and prototyping easier.
+**hey-api-builders** is a custom plugin for the [Hey API](https://heyapi.dev/openapi-ts/) ecosystem that generates TypeScript builder classes for mock data based on your OpenAPI schemas. With a fully custom lightweight mock generator, [Zod](https://zod.dev/) integration, or static mock generation, this plugin automates the creation of flexible mock data builders, making testing and prototyping easier.
 
 ## Features
 
 - **Builder Pattern for Mock Data:** Generates a TypeScript builder class for each OpenAPI schema, allowing you to override specific fields and generate mock objects.
 - **Multiple Mock Generation Strategies:**
-  - **JSON Schema Faker** (default): Dynamic mock generation with full faker.js support
+  - **Custom Runtime** (default): Lightweight, dependency-free mock generation with full JSON Schema support
   - **Zod Integration:** Generate Zod schemas with proper format validation (UUID, email, etc.) for enhanced type safety and validation
-  - **Static Mocks:** Generate hardcoded mock values without runtime dependencies for lightweight, fast mock generation
-- **Format-Aware Validation:** Handles OpenAPI formats like `uuid`, `email`, `date-time`, and more with appropriate validators.
+  - **Static Mocks:** Generate hardcoded mock values without runtime dependencies for ultra-fast mock generation
+- **Format-Aware Generation:** Handles OpenAPI formats like `uuid`, `email`, `date-time`, and more with appropriate mock values.
 - **Automatic Reference Resolution:** Handles `$ref` and schema composition, so your builders reflect your OpenAPI definitions accurately.
 - **Seamless Integration:** Designed to work with Hey API's plugin system and TypeScript type generation.
-- **Configurable Output:** Choose between JSON Schema Faker, Zod, or static mock generation.
+- **Zero External Dependencies:** No need for faker.js or other heavy dependencies - the custom runtime is lightweight and fast.
+- **Configurable Output:** Choose between custom runtime, Zod, or static mock generation.
 
 ## Installation
 
@@ -101,32 +102,39 @@ if (result.success) {
 ## Configuration Options
 
 - **generateZod** (boolean): Generate Zod schemas alongside builders for validation. Default: `false`.
-- **useZodForMocks** (boolean): Use Zod for mock generation instead of JSON Schema Faker. Default: `false` (experimental).
-- **useStaticMocks** (boolean): Generate static mock builders without runtime dependencies. When enabled, generates hardcoded mock values based on schema types instead of using JSON Schema Faker or Zod at runtime. Default: `false`.
+- **useZodForMocks** (boolean): Use Zod for mock generation instead of the custom runtime. Default: `false`.
+- **useStaticMocks** (boolean): Generate static mock builders without runtime dependencies. When enabled, generates hardcoded mock values based on schema types. Default: `false`.
 - **output** (string): Output filename (without extension) for the generated builders. Default: `'builders'`.
 
 ## Mock Generation Strategies
 
-### JSON Schema Faker (Default)
+### Custom Runtime (Default)
 
-The default strategy uses JSON Schema Faker to generate dynamic, randomized mock data at runtime. This provides the most flexibility and variety in generated data.
+The default strategy uses a lightweight custom mock generator that supports all JSON Schema features without external dependencies. This provides fast, predictable mock data generation.
 
 ```typescript
 import { UserBuilder } from './client/builders';
 
 const user = new UserBuilder()
   .withName('Alice')
-  .build(); // Generates random data for other fields
+  .build(); // Generates schema-compliant data for other fields
 ```
+
+Features:
+- **Zero dependencies** - No external libraries required
+- **Full JSON Schema support** - Handles all types, formats, and constraints
+- **Format-aware** - Generates appropriate values for UUIDs, emails, dates, etc.
+- **Lightweight** - Small bundle size
+- **Fast** - Optimized for performance
 
 ### Static Mocks
 
 When `useStaticMocks: true` is enabled, the plugin generates hardcoded mock values directly in the builder classes. This approach:
 
-- **No runtime dependencies** - doesn't require JSON Schema Faker or faker.js
+- **No runtime generation** - All values are pre-computed at build time
 - **Predictable values** - generates consistent, type-appropriate default values
-- **Lightweight** - smaller bundle size
-- **Fast** - no runtime mock generation overhead
+- **Ultra-lightweight** - No runtime code at all
+- **Maximum performance** - Zero overhead
 
 ```typescript
 // Configuration
@@ -200,9 +208,10 @@ const user = new UserBuilder()
 
 - For each schema, a builder class is generated with:
   - `with<Property>(value)` methods for each property.
-  - A `build()` method that generates a mock object using JSON Schema Faker or Zod, applying any overrides you set.
+  - A `build()` method that generates a mock object using the custom runtime, Zod, or static values, applying any overrides you set.
 - When `generateZod: true`, Zod schemas are generated with proper format validation.
-- Format-specific validations ensure UUIDs are valid UUIDs, emails are valid emails, etc.
+- Format-specific generation ensures UUIDs, emails, dates, etc. have appropriate mock values.
+- The custom runtime supports all JSON Schema features including nested objects, arrays, enums, and unions.
 
 ## Contributing
 

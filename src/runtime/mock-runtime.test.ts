@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { generateMock } from './jsf-runtime';
+import { generateMock } from './mock-runtime';
 
-describe('JSF Runtime', () => {
+describe('Custom Mock Runtime', () => {
   describe('generateMock', () => {
     it('generates mock from simple string schema', () => {
       const schema = { type: 'string' };
@@ -59,22 +59,22 @@ describe('JSF Runtime', () => {
       expect(['active', 'inactive']).toContain(result);
     });
 
-    it('uses default value when useDefaultValue is true', () => {
+    it('uses default value when useDefault is true', () => {
       const schema = {
         type: 'string',
         default: 'default-value',
       };
-      const result = generateMock<string>(schema, { useDefaultValue: true });
+      const result = generateMock<string>(schema, { useDefault: true });
 
       expect(result).toBe('default-value');
     });
 
-    it('uses example value when useExamplesValue is true', () => {
+    it('uses example value when useExamples is true', () => {
       const schema = {
         type: 'string',
         examples: ['example-value'],
       };
-      const result = generateMock<string>(schema, { useExamplesValue: true });
+      const result = generateMock<string>(schema, { useExamples: true });
 
       expect(result).toBe('example-value');
     });

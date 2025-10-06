@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateStaticMockCode } from './static-mock-generator';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 
 describe('Static Mock Generator', () => {
   describe('generateStaticMockCode', () => {

@@ -5,7 +5,7 @@ import {
   generateBuilderOptionsType,
   generateSchemaConstants,
 } from './code-generator';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 
 describe('Code Generator', () => {
   describe('generateWithMethods', () => {

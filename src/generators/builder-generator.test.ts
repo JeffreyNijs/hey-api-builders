@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateEnumBuilder, generateObjectBuilder } from './builder-generator';
 import type { GeneratedSchemaMeta } from '../types';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 
 describe('Builder Generator', () => {
   describe('generateEnumBuilder', () => {
@@ -25,7 +25,7 @@ describe('Builder Generator', () => {
       expect(result).toContain('build(): types.Status');
     });
 
-    it('generates JSF build method by default', () => {
+    it('generates custom runtime build method by default', () => {
       const result = generateEnumBuilder(enumMeta, {
         useStaticMocks: false,
         useZodForMocks: false,
@@ -33,8 +33,8 @@ describe('Builder Generator', () => {
 
       expect(result).toContain('generateMock');
       expect(result).toContain('schemas.StatusSchema');
-      expect(result).toContain('useDefaultValue');
-      expect(result).toContain('useExamplesValue');
+      expect(result).toContain('useDefault');
+      expect(result).toContain('useExamples');
     });
 
     it('generates static mock build method when useStaticMocks is true', () => {

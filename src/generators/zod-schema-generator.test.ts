@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateZodSchema } from './zod-schema-generator';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 
 describe('Zod Schema Generator', () => {
   describe('generateZodSchema', () => {

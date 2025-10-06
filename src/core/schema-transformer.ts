@@ -1,5 +1,5 @@
 import type { IR } from '@hey-api/openapi-ts';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 import type {
   EnumSchemaObject,
   EnumItem,

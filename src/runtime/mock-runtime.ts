@@ -1,0 +1,306 @@
+import type { Schema } from '../types';
+
+export interface MockOptions {
+  useDefault?: boolean;
+  useExamples?: boolean;
+  alwaysIncludeOptionals?: boolean;
+  optionalsProbability?: number | false;
+  omitNulls?: boolean;
+  requiredOnly?: boolean;
+}
+
+/**
+ * Custom mock data generator for JSON schemas
+ * This is a lightweight alternative to json-schema-faker
+ */
+export class MockGenerator {
+  private options: Required<MockOptions>;
+  private seenRefs = new Set<string>();
+
+  constructor(options: MockOptions = {}) {
+    this.options = {
+      useDefault: options.useDefault ?? false,
+      useExamples: options.useExamples ?? false,
+      alwaysIncludeOptionals: options.alwaysIncludeOptionals ?? false,
+      optionalsProbability: options.optionalsProbability ?? 1,
+      omitNulls: options.omitNulls ?? false,
+      requiredOnly: options.requiredOnly ?? false,
+    };
+  }
+
+  /**
+   * Generate mock data from schema
+   */
+  generate(schema: Schema): unknown {
+    this.seenRefs.clear();
+    return this.generateValue(schema);
+  }
+
+  private generateValue(schema: Schema): unknown {
+    // Handle $ref (prevent circular references)
+    if (schema.$ref) {
+      if (this.seenRefs.has(schema.$ref)) {
+        return null;
+      }
+      this.seenRefs.add(schema.$ref);
+    }
+
+    // Use default if configured
+    if (this.options.useDefault && schema.default !== undefined) {
+      return schema.default;
+    }
+
+    // Use examples if configured
+    if (this.options.useExamples && schema.examples && schema.examples.length > 0) {
+      return schema.examples[0];
+    }
+
+    // Handle const
+    if (schema.const !== undefined) {
+      return schema.const;
+    }
+
+    // Handle enum
+    if (schema.enum && schema.enum.length > 0) {
+      return schema.enum[0];
+    }
+
+    // Handle nullable
+    if (schema.nullable && this.shouldIncludeNull()) {
+      return null;
+    }
+
+    // Handle allOf (merge schemas)
+    if (schema.allOf && schema.allOf.length > 0) {
+      return this.generateAllOf(schema.allOf);
+    }
+
+    // Handle anyOf/oneOf (use first option)
+    if (schema.anyOf && schema.anyOf.length > 0) {
+      return this.generateValue(schema.anyOf[0]);
+    }
+    if (schema.oneOf && schema.oneOf.length > 0) {
+      return this.generateValue(schema.oneOf[0]);
+    }
+
+    // Handle array of types
+    if (Array.isArray(schema.type)) {
+      const nonNullTypes = schema.type.filter((t) => t !== 'null');
+      const type = nonNullTypes.length > 0 ? nonNullTypes[0] : 'null';
+      return this.generateByType({ ...schema, type });
+    }
+
+    // Handle single type
+    return this.generateByType(schema);
+  }
+
+  private generateByType(schema: Schema): unknown {
+    const type = schema.type || 'object';
+
+    switch (type) {
+      case 'null':
+        return null;
+
+      case 'boolean':
+        return false;
+
+      case 'integer':
+      case 'number':
+        return this.generateNumber(schema);
+
+      case 'string':
+        return this.generateString(schema);
+
+      case 'array':
+        return this.generateArray(schema);
+
+      case 'object':
+        return this.generateObject(schema);
+
+      default:
+        return null;
+    }
+  }
+
+  private generateNumber(schema: Schema): number {
+    const min =
+      schema.minimum ??
+      (schema.exclusiveMinimum
+        ? typeof schema.exclusiveMinimum === 'number'
+          ? schema.exclusiveMinimum + 1
+          : 1
+        : 0);
+    const max =
+      schema.maximum ??
+      (schema.exclusiveMaximum
+        ? typeof schema.exclusiveMaximum === 'number'
+          ? schema.exclusiveMaximum - 1
+          : 99
+        : 100);
+
+    let value = min;
+
+    // Handle multipleOf
+    if (schema.multipleOf) {
+      value = Math.ceil(min / schema.multipleOf) * schema.multipleOf;
+      if (value > max) {
+        value = schema.multipleOf;
+      }
+    }
+
+    return schema.type === 'integer' ? Math.floor(value) : value;
+  }
+
+  private generateString(schema: Schema): string {
+    const minLength = schema.minLength ?? 0;
+    const maxLength = schema.maxLength ?? 10;
+
+    // Handle format
+    if (schema.format) {
+      return this.generateStringByFormat(schema.format, minLength, maxLength);
+    }
+
+    // Handle pattern (simple approach)
+    if (schema.pattern) {
+      return this.generateStringForPattern(schema.pattern, minLength, maxLength);
+    }
+
+    // Generate random string
+    const length = Math.max(minLength, Math.min(maxLength, 10));
+    return 'a'.repeat(length);
+  }
+
+  private generateStringByFormat(format: string, minLength: number, maxLength: number): string {
+    switch (format) {
+      case 'email':
+        return 'test@example.com';
+      case 'uri':
+      case 'url':
+        return 'https://example.com';
+      case 'uuid':
+        return '00000000-0000-0000-0000-000000000000';
+      case 'date':
+        return '2024-01-01';
+      case 'date-time':
+        return '2024-01-01T00:00:00Z';
+      case 'time':
+        return '00:00:00';
+      case 'ipv4':
+        return '127.0.0.1';
+      case 'ipv6':
+        return '::1';
+      case 'hostname':
+        return 'localhost';
+      case 'phone':
+        return '+1234567890';
+      default: {
+        const length = Math.max(minLength, Math.min(maxLength, 10));
+        return 'string'.substring(0, Math.max(length, 1));
+      }
+    }
+  }
+
+  private generateStringForPattern(pattern: string, minLength: number, maxLength: number): string {
+    // Very basic pattern handling - just generate something that might match
+    // For production, you'd want a proper regex generator
+    const length = Math.max(minLength, Math.min(maxLength, 10));
+    return 'x'.repeat(length);
+  }
+
+  private generateArray(schema: Schema): unknown[] {
+    const minItems = schema.minItems ?? 0;
+    const maxItems = schema.maxItems ?? 3;
+    const length = Math.max(minItems, Math.min(maxItems, 1));
+
+    if (!schema.items) {
+      return Array(length).fill(null);
+    }
+
+    // Handle tuple (array of schemas)
+    if (Array.isArray(schema.items)) {
+      return schema.items.map((itemSchema) => this.generateValue(itemSchema));
+    }
+
+    // Handle single schema for all items
+    return Array.from({ length }, () => this.generateValue(schema.items as Schema));
+  }
+
+  private generateObject(schema: Schema): Record<string, unknown> {
+    const obj: Record<string, unknown> = {};
+
+    if (!schema.properties) {
+      return obj;
+    }
+
+    const required = new Set(schema.required || []);
+
+    for (const [propName, propSchema] of Object.entries(schema.properties)) {
+      const isRequired = required.has(propName);
+
+      // Skip optional properties if requiredOnly is true
+      if (this.options.requiredOnly && !isRequired) {
+        continue;
+      }
+
+      // Handle optional properties
+      if (!isRequired && !this.shouldIncludeOptional()) {
+        continue;
+      }
+
+      const value = this.generateValue(propSchema);
+
+      // Skip nulls if omitNulls is true
+      if (this.options.omitNulls && value === null) {
+        continue;
+      }
+
+      obj[propName] = value;
+    }
+
+    return obj;
+  }
+
+  private generateAllOf(schemas: Schema[]): unknown {
+    // Merge all schemas into a single object
+    const merged: Record<string, unknown> = {};
+
+    for (const schema of schemas) {
+      const value = this.generateValue(schema);
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        Object.assign(merged, value);
+      }
+    }
+
+    return merged;
+  }
+
+  private shouldIncludeOptional(): boolean {
+    if (this.options.alwaysIncludeOptionals) {
+      return true;
+    }
+
+    if (this.options.optionalsProbability === false) {
+      return false;
+    }
+
+    return Math.random() < this.options.optionalsProbability;
+  }
+
+  private shouldIncludeNull(): boolean {
+    return !this.options.omitNulls && Math.random() < 0.1;
+  }
+}
+
+/**
+ * Generates mock data using custom mock generator
+ * @param schema - JSON Schema
+ * @param options - Generation options
+ * @returns Generated mock data
+ */
+export function generateMock<T = unknown>(schema: unknown, options?: MockOptions): T {
+  const generator = new MockGenerator(options);
+  return generator.generate(schema as Schema) as T;
+}
+
+export type { BuilderOptions } from '../types';
+export type { Schema as BuilderSchema } from '../types';

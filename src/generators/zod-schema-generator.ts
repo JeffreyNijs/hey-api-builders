@@ -1,4 +1,4 @@
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 import type { ExtendedSchema, JsonValue, ZodGeneratorOptions } from '../types';
 
 /**

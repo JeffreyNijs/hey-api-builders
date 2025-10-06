@@ -11,7 +11,6 @@ export interface JSFOptions {
     requiredOnly?: boolean
 }
 
-// TODO: replace unknown with Schema
 export function generateMock<T = unknown>(schema: unknown, options?: JSFOptions): T {
     JSONSchemaFaker.option({
         useDefaultValue: options?.useDefaultValue ?? false,

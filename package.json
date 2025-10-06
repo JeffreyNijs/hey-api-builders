@@ -1,7 +1,7 @@
 {
   "name": "hey-api-builders",
   "version": "0.7.0",
-  "description": "A custom plugin for @hey-api/openapi-ts that generates mock data builders with support for JSON Schema Faker, Zod, or static mock generation.",
+  "description": "A custom plugin for @hey-api/openapi-ts that generates mock data builders with a lightweight custom runtime, Zod integration, or static mock generation.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -35,8 +35,7 @@
     "url": "https://github.com/JeffreyNijs/hey-api-builders.git"
   },
   "dependencies": {
-    "@hey-api/openapi-ts": "0.77.0",
-    "json-schema-faker": "0.5.8"
+    "@hey-api/openapi-ts": "0.77.0"
   },
   "peerDependencies": {
     "@hey-api/openapi-ts": "^0.77.0",

@@ -1,6 +1,52 @@
 import type { DefinePlugin } from '@hey-api/openapi-ts';
 import type { IR } from '@hey-api/openapi-ts';
-import type { Schema } from 'json-schema-faker';
+
+/**
+ * JSON Schema definition
+ */
+export interface Schema {
+  type?:
+    | 'null'
+    | 'boolean'
+    | 'object'
+    | 'array'
+    | 'number'
+    | 'string'
+    | 'integer'
+    | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
+  properties?: Record<string, Schema>;
+  required?: string[];
+  additionalProperties?: boolean | Schema;
+  items?: Schema | Schema[];
+  allOf?: Schema[];
+  anyOf?: Schema[];
+  oneOf?: Schema[];
+  enum?: JsonValue[];
+  const?: JsonValue;
+  nullable?: boolean;
+  format?: string;
+  pattern?: string;
+  minimum?: number;
+  maximum?: number;
+  exclusiveMinimum?: number | boolean;
+  exclusiveMaximum?: number | boolean;
+  minLength?: number;
+  maxLength?: number;
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
+  minProperties?: number;
+  maxProperties?: number;
+  multipleOf?: number;
+  default?: unknown;
+  examples?: unknown[];
+  description?: string;
+  title?: string;
+  $ref?: string;
+  $id?: string;
+  $schema?: string;
+  [key: string]: unknown;
+}
 
 /**
  * Plugin configuration options

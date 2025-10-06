@@ -1,4 +1,4 @@
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 import type { ExtendedSchema, JsonValue, ZodGeneratorOptions } from '../types';
 
 /**
@@ -16,7 +16,6 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     return 'z.unknown()';
   }
 
-  // Handle anyOf (enums typically)
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
     const enumValues = schema.anyOf
       .filter((item) => item && typeof item === 'object' && 'const' in item)
@@ -28,13 +27,11 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     }
   }
 
-  // Handle enum arrays
   if (schema.enum && Array.isArray(schema.enum)) {
     const zodEnumValues = schema.enum.map((val) => JSON.stringify(val)).join(', ');
     return `z.enum([${zodEnumValues}])`;
   }
 
-  // Handle union types
   if (Array.isArray(schema.type)) {
     const types = schema.type.filter((t) => t !== 'null');
     const isNullable = schema.type.includes('null');
@@ -55,17 +52,14 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     }
   }
 
-  // Handle single types
   if (typeof schema.type === 'string') {
     return generateZodForSingleType(schema.type, schema, options);
   }
 
-  // Handle object with properties but no explicit type
   if (schema.properties && !schema.type) {
     return generateZodObject(schema, options);
   }
 
-  // Handle array with items but no explicit type
   if (schema.items && !schema.type) {
     return generateZodArray(schema, options);
   }
@@ -101,7 +95,6 @@ function generateZodForSingleType(
 function generateZodString(schema: ExtendedSchema): string {
   let zodType = 'z.string()';
 
-  // Handle format validations
   if (schema.format) {
     switch (schema.format) {
       case 'uuid':
@@ -126,12 +119,10 @@ function generateZodString(schema: ExtendedSchema): string {
     }
   }
 
-  // Handle pattern
   if (schema.pattern) {
     zodType += `.regex(/${schema.pattern}/)`;
   }
 
-  // Handle length constraints
   if (typeof schema.minLength === 'number') {
     zodType += `.min(${schema.minLength})`;
   }
@@ -185,13 +176,11 @@ function generateZodArray(schema: ExtendedSchema, options: ZodGeneratorOptions):
 
   if (schema.items) {
     if (Array.isArray(schema.items)) {
-      // Tuple
       const tupleTypes = schema.items.map((item) =>
         generateZodSchemaInternal(item as ExtendedSchema, options)
       );
       return `z.tuple([${tupleTypes.join(', ')}])`;
     } else {
-      // Array
       itemType = generateZodSchemaInternal(schema.items as ExtendedSchema, options);
     }
   }
@@ -229,7 +218,6 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
 
   let zodType = `z.object({\n  ${properties.join(',\n  ')}\n})`;
 
-  // Handle additional properties
   if (schema.additionalProperties === false) {
     zodType += '.strict()';
   } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {

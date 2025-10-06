@@ -17,12 +17,9 @@ export const handler: BuildersHandler = ({ plugin }) => {
 
   let out = '';
 
-  // Fix: Only import "z" once, even if both options are enabled
   const needsZodImport = generateZod || useZodForMocks;
 
-  // Import section based on options
   if (useStaticMocks) {
-    // Static mocks don't need any imports from the library
   } else if (useZodForMocks) {
     out += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
   } else {
@@ -44,7 +41,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
   out += '  omitNulls?: boolean;\n';
   out += '}\n\n';
 
-  // Generate JSON schemas for JSF (only if not using static or zod mocks)
   if (!useZodForMocks && !useStaticMocks) {
     const schemaEntries: string[] = [];
     for (const m of metas) {
@@ -53,7 +49,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
     out += 'const schemas = {\n' + schemaEntries.join(',\n') + '\n} satisfies Record<string, BuilderSchema>\n\n';
   }
 
-  // Generate Zod schemas if requested
   if (generateZod || useZodForMocks) {
     const zodSchemaEntries: string[] = [];
     for (const m of metas) {
@@ -63,7 +58,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
     out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
   }
 
-  // Generate builders
   for (const m of metas) {
     if (m.isEnum) {
       out += `export class ${m.typeName}Builder {\n`;
@@ -71,7 +65,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
 
       if (useStaticMocks) {
-        // Static mock for enums - just return the first value
         const staticMock = generateStaticMockCode(m.schema, m.typeName);
         out += `  build(): types.${m.typeName} {\n`;
         out += `    return ${staticMock} as types.${m.typeName};\n`;
@@ -108,7 +101,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
       if (withMethods) out += withMethods + '\n';
 
       if (useStaticMocks) {
-        // Static mock generation - generate a base object and merge overrides
         const staticMock = generateStaticMockCode(m.schema, m.typeName);
         out += `  build(): types.${m.typeName} {\n`;
         out += `    const baseMock = ${staticMock};\n`;

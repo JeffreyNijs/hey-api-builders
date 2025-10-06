@@ -8,8 +8,6 @@ export const defaultConfig: BuildersPlugin['Config'] = {
   handler,
   name: 'hey-api-builders',
   output: 'builders',
-  // @ts-expect-error - exportFromIndex is valid but not in types
-  exportFromIndex: true,
 };
 
 export const defineConfig = definePluginConfig(defaultConfig);

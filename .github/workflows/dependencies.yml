@@ -54,7 +54,7 @@ jobs:
                 body += '\n---\n';
                 body += 'Please review and update dependencies as needed.';
                 
-                // Check if issue already exists
+                
                 const issues = await github.rest.issues.listForRepo({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -67,7 +67,7 @@ jobs:
                 );
                 
                 if (existingIssue) {
-                  // Update existing issue
+                  
                   await github.rest.issues.update({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -76,7 +76,7 @@ jobs:
                   });
                   console.log('Updated existing issue');
                 } else {
-                  // Create new issue
+                  
                   await github.rest.issues.create({
                     owner: context.repo.owner,
                     repo: context.repo.repo,

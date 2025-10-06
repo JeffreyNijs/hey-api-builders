@@ -8,7 +8,6 @@ export const defaultConfig: BuildersPlugin['Config'] = {
     handler,
     name: 'hey-api-builders',
     output: 'builders',
-    // @ts-ignore
     exportFromIndex: true
 };
 

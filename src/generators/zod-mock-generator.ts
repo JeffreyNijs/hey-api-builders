@@ -1,4 +1,4 @@
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 import type { ExtendedSchema, JsonValue } from '../types';
 
 export interface ZodGeneratorOptions {
@@ -29,7 +29,6 @@ export function generateMockFromZodSchema(
   overrides: Record<string, unknown> = {},
   options: ZodMockOptions = {}
 ): unknown {
-  // Parse the Zod schema string to understand its structure
   const mockGenerator = new ZodMockGenerator(options);
   return mockGenerator.generateFromSchemaString(zodSchemaString, overrides);
 }
@@ -73,7 +72,6 @@ class ZodMockGenerator {
     zodSchemaString: string,
     overrides: Record<string, unknown> = {}
   ): unknown {
-    // Parse different Zod schema patterns
     if (zodSchemaString.includes('z.object(')) {
       return this.generateObjectMock(zodSchemaString, overrides);
     } else if (zodSchemaString.includes('z.array(')) {
@@ -101,7 +99,6 @@ class ZodMockGenerator {
   ): Record<string, unknown> {
     const mock: Record<string, unknown> = {};
 
-    // Extract object properties from the schema string with proper bracket matching
     const propertiesString = this.extractObjectProperties(zodSchemaString);
     if (!propertiesString) {
       return mock;
@@ -115,18 +112,16 @@ class ZodMockGenerator {
       } else {
         const isOptional = propSchema.includes('.optional()');
 
-        // Handle optional fields based on options
         if (isOptional && !this.options.alwaysIncludeOptionals) {
           const probability =
             this.options.optionalsProbability === false ? 0.8 : this.options.optionalsProbability;
           if (Math.random() > (probability ?? 0.8)) {
-            continue; // Skip this optional field
+            continue;
           }
         }
 
         const value = this.generateFromSchemaString(propSchema);
 
-        // Handle null omission
         if (value === null && this.options.omitNulls) {
           continue;
         }
@@ -159,7 +154,6 @@ class ZodMockGenerator {
     }
 
     if (depth === 0) {
-      // Found the matching closing brace
       return zodSchemaString.substring(contentStart, i - 1);
     }
 
@@ -169,10 +163,8 @@ class ZodMockGenerator {
   private parseObjectProperties(propertiesString: string): Array<[string, string]> {
     const properties: Array<[string, string]> = [];
 
-    // Clean up the properties string - remove extra whitespace and normalize
     const cleanString = propertiesString.trim();
 
-    // Split by commas, but be careful about nested objects/arrays
     const propertyStrings = this.splitObjectProperties(cleanString);
 
     for (const propString of propertyStrings) {
@@ -181,10 +173,9 @@ class ZodMockGenerator {
         continue;
       }
 
-      // Match property: type pattern, handling quoted property names
       const match = trimmed.match(/^(\w+|"[^"]+"|'[^']+'):\s*(.+)$/s);
       if (match && match[1] && match[2]) {
-        const key = match[1].replace(/['"]/g, ''); // Remove quotes
+        const key = match[1].replace(/['"]/g, '');
         const schema = match[2].trim();
         properties.push([key, schema]);
       }
@@ -216,7 +207,6 @@ class ZodMockGenerator {
         } else if (char === ')' || char === ']' || char === '}') {
           depth--;
         } else if (char === ',' && depth === 0) {
-          // Check if this comma is actually separating properties
           const beforeComma = current.trim();
           if (beforeComma && this.isCompleteProperty(beforeComma)) {
             result.push(current.trim());
@@ -239,7 +229,6 @@ class ZodMockGenerator {
   }
 
   private isCompleteProperty(str: string): boolean {
-    // Check if the string looks like a complete property (key: value)
     const colonIndex = str.indexOf(':');
     if (colonIndex === -1) {
       return false;
@@ -248,10 +237,8 @@ class ZodMockGenerator {
     const key = str.substring(0, colonIndex).trim();
     const value = str.substring(colonIndex + 1).trim();
 
-    // Key should be a valid identifier or quoted string
     const keyValid = /^(\w+|"[^"]+"|'[^']+')$/.test(key);
 
-    // Value should not be empty and should have balanced brackets
     const valueValid = value.length > 0 && this.hasBalancedBrackets(value);
 
     return keyValid && valueValid;
@@ -297,20 +284,16 @@ class ZodMockGenerator {
 
     const itemSchema = itemTypeMatch[1];
 
-    // Check if we have specific items in overrides - if so, use that length
     if (Array.isArray(overrides.items)) {
       return overrides.items.map((item) => {
-        // If the override item is a primitive value, return it directly
         if (item !== null && typeof item === 'object') {
           return this.generateFromSchemaString(itemSchema, item as Record<string, unknown>);
         } else {
-          // For primitive values, return them directly
           return item;
         }
       });
     }
 
-    // Check for array constraints only if no specific items are provided
     const minMatch = zodSchemaString.match(/\.min\((\d+)\)/);
     const maxMatch = zodSchemaString.match(/\.max\((\d+)\)/);
 
@@ -331,7 +314,7 @@ class ZodMockGenerator {
 
     const enumValues = enumMatch[1].split(',').map((val) => {
       const trimmed = val.trim();
-      // Remove quotes and parse the value
+
       if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
         return trimmed.slice(1, -1);
       }
@@ -348,7 +331,6 @@ class ZodMockGenerator {
   }
 
   private generateStringMock(zodSchemaString: string): string {
-    // Check for specific string formats
     if (zodSchemaString.includes('.uuid()')) {
       return this.generateUUID();
     } else if (zodSchemaString.includes('.email()')) {
@@ -363,7 +345,6 @@ class ZodMockGenerator {
       return this.generateFromRegex(zodSchemaString);
     }
 
-    // Check for length constraints
     const minMatch = zodSchemaString.match(/\.min\((\d+)\)/);
     const maxMatch = zodSchemaString.match(/\.max\((\d+)\)/);
 
@@ -413,7 +394,7 @@ class ZodMockGenerator {
     const randomType = unionTypes[Math.floor(Math.random() * unionTypes.length)];
     if (!randomType) {
       return null;
-    } // Fix: Check if randomType is defined
+    }
 
     return this.generateFromSchemaString(randomType, overrides);
   }
@@ -500,13 +481,10 @@ class ZodMockGenerator {
 
     const pattern = regexMatch[1];
 
-    // Handle common patterns
     if (pattern?.includes('\\+?[1-9]\\d{1,14}')) {
-      // Phone number pattern
       return `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`;
     }
 
-    // For other regex patterns, generate a basic string
     return this.generateRandomString(10);
   }
 
@@ -525,7 +503,6 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     return 'z.unknown()';
   }
 
-  // Handle anyOf (enums typically)
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
     const enumValues = schema.anyOf
       .filter((item) => item && typeof item === 'object' && 'const' in item)
@@ -537,13 +514,11 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     }
   }
 
-  // Handle enum arrays
   if (schema.enum && Array.isArray(schema.enum)) {
     const zodEnumValues = schema.enum.map((val) => JSON.stringify(val)).join(', ');
     return `z.enum([${zodEnumValues}])`;
   }
 
-  // Handle union types
   if (Array.isArray(schema.type)) {
     const types = schema.type.filter((t) => t !== 'null');
     const isNullable = schema.type.includes('null');
@@ -564,17 +539,14 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     }
   }
 
-  // Handle single types
   if (typeof schema.type === 'string') {
     return generateZodForSingleType(schema.type, schema, options);
   }
 
-  // Handle object with properties but no explicit type
   if (schema.properties && !schema.type) {
     return generateZodObject(schema, options);
   }
 
-  // Handle array with items but no explicit type
   if (schema.items && !schema.type) {
     return generateZodArray(schema, options);
   }
@@ -610,7 +582,6 @@ function generateZodForSingleType(
 function generateZodString(schema: ExtendedSchema): string {
   let zodType = 'z.string()';
 
-  // Handle format validations
   if (schema.format) {
     switch (schema.format) {
       case 'uuid':
@@ -630,18 +601,15 @@ function generateZodString(schema: ExtendedSchema): string {
         zodType += '.datetime()';
         break;
       case 'phone':
-        // Custom regex for phone validation
         zodType += '.regex(/^\\+?[1-9]\\d{1,14}$/)';
         break;
     }
   }
 
-  // Handle pattern
   if (schema.pattern) {
     zodType += `.regex(/${schema.pattern}/)`;
   }
 
-  // Handle length constraints
   if (typeof schema.minLength === 'number') {
     zodType += `.min(${schema.minLength})`;
   }
@@ -695,13 +663,11 @@ function generateZodArray(schema: ExtendedSchema, options: ZodGeneratorOptions):
 
   if (schema.items) {
     if (Array.isArray(schema.items)) {
-      // Tuple
       const tupleTypes = schema.items.map((item) =>
         generateZodSchemaInternal(item as ExtendedSchema, options)
       );
       return `z.tuple([${tupleTypes.join(', ')}])`;
     } else {
-      // Array
       itemType = generateZodSchemaInternal(schema.items as ExtendedSchema, options);
     }
   }
@@ -739,7 +705,6 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
 
   let zodType = `z.object({\n  ${properties.join(',\n  ')}\n})`;
 
-  // Handle additional properties
   if (schema.additionalProperties === false) {
     zodType += '.strict()';
   } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {

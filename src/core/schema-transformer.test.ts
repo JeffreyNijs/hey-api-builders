@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { IR } from '@hey-api/openapi-ts';
 import { irToSchema, collectSchemas, normalizeSchema, sanitizeSchema } from './schema-transformer';
+import type { NormalizedSchemaNode } from '../types';
 
 describe('Schema Transformer', () => {
   describe('irToSchema', () => {
@@ -53,7 +54,7 @@ describe('Schema Transformer', () => {
       const ir = {
         type: 'string',
         nullable: true,
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result.type).toEqual(['string', 'null']);
@@ -158,7 +159,7 @@ describe('Schema Transformer', () => {
       const ir = {
         type: 'string',
         example: 'test-value',
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('examples');
@@ -180,32 +181,88 @@ describe('Schema Transformer', () => {
     });
 
     it('returns empty object for non-object input', () => {
-      const result = irToSchema('string' as unknown as IR.SchemaObject, {});
+      const result = irToSchema('string' as IR.SchemaObject, {});
       expect(result).toEqual({});
+    });
+
+    it('handles enum with type enum and items', () => {
+      const ir = {
+        type: 'enum',
+        items: [{ const: 'value1' }, { const: 'value2' }, { const: 'value3' }],
+      } as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(3);
+    });
+
+    it('handles enum with items but no enum property', () => {
+      const ir = {
+        items: [{ const: 'red' }, { const: 'blue' }, { const: 'green' }],
+      } as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(3);
+    });
+
+    it('handles nullable arrays with union types', () => {
+      const ir = {
+        type: ['string', 'null'],
+        nullable: true,
+      } as unknown as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result.type).toEqual(['string', 'null']);
+    });
+
+    it('handles allOf composition', () => {
+      const ir = {
+        allOf: [
+          { type: 'object', properties: { a: { type: 'string' } } },
+          { type: 'object', properties: { b: { type: 'number' } } },
+        ],
+      } as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('allOf');
+      expect(result.allOf).toHaveLength(2);
+    });
+
+    it('handles anyOf composition', () => {
+      const ir = {
+        anyOf: [{ type: 'string' }, { type: 'number' }],
+      } as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('anyOf');
+      expect(result.anyOf).toHaveLength(2);
+    });
+
+    it('handles oneOf composition', () => {
+      const ir = {
+        oneOf: [{ type: 'boolean' }, { type: 'string' }],
+      } as IR.SchemaObject;
+      const result = irToSchema(ir, {});
+
+      expect(result).toHaveProperty('oneOf');
+      expect(result.oneOf).toHaveLength(2);
     });
   });
 
   describe('normalizeSchema', () => {
     it('normalizes basic schema', () => {
-      const schema = { type: 'string' as const };
+      const schema: NormalizedSchemaNode = { type: 'string' };
       const result = normalizeSchema(schema);
 
       expect(result).toHaveProperty('type', 'string');
     });
 
-    it('handles null or undefined input', () => {
-      const result1 = normalizeSchema(null as unknown as any);
-      const result2 = normalizeSchema(undefined as unknown as any);
-
-      expect(result1).toBeNull();
-      expect(result2).toBeUndefined();
-    });
-
     it('normalizes nested properties', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
-          nested: { type: 'string' as const },
+          nested: { type: 'string' },
         },
       };
       const result = normalizeSchema(schema);
@@ -213,12 +270,129 @@ describe('Schema Transformer', () => {
       expect(result.properties).toBeDefined();
       expect(result.properties?.nested).toHaveProperty('type', 'string');
     });
+
+    it('normalizes enum type with items', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
+        items: [{ const: 'value1' }, { const: 'value2' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual(['value1', 'value2']);
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes enum type with number items', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
+        items: [{ const: 1 }, { const: 2 }, { const: 3 }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual([1, 2, 3]);
+      expect(result.type).toBe('integer');
+    });
+
+    it('normalizes enum type with mixed types to string', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
+        items: [{ const: 'text' }, { const: 123 }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.enum).toEqual(['text', 123]);
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes enum type with no valid items', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
+        items: [],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.type).toBe('string');
+    });
+
+    it('normalizes array with enum items', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        properties: {
+          values: {
+            type: 'array',
+            items: [
+              { type: 'enum', items: [{ const: 'a' }] },
+              { type: 'enum', items: [{ const: 'b' }] },
+            ],
+          },
+        },
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.properties?.values).toBeDefined();
+    });
+
+    it('normalizes array with mixed type items to anyOf', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
+        items: [{ type: 'string' }, { type: 'number' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+      expect(result).not.toHaveProperty('type');
+    });
+
+    it('normalizes nested items in array', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+        },
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.properties?.data).toBeDefined();
+    });
+
+    it('normalizes allOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        allOf: [{ type: 'string' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.allOf).toBeDefined();
+    });
+
+    it('normalizes anyOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        anyOf: [{ type: 'string' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+    });
+
+    it('normalizes oneOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        oneOf: [{ type: 'string' }],
+      };
+      const result = normalizeSchema(schema);
+
+      expect(result.oneOf).toBeDefined();
+    });
   });
 
   describe('sanitizeSchema', () => {
     it('removes enum type and sets appropriate type', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         enum: ['value1', 'value2'],
       };
       const result = sanitizeSchema(schema);
@@ -227,28 +401,28 @@ describe('Schema Transformer', () => {
       expect(result.enum).toEqual(['value1', 'value2']);
     });
 
-    it('removes unknown type', () => {
-      const schema = { type: 'unknown' } as any;
+    it('removes IR.SchemaObject type', () => {
+      const schema: NormalizedSchemaNode = { type: 'unknown' } as unknown as NormalizedSchemaNode;
       const result = sanitizeSchema(schema);
 
       expect(result).not.toHaveProperty('type');
     });
 
     it('removes logicalOperator property', () => {
-      const schema = {
-        type: 'string' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'string',
         logicalOperator: 'AND',
-      } as any;
+      };
       const result = sanitizeSchema(schema);
 
       expect(result).not.toHaveProperty('logicalOperator');
     });
 
     it('sanitizes nested properties', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
-          field: { type: 'enum' as const, enum: ['val'] },
+          field: { type: 'enum', enum: ['val'] },
         },
       };
       const result = sanitizeSchema(schema);
@@ -257,13 +431,77 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes arrays', () => {
-      const schema = {
-        type: 'array' as const,
-        items: { type: 'unknown' } as any,
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
+        items: { type: 'unknown' },
+      } as unknown as NormalizedSchemaNode;
+      const result = sanitizeSchema(schema);
+
+      expect(result.items).toBeDefined();
+    });
+
+    it('sets type to string when enum exists without type', () => {
+      const schema: NormalizedSchemaNode = {
+        enum: ['a', 'b', 'c'],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.type).toBe('string');
+    });
+
+    it('sanitizes additionalProperties', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        additionalProperties: {
+          type: 'object',
+        },
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.additionalProperties).toBeDefined();
+    });
+
+    it('sanitizes array items when items is array', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
+        items: [{ type: 'enum', enum: ['val1'] }, { type: 'string' }],
       };
       const result = sanitizeSchema(schema);
 
       expect(result.items).toBeDefined();
+      if (Array.isArray(result.items)) {
+        expect(result.items[0]).not.toHaveProperty('type', 'enum');
+      }
+    });
+
+    it('sanitizes allOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        allOf: [{ type: 'enum', enum: ['val'] }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.allOf).toBeDefined();
+    });
+
+    it('sanitizes anyOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        anyOf: [{ type: 'string' }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.anyOf).toBeDefined();
+    });
+
+    it('sanitizes oneOf schemas', () => {
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        oneOf: [{ type: 'enum', enum: ['x'] }],
+      };
+      const result = sanitizeSchema(schema);
+
+      expect(result.oneOf).toBeDefined();
     });
   });
 
@@ -330,6 +568,302 @@ describe('Schema Transformer', () => {
 
       expect(result[0].constName).toMatch(/Schema$/);
       expect(result[0].constName).not.toContain('-');
+    });
+
+    it('handles schemas with $ref', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        User: {
+          type: 'object',
+          properties: {
+            address: { $ref: '#/components/schemas/Address' },
+          },
+        },
+        Address: { type: 'object' },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result.length).toBe(2);
+    });
+
+    it('handles schemas with additionalProperties', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        DynamicObject: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result.length).toBe(1);
+      expect(result[0].schema.additionalProperties).toBeDefined();
+    });
+
+    it('handles schemas with required array', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        User: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' },
+          },
+          required: ['id'],
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.required).toEqual(['id']);
+    });
+
+    it('handles oneOf schemas', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Mixed: {
+          oneOf: [{ type: 'string' }, { type: 'number' }],
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.oneOf).toBeDefined();
+    });
+
+    it('handles anyOf schemas', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Flexible: {
+          anyOf: [{ type: 'string' }, { type: 'boolean' }],
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.anyOf).toBeDefined();
+    });
+
+    it('handles allOf schemas', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Combined: {
+          allOf: [
+            { type: 'object', properties: { a: { type: 'string' } } },
+            { type: 'object', properties: { b: { type: 'number' } } },
+          ],
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.allOf).toBeDefined();
+    });
+
+    it('handles array schemas with min/max items', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        LimitedArray: {
+          type: 'array',
+          items: { type: 'string' },
+          minItems: 1,
+          maxItems: 10,
+        },
+      } as unknown as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.minItems).toBe(1);
+      expect(result[0].schema.maxItems).toBe(10);
+    });
+
+    it('handles number schemas with constraints', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        ConstrainedNumber: {
+          type: 'number',
+          minimum: 0,
+          maximum: 100,
+          multipleOf: 5,
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('ConstrainedNumber');
+    });
+
+    it('handles string schemas with format and pattern', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        FormattedString: {
+          type: 'string',
+          format: 'email',
+          pattern: '^[a-z]+@[a-z]+\\.[a-z]+$',
+          minLength: 5,
+          maxLength: 50,
+        },
+      };
+
+      const result = collectSchemas(schemas);
+
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('FormattedString');
+    });
+
+    it('handles nested object schemas', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Nested: {
+          type: 'object',
+          properties: {
+            inner: {
+              type: 'object',
+              properties: {
+                value: { type: 'string' },
+              },
+            },
+          },
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.properties?.inner).toBeDefined();
+    });
+
+    it('handles schemas with description and title', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Documented: {
+          type: 'object',
+          title: 'Documented Schema',
+          description: 'A well-documented schema',
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.title).toBe('Documented Schema');
+      expect(result[0].schema.description).toBe('A well-documented schema');
+    });
+
+    it('handles schemas with nullable', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Nullable: {
+          type: 'string',
+          nullable: true,
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('Nullable');
+    });
+
+    it('handles schemas with deprecated flag', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Old: {
+          type: 'string',
+          deprecated: true,
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.deprecated).toBe(true);
+    });
+
+    it('handles schemas with readOnly flag', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        ReadOnly: {
+          type: 'object',
+          properties: {
+            id: { type: 'number', readOnly: true },
+          },
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.properties?.id.readOnly).toBe(true);
+    });
+
+    it('handles schemas with writeOnly flag', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        WriteOnly: {
+          type: 'object',
+          properties: {
+            password: { type: 'string', writeOnly: true },
+          },
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.properties?.password.writeOnly).toBe(true);
+    });
+
+    it('handles schemas with examples', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        WithExamples: {
+          type: 'string',
+          examples: ['example1', 'example2'],
+        },
+      } as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('WithExamples');
+    });
+
+    it('handles schemas with default values', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        WithDefault: {
+          type: 'string',
+          default: 'default-value',
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('WithDefault');
+    });
+
+    it('handles schemas with const values', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Constant: {
+          type: 'string',
+          const: 'fixed',
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0]).toBeDefined();
+      expect(result[0].typeName).toBe('Constant');
+    });
+
+    it('handles complex nested structures', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Complex: {
+          type: 'object',
+          properties: {
+            users: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  roles: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      enum: ['admin', 'user', 'guest'],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      } as unknown as Record<string, IR.SchemaObject>;
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.properties?.users).toBeDefined();
+    });
+
+    it('handles schemas with exclusive minimum and maximum', () => {
+      const schemas: Record<string, IR.SchemaObject> = {
+        Exclusive: {
+          type: 'number',
+          exclusiveMinimum: 0,
+          exclusiveMaximum: 100,
+        },
+      };
+
+      const result = collectSchemas(schemas);
+      expect(result[0].schema.exclusiveMinimum).toBe(0);
+      expect(result[0].schema.exclusiveMaximum).toBe(100);
     });
   });
 });

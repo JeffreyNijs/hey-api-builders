@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/webstorm,node,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=webstorm,node,visualstudiocode
+# Created by https:
+# Edit at https:
 
 ### Node ###
 # Logs
@@ -11,7 +11,7 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports (https:
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
@@ -30,23 +30,23 @@ coverage
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+# Grunt intermediate storage (https:
 .grunt
 
-# Bower dependency directory (https://bower.io/)
+# Bower dependency directory (https:
 bower_components
 
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
+# Compiled binary addons (https:
 build/Release
 
 # Dependency directories
 node_modules/
 jspm_packages/
 
-# Snowpack dependency directory (https://snowpack.dev/)
+# Snowpack dependency directory (https:
 web_modules/
 
 # TypeScript cache
@@ -83,7 +83,7 @@ web_modules/
 .env.production.local
 .env.local
 
-# parcel-bundler cache (https://parceljs.org/)
+# parcel-bundler cache (https:
 .cache
 .parcel-cache
 
@@ -98,7 +98,7 @@ dist
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
+# https:
 # public
 
 # vuepress build output

@@ -4,8 +4,11 @@ import {
   generateImports,
   generateBuilderOptionsType,
   generateSchemaConstants,
+  generateProperty,
+  generateMethod,
+  indent,
 } from './code-generator';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 
 describe('Code Generator', () => {
   describe('generateWithMethods', () => {
@@ -70,7 +73,7 @@ describe('Code Generator', () => {
       const result = generateWithMethods(schema, 'Entity');
       const lines = result.split('\n').filter((l) => l.trim());
 
-      expect(lines.length).toBe(3); // One method per property
+      expect(lines.length).toBe(3);
     });
   });
 
@@ -203,6 +206,190 @@ describe('Code Generator', () => {
 
       expect(result).toContain('"properties"');
       expect(result).toContain('"required"');
+    });
+  });
+
+  describe('generateImports edge cases', () => {
+    it('includes all imports when all options are enabled', () => {
+      const result = generateImports({
+        useStaticMocks: false,
+        useZodForMocks: true,
+        generateZod: true,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+      expect(result).toContain('generateMockFromZodSchema');
+      expect(result).toContain('import { z } from "zod"');
+    });
+
+    it('includes only base imports when no options are enabled', () => {
+      const result = generateImports({
+        useStaticMocks: false,
+        useZodForMocks: false,
+        generateZod: false,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+      expect(result).toContain('generateMock');
+    });
+
+    it('handles static mocks correctly', () => {
+      const result = generateImports({
+        useStaticMocks: true,
+        useZodForMocks: false,
+        generateZod: false,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+    });
+  });
+
+  describe('generateBuilderOptionsType edge cases', () => {
+    it('generates the correct type definition', () => {
+      const result = generateBuilderOptionsType();
+
+      expect(result).toContain('type BuilderOptions');
+      expect(result).toContain('useDefault');
+      expect(result).toContain('boolean');
+    });
+
+    it('includes proper formatting', () => {
+      const result = generateBuilderOptionsType();
+
+      expect(result).toMatch(/\n/);
+      expect(result.includes('{')).toBe(true);
+      expect(result.includes('}')).toBe(true);
+    });
+  });
+
+  describe('generateWithMethods advanced cases', () => {
+    it('handles property names with special characters', () => {
+      const schema: Schema = {
+        type: 'object',
+        properties: {
+          'nested-property': { type: 'string' },
+          another_nested: { type: 'number' },
+        },
+      };
+
+      const result = generateWithMethods(schema, 'Complex');
+      expect(result).toContain('withNestedProperty');
+      expect(result).toContain('withAnotherNested');
+    });
+
+    it('generates correct method signatures', () => {
+      const schema: Schema = {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      };
+
+      const result = generateWithMethods(schema, 'Entity');
+      expect(result).toContain('withId(');
+      expect(result).toContain('value: types.Entity["id"]');
+      expect(result).toContain('return this');
+    });
+  });
+
+  describe('generateSchemaConstants advanced cases', () => {
+    it('handles schemas with multiple complex properties', () => {
+      const metas = [
+        {
+          constName: 'MultiPropertySchema',
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', minLength: 5 },
+              age: { type: 'number', minimum: 0, maximum: 120 },
+              email: { type: 'string', format: 'email' },
+              tags: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['name', 'email'],
+          } as Schema,
+        },
+      ];
+
+      const result = generateSchemaConstants(metas);
+      expect(result).toContain('MultiPropertySchema');
+      expect(result).toContain('minLength');
+      expect(result).toContain('minimum');
+      expect(result).toContain('format');
+    });
+
+    it('escapes special characters in schema values', () => {
+      const metas = [
+        {
+          constName: 'SpecialCharsSchema',
+          schema: {
+            type: 'string',
+            pattern: '^[a-z]+"test"\\s*$',
+          } as Schema,
+        },
+      ];
+
+      const result = generateSchemaConstants(metas);
+      expect(result).toContain('pattern');
+    });
+  });
+
+  describe('generateProperty', () => {
+    it('generates a private property declaration', () => {
+      const result = generateProperty('overrides', 'Partial<User>', '{}');
+      expect(result).toBe('  private overrides: Partial<User> = {}\n');
+    });
+
+    it('generates property with different types', () => {
+      const result = generateProperty('options', 'BuilderOptions', '{}');
+      expect(result).toContain('private options');
+      expect(result).toContain('BuilderOptions');
+    });
+  });
+
+  describe('generateMethod', () => {
+    it('generates a method declaration', () => {
+      const body = '    return this.value;\n';
+      const result = generateMethod('getValue', 'string', body);
+
+      expect(result).toContain('getValue()');
+      expect(result).toContain(': string {');
+      expect(result).toContain('return this.value');
+    });
+
+    it('generates method with complex body', () => {
+      const body = '    const result = doSomething();\n    return result;\n';
+      const result = generateMethod('build', 'User', body);
+
+      expect(result).toContain('build()');
+      expect(result).toContain(': User {');
+    });
+  });
+
+  describe('indent', () => {
+    it('indents single line code', () => {
+      const code = 'const x = 1;';
+      const result = indent(code, 2);
+      expect(result).toBe('  const x = 1;');
+    });
+
+    it('indents multi-line code', () => {
+      const code = 'const x = 1;\nconst y = 2;';
+      const result = indent(code, 4);
+      expect(result).toBe('    const x = 1;\n    const y = 2;');
+    });
+
+    it('preserves empty lines', () => {
+      const code = 'const x = 1;\n\nconst y = 2;';
+      const result = indent(code, 2);
+      expect(result).toBe('  const x = 1;\n\n  const y = 2;');
+    });
+
+    it('handles code with existing indentation', () => {
+      const code = '  const x = 1;\n  const y = 2;';
+      const result = indent(code, 2);
+
+      expect(result).toContain('    const x = 1;');
+      expect(result).toContain('    const y = 2;');
     });
   });
 });

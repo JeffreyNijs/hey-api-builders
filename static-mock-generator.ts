@@ -1,9 +1,6 @@
 import type { Schema } from 'json-schema-faker';
 import type { ExtendedSchema, JsonValue } from './types';
 
-/**
- * Generates static TypeScript code that creates mock data without runtime dependencies
- */
 export function generateStaticMockCode(schema: Schema, typeName: string): string {
   return generateStaticMockInternal(schema as ExtendedSchema, typeName, 0);
 }
@@ -15,7 +12,6 @@ function generateStaticMockInternal(schema: ExtendedSchema, typeName: string, de
 
   const indent = '  '.repeat(depth);
 
-  // Handle anyOf (enums typically)
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
     const enumValues = schema.anyOf
       .filter(item => item && typeof item === 'object' && 'const' in item)
@@ -26,12 +22,10 @@ function generateStaticMockInternal(schema: ExtendedSchema, typeName: string, de
     }
   }
 
-  // Handle enum arrays
   if (schema.enum && Array.isArray(schema.enum)) {
     return JSON.stringify(schema.enum[0]);
   }
 
-  // Handle union types - pick first non-null type
   if (Array.isArray(schema.type)) {
     const types = schema.type.filter(t => t !== 'null');
     if (types.length > 0 && types[0]) {
@@ -39,17 +33,14 @@ function generateStaticMockInternal(schema: ExtendedSchema, typeName: string, de
     }
   }
 
-  // Handle single types
   if (typeof schema.type === 'string') {
     return generateStaticForSingleType(schema.type, schema, typeName, depth);
   }
 
-  // Handle object with properties but no explicit type
   if (schema.properties && !schema.type) {
     return generateStaticObject(schema, typeName, depth);
   }
 
-  // Handle array with items but no explicit type
   if (schema.items && !schema.type) {
     return generateStaticArray(schema, typeName, depth);
   }
@@ -79,7 +70,6 @@ function generateStaticForSingleType(type: string, schema: ExtendedSchema, typeN
 }
 
 function generateStaticString(schema: ExtendedSchema): string {
-  // Handle format-specific strings
   if (schema.format) {
     switch (schema.format) {
       case 'uuid':
@@ -88,7 +78,7 @@ function generateStaticString(schema: ExtendedSchema): string {
         return '"user@example.com"';
       case 'uri':
       case 'url':
-        return '"https://example.com"';
+        return '"https:
       case 'date':
         return '"2024-01-01"';
       case 'date-time':
@@ -98,7 +88,6 @@ function generateStaticString(schema: ExtendedSchema): string {
     }
   }
 
-  // Handle default or example values
   if (schema.default !== undefined) {
     return JSON.stringify(schema.default);
   }
@@ -107,12 +96,10 @@ function generateStaticString(schema: ExtendedSchema): string {
     return JSON.stringify(schema.examples[0]);
   }
 
-  // Handle pattern - generate a simple placeholder
   if (schema.pattern) {
     return '"pattern-match"';
   }
 
-  // Use min/max length if available
   const minLength = typeof schema.minLength === 'number' ? schema.minLength : 5;
   const targetLength = Math.max(minLength, 5);
   
@@ -120,7 +107,6 @@ function generateStaticString(schema: ExtendedSchema): string {
 }
 
 function generateStaticNumber(schema: ExtendedSchema): string {
-  // Handle default or example values
   if (typeof schema.default === 'number') {
     return String(schema.default);
   }
@@ -140,7 +126,6 @@ function generateStaticNumber(schema: ExtendedSchema): string {
 }
 
 function generateStaticInteger(schema: ExtendedSchema): string {
-  // Handle default or example values
   if (typeof schema.default === 'number') {
     return String(Math.floor(schema.default));
   }
@@ -167,18 +152,15 @@ function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: nu
   const indent = '  '.repeat(depth);
   const nextIndent = '  '.repeat(depth + 1);
 
-  // Generate a single item by default (can be configured later)
   const minItems = typeof schema.minItems === 'number' ? schema.minItems : 1;
   const itemCount = Math.max(minItems, 1);
 
   if (Array.isArray(schema.items)) {
-    // Tuple
     const items = schema.items.map(item => 
       generateStaticMockInternal(item as ExtendedSchema, typeName, depth + 1)
     );
     return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`;
   } else {
-    // Array of same type
     const itemMock = generateStaticMockInternal(schema.items as ExtendedSchema, typeName, depth + 1);
     
     if (itemCount === 1) {
@@ -201,7 +183,6 @@ function generateStaticObject(schema: ExtendedSchema, typeName: string, depth: n
   const required = new Set(schema.required || []);
 
   for (const [key, propSchema] of Object.entries(schema.properties)) {
-    // Only include required properties by default
     if (!required.has(key)) {
       continue;
     }

@@ -1,5 +1,5 @@
 import type { GeneratedSchemaMeta } from '../types';
-import type { Schema } from 'json-schema-faker';
+import type { Schema } from '../types';
 import { generateZodSchema } from './zod-schema-generator';
 import { generateStaticMockCode } from './static-mock-generator';
 import { generateWithMethods } from '../core/code-generator';
@@ -32,7 +32,7 @@ export function generateEnumBuilder(
   } else if (useZodForMocks) {
     code += generateZodEnumBuild(typeName, schema);
   } else {
-    code += generateJsfEnumBuild(typeName, meta.constName);
+    code += generateCustomEnumBuild(typeName, meta.constName);
   }
 
   code += `}\n\n`;
@@ -66,7 +66,7 @@ export function generateObjectBuilder(
   } else if (useZodForMocks) {
     code += generateZodObjectBuild(typeName, schema);
   } else {
-    code += generateJsfObjectBuild(typeName, constName);
+    code += generateCustomObjectBuild(typeName, constName);
   }
 
   code += `}\n\n`;
@@ -101,15 +101,15 @@ function generateZodEnumBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * JSF build method for enums
+ * Custom runtime build method for enums
  */
-function generateJsfEnumBuild(typeName: string, constName: string): string {
+function generateCustomEnumBuild(typeName: string, constName: string): string {
   return (
     `  build(): types.${typeName} {\n` +
     `    return generateMock<types.${typeName}>(schemas.${constName}, {\n` +
-    `      useDefaultValue: this.options.useDefault,\n` +
-    `      useExamplesValue: this.options.useExamples,\n` +
-    `      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,\n` +
+    `      useDefault: this.options.useDefault,\n` +
+    `      useExamples: this.options.useExamples,\n` +
+    `      alwaysIncludeOptionals: this.options.alwaysIncludeOptionals,\n` +
     `      optionalsProbability: this.options.optionalsProbability,\n` +
     `      omitNulls: this.options.omitNulls\n` +
     `    })\n` +
@@ -150,15 +150,15 @@ function generateZodObjectBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * JSF build method for objects
+ * Custom runtime build method for objects
  */
-function generateJsfObjectBuild(typeName: string, constName: string): string {
+function generateCustomObjectBuild(typeName: string, constName: string): string {
   return (
     `  build(): types.${typeName} {\n` +
     `    const mock = generateMock<types.${typeName}>(schemas.${constName}, {\n` +
-    `      useDefaultValue: this.options.useDefault,\n` +
-    `      useExamplesValue: this.options.useExamples,\n` +
-    `      alwaysFakeOptionals: this.options.alwaysIncludeOptionals,\n` +
+    `      useDefault: this.options.useDefault,\n` +
+    `      useExamples: this.options.useExamples,\n` +
+    `      alwaysIncludeOptionals: this.options.alwaysIncludeOptionals,\n` +
     `      optionalsProbability: this.options.optionalsProbability,\n` +
     `      omitNulls: this.options.omitNulls\n` +
     `    })\n` +

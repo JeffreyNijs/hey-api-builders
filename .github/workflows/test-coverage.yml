@@ -1,0 +1,229 @@
+name: Test Coverage Report
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  coverage:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm run test:run -- --coverage --coverage.reporter=json --coverage.reporter=json-summary --coverage.reporter=text --coverage.reporter=html
+        continue-on-error: true
+
+      - name: Generate coverage summary
+        id: coverage
+        run: |
+          echo "Generating coverage summary..."
+          
+          # Check if coverage file exists
+          if [ ! -f coverage/coverage-summary.json ]; then
+            echo "No coverage file found"
+            echo "coverage_exists=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "coverage_exists=true" >> $GITHUB_OUTPUT
+          
+          # Extract coverage percentages
+          STATEMENTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
+          BRANCHES=$(jq '.total.branches.pct' coverage/coverage-summary.json)
+          FUNCTIONS=$(jq '.total.functions.pct' coverage/coverage-summary.json)
+          LINES=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+          
+          # Store in outputs
+          echo "statements=$STATEMENTS" >> $GITHUB_OUTPUT
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+          echo "functions=$FUNCTIONS" >> $GITHUB_OUTPUT
+          echo "lines=$LINES" >> $GITHUB_OUTPUT
+          
+          # Determine overall status
+          THRESHOLD=80
+          if (( $(echo "$LINES >= $THRESHOLD" | bc -l) )); then
+            echo "status=✅" >> $GITHUB_OUTPUT
+            echo "color=green" >> $GITHUB_OUTPUT
+          else
+            echo "status=⚠️" >> $GITHUB_OUTPUT
+            echo "color=orange" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate detailed coverage report
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        run: |
+          cat > coverage-report.md << 'EOF'
+          ## 📊 Test Coverage Report
+          
+          ### Overall Coverage
+          
+          | Metric | Coverage | Status |
+          |--------|----------|--------|
+          | **Statements** | ${{ steps.coverage.outputs.statements }}% | ${{ steps.coverage.outputs.status }} |
+          | **Branches** | ${{ steps.coverage.outputs.branches }}% | ${{ steps.coverage.outputs.status }} |
+          | **Functions** | ${{ steps.coverage.outputs.functions }}% | ${{ steps.coverage.outputs.status }} |
+          | **Lines** | ${{ steps.coverage.outputs.lines }}% | ${{ steps.coverage.outputs.status }} |
+          
+          ### Coverage by File
+          
+          <details>
+          <summary>Click to expand detailed coverage</summary>
+          
+          ```
+          EOF
+          
+          # Add coverage text report
+          cat coverage/coverage.txt >> coverage-report.md || echo "No detailed coverage available" >> coverage-report.md
+          
+          cat >> coverage-report.md << 'EOF'
+          ```
+          
+          </details>
+          
+          ### Coverage Threshold
+          
+          - ✅ **Passing:** Coverage >= 80%
+          - ⚠️ **Warning:** Coverage < 80%
+          
+          ### How to Improve Coverage
+          
+          1. Run `pnpm test -- --coverage` locally to see uncovered lines
+          2. Add tests for uncovered code paths
+          3. Focus on critical business logic first
+          4. Aim for meaningful tests, not just high percentages
+          
+          ---
+          
+          *Coverage report updated on every commit to this PR*
+          EOF
+
+      - name: Comment coverage on PR
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverageReport = fs.readFileSync('coverage-report.md', 'utf8');
+            
+            // Find existing coverage comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📊 Test Coverage Report')
+            );
+            
+            const commentBody = coverageReport;
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              console.log('Updated existing coverage comment');
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+              console.log('Created new coverage comment');
+            }
+
+      - name: Upload coverage artifacts
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage/
+            !coverage/**/*.tmp
+          retention-days: 30
+
+      - name: Upload to Codecov
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-${{ github.event.pull_request.number }}
+          fail_ci_if_error: false
+
+      - name: Create coverage badge
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        run: |
+          COVERAGE=${{ steps.coverage.outputs.lines }}
+          COLOR=${{ steps.coverage.outputs.color }}
+          
+          echo "Creating badge with $COVERAGE% coverage in $COLOR"
+          
+          # Badge will be created by shields.io in PR comment
+          echo "Badge URL: https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}"
+
+      - name: Check coverage threshold
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        run: |
+          THRESHOLD=80
+          COVERAGE=${{ steps.coverage.outputs.lines }}
+          
+          echo "Coverage: $COVERAGE%"
+          echo "Threshold: $THRESHOLD%"
+          
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "⚠️ Warning: Coverage is below threshold ($COVERAGE% < $THRESHOLD%)"
+            echo "Consider adding more tests to improve coverage"
+            # Don't fail the build, just warn
+            exit 0
+          else
+            echo "✅ Coverage meets threshold ($COVERAGE% >= $THRESHOLD%)"
+          fi
+
+      - name: Generate coverage summary for checks
+        if: steps.coverage.outputs.coverage_exists == 'true'
+        run: |
+          echo "### Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Percentage |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Statements | ${{ steps.coverage.outputs.statements }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branches | ${{ steps.coverage.outputs.branches }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Functions | ${{ steps.coverage.outputs.functions }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines | ${{ steps.coverage.outputs.lines }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ steps.coverage.outputs.status }}" >> $GITHUB_STEP_SUMMARY

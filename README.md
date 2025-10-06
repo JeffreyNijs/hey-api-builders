@@ -1,5 +1,10 @@
 # hey-api-builders
 
+[![CI](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/code-quality.yml/badge.svg)](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/code-quality.yml)
+[![npm version](https://badge.fury.io/js/hey-api-builders.svg)](https://badge.fury.io/js/hey-api-builders)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **hey-api-builders** is a custom plugin for the [Hey API](https://heyapi.dev/openapi-ts/) ecosystem that generates TypeScript builder classes for mock data based on your OpenAPI schemas. By leveraging [JSON Schema Faker](https://github.com/json-schema-faker/json-schema-faker), [Zod](https://zod.dev/), or static mock generation, this plugin automates the creation of flexible mock data builders, making testing and prototyping easier.
 
 ## Features

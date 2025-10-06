@@ -190,3 +190,12 @@ fabric.properties
 
 # jetbrains
 .idea/
+
+# Coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Coverage reports
+coverage-report.md
+.coveragerc

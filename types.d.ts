@@ -31,6 +31,14 @@ export interface Config {
      * @default false
      */
     useZodForMocks?: boolean;
+    /**
+     * Generate static mock builders without runtime dependencies
+     * When enabled, generates hardcoded mock values based on schema types
+     * instead of using JSON Schema Faker or Zod at runtime
+     *
+     * @default false
+     */
+    useStaticMocks?: boolean;
 }
 
 export type BuildersPlugin = DefinePlugin<Config>

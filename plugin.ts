@@ -1,5 +1,6 @@
 import { collectSchemas, generateWithMethods } from './utils';
 import { generateZodSchema } from './zod-generator';
+import { generateStaticMockCode } from './static-mock-generator';
 import type { BuildersHandler } from './types';
 import type { IR } from '@hey-api/openapi-ts';
 
@@ -12,13 +13,17 @@ export const handler: BuildersHandler = ({ plugin }) => {
   const config = plugin.config;
   const generateZod = config.generateZod || false;
   const useZodForMocks = config.useZodForMocks || false;
+  const useStaticMocks = config.useStaticMocks || false;
 
   let out = '';
 
   // Fix: Only import "z" once, even if both options are enabled
   const needsZodImport = generateZod || useZodForMocks;
 
-  if (useZodForMocks) {
+  // Import section based on options
+  if (useStaticMocks) {
+    // Static mocks don't need any imports from the library
+  } else if (useZodForMocks) {
     out += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
   } else {
     out += 'import { generateMock } from "hey-api-builders"\n';
@@ -39,8 +44,8 @@ export const handler: BuildersHandler = ({ plugin }) => {
   out += '  omitNulls?: boolean;\n';
   out += '}\n\n';
 
-  // Generate JSON schemas for JSF
-  if (!useZodForMocks) {
+  // Generate JSON schemas for JSF (only if not using static or zod mocks)
+  if (!useZodForMocks && !useStaticMocks) {
     const schemaEntries: string[] = [];
     for (const m of metas) {
       schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`);
@@ -65,7 +70,13 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  private options: BuilderOptions = {}\n`;
       out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
 
-      if (useZodForMocks) {
+      if (useStaticMocks) {
+        // Static mock for enums - just return the first value
+        const staticMock = generateStaticMockCode(m.schema, m.typeName);
+        out += `  build(): types.${m.typeName} {\n`;
+        out += `    return ${staticMock} as types.${m.typeName};\n`;
+        out += `  }\n`;
+      } else if (useZodForMocks) {
         out += `  build(): types.${m.typeName} {\n`;
         out += `    const zodSchemaString = \`${generateZodSchema(m.schema)}\`;\n`;
         out += `    return generateMockFromZodSchema(zodSchemaString, {}, {\n`;
@@ -96,7 +107,14 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
       if (withMethods) out += withMethods + '\n';
 
-      if (useZodForMocks) {
+      if (useStaticMocks) {
+        // Static mock generation - generate a base object and merge overrides
+        const staticMock = generateStaticMockCode(m.schema, m.typeName);
+        out += `  build(): types.${m.typeName} {\n`;
+        out += `    const baseMock = ${staticMock};\n`;
+        out += `    return { ...baseMock, ...this.overrides } as types.${m.typeName};\n`;
+        out += `  }\n`;
+      } else if (useZodForMocks) {
         out += `  build(): types.${m.typeName} {\n`;
         out += `    const zodSchemaString = \`${generateZodSchema(m.schema)}\`;\n`;
         out += `    return generateMockFromZodSchema(zodSchemaString, this.overrides, {\n`;

@@ -1,6 +1,6 @@
 {
   "name": "hey-api-builders",
-  "version": "0.7.0",
+  "version": "0.8.1",
   "description": "A custom plugin for @hey-api/openapi-ts that generates mock data builders with a lightweight custom runtime, Zod integration, or static mock generation.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

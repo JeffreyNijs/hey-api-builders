@@ -1,5 +1,5 @@
 import type { IR } from '@hey-api/openapi-ts';
-import type { BuildersHandler } from '../types';
+import type { BuildersHandler, MockStrategy } from '../types';
 import { collectSchemas } from '../core/schema-transformer';
 import { generateZodSchema } from '../generators/zod-schema-generator';
 import { generateEnumBuilder, generateObjectBuilder } from '../generators/builder-generator';
@@ -8,6 +8,31 @@ import {
   generateBuilderOptionsType,
   generateSchemaConstants,
 } from '../core/code-generator';
+
+/**
+ * Resolves the mock strategy from config, handling backward compatibility
+ */
+function resolveMockStrategy(config: {
+  mockStrategy?: MockStrategy;
+  useZodForMocks?: boolean;
+  useStaticMocks?: boolean;
+}): MockStrategy {
+  // New config takes precedence
+  if (config.mockStrategy) {
+    return config.mockStrategy;
+  }
+
+  // Backward compatibility with old boolean flags
+  if (config.useStaticMocks) {
+    return 'static';
+  }
+  if (config.useZodForMocks) {
+    return 'zod';
+  }
+
+  // Default strategy
+  return 'runtime';
+}
 
 /**
  * Main plugin handler for generating builder classes
@@ -23,20 +48,19 @@ export const handler: BuildersHandler = ({ plugin }) => {
 
   const config = plugin.config;
   const generateZod = config.generateZod || false;
-  const useZodForMocks = config.useZodForMocks || false;
-  const useStaticMocks = config.useStaticMocks || false;
+  const mockStrategy = resolveMockStrategy(config);
 
   let out = '';
 
-  out += generateImports({ useStaticMocks, useZodForMocks, generateZod });
+  out += generateImports({ mockStrategy, generateZod });
 
   out += generateBuilderOptionsType();
 
-  if (!useZodForMocks && !useStaticMocks) {
+  if (mockStrategy === 'runtime') {
     out += generateSchemaConstants(metas);
   }
 
-  if (generateZod || useZodForMocks) {
+  if (generateZod || mockStrategy === 'zod') {
     const zodSchemaEntries: string[] = [];
     for (const m of metas) {
       const zodSchemaString = generateZodSchema(m.schema);
@@ -45,12 +69,11 @@ export const handler: BuildersHandler = ({ plugin }) => {
     out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
   }
 
-  const builderOptions = { useStaticMocks, useZodForMocks };
   for (const m of metas) {
     if (m.isEnum) {
-      out += generateEnumBuilder(m, builderOptions);
+      out += generateEnumBuilder(m, { mockStrategy });
     } else {
-      out += generateObjectBuilder(m, builderOptions);
+      out += generateObjectBuilder(m, { mockStrategy });
     }
   }
 

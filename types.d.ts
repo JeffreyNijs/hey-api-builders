@@ -2,6 +2,8 @@ import {DefinePlugin} from "@hey-api/openapi-ts";
 import type { IR } from '@hey-api/openapi-ts';
 import type { Schema } from 'json-schema-faker';
 
+export type MockStrategy = 'runtime' | 'zod' | 'static';
+
 export interface Config {
     /**
      * Plugin name. Must be unique.
@@ -26,12 +28,23 @@ export interface Config {
      */
     generateZod?: boolean;
     /**
+     * Strategy for generating mock data in builders
+     * - 'runtime': Use custom lightweight runtime mock generation (default)
+     * - 'zod': Use Zod schemas for mock generation
+     * - 'static': Generate hardcoded static mock values
+     *
+     * @default 'runtime'
+     */
+    mockStrategy?: MockStrategy;
+    /**
+     * @deprecated Use mockStrategy: 'zod' instead
      * Use Zod for mock generation instead of JSON Schema Faker
      *
      * @default false
      */
     useZodForMocks?: boolean;
     /**
+     * @deprecated Use mockStrategy: 'static' instead
      * Generate static mock builders without runtime dependencies
      * When enabled, generates hardcoded mock values based on schema types
      * instead of using JSON Schema Faker or Zod at runtime

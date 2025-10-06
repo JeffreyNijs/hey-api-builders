@@ -1,4 +1,4 @@
-import type { Schema } from '../types';
+import type { Schema, MockStrategy } from '../types';
 import type { ExtendedSchema } from '../types';
 import { toPascal } from './string-utils';
 
@@ -31,20 +31,19 @@ export function generateWithMethods(schema: Schema, typeName: string): string {
  * @returns Import statements
  */
 export function generateImports(options: {
-  useStaticMocks: boolean;
-  useZodForMocks: boolean;
+  mockStrategy: MockStrategy;
   generateZod: boolean;
 }): string {
-  const { useStaticMocks, useZodForMocks, generateZod } = options;
+  const { mockStrategy, generateZod } = options;
   let imports = '';
 
-  const needsZodImport = generateZod || useZodForMocks;
+  const needsZodImport = generateZod || mockStrategy === 'zod';
 
-  if (useStaticMocks) {
+  if (mockStrategy === 'static') {
     return 'import type * as types from "./types.gen"\n\n';
   }
 
-  if (useZodForMocks) {
+  if (mockStrategy === 'zod') {
     imports += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
   } else {
     imports += 'import { generateMock } from "hey-api-builders"\n';

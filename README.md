@@ -18,7 +18,7 @@
 - **Automatic Reference Resolution:** Handles `$ref` and schema composition, so your builders reflect your OpenAPI definitions accurately.
 - **Seamless Integration:** Designed to work with Hey API's plugin system and TypeScript type generation.
 - **Zero External Dependencies:** No need for faker.js or other heavy dependencies - the custom runtime is lightweight and fast.
-- **Configurable Output:** Choose between custom runtime, Zod, or static mock generation.
+- **Flexible Configuration:** Choose between custom runtime, Zod, or static mock generation using a simple `mockStrategy` option.
 
 ## Installation
 
@@ -56,16 +56,31 @@ export default defineConfig({
     defineBuildersConfig({
       // Optional: Generate Zod schemas for validation
       generateZod: true,
-      // Optional: Use Zod for mock generation (requires zod-mock library)
-      useZodForMocks: false,
-      // Optional: Use static mock generation (no runtime dependencies)
-      useStaticMocks: false,
+      // Optional: Mock generation strategy (default: 'runtime')
+      // Options: 'runtime' | 'zod' | 'static'
+      mockStrategy: 'runtime',
       // Optional: Custom output filename
       output: 'builders.gen.ts'
     }),
   ],
 });
 ```
+
+### Configuration Options
+
+- **generateZod** (boolean): Generate Zod schemas alongside builders for validation. Default: `false`.
+- **mockStrategy** (string): Strategy for generating mock data. Default: `'runtime'`.
+  - `'runtime'`: Use custom lightweight runtime mock generation
+  - `'zod'`: Use Zod for mock generation
+  - `'static'`: Generate static mock builders without runtime dependencies
+- **output** (string): Output filename (without extension) for the generated builders. Default: `'builders'`.
+
+### Deprecated Options
+
+The following options are deprecated but still supported for backward compatibility:
+
+- **useZodForMocks** (boolean): Use `mockStrategy: 'zod'` instead.
+- **useStaticMocks** (boolean): Use `mockStrategy: 'static'` instead.
 
 ## Usage
 
@@ -99,13 +114,6 @@ if (result.success) {
 }
 ```
 
-## Configuration Options
-
-- **generateZod** (boolean): Generate Zod schemas alongside builders for validation. Default: `false`.
-- **useZodForMocks** (boolean): Use Zod for mock generation instead of the custom runtime. Default: `false`.
-- **useStaticMocks** (boolean): Generate static mock builders without runtime dependencies. When enabled, generates hardcoded mock values based on schema types. Default: `false`.
-- **output** (string): Output filename (without extension) for the generated builders. Default: `'builders'`.
-
 ## Mock Generation Strategies
 
 ### Custom Runtime (Default)
@@ -113,6 +121,12 @@ if (result.success) {
 The default strategy uses a lightweight custom mock generator that supports all JSON Schema features without external dependencies. This provides fast, predictable mock data generation.
 
 ```typescript
+// Configuration
+defineBuildersConfig({
+  mockStrategy: 'runtime', // or omit for default
+})
+
+// Usage
 import { UserBuilder } from './client/builders';
 
 const user = new UserBuilder()
@@ -129,7 +143,7 @@ Features:
 
 ### Static Mocks
 
-When `useStaticMocks: true` is enabled, the plugin generates hardcoded mock values directly in the builder classes. This approach:
+When `mockStrategy: 'static'` is configured, the plugin generates hardcoded mock values directly in the builder classes. This approach:
 
 - **No runtime generation** - All values are pre-computed at build time
 - **Predictable values** - generates consistent, type-appropriate default values
@@ -139,7 +153,7 @@ When `useStaticMocks: true` is enabled, the plugin generates hardcoded mock valu
 ```typescript
 // Configuration
 defineBuildersConfig({
-  useStaticMocks: true,
+  mockStrategy: 'static',
 })
 
 // Usage - same API, but mocks are statically generated
@@ -159,7 +173,19 @@ Static mocks generate appropriate defaults based on OpenAPI types and formats:
 
 ### Zod Integration
 
-When `useZodForMocks: true` is enabled, mock generation uses Zod schemas. This is experimental and provides runtime validation.
+When `mockStrategy: 'zod'` is configured, mock generation uses Zod schemas. This is experimental and provides runtime validation.
+
+```typescript
+// Configuration
+defineBuildersConfig({
+  mockStrategy: 'zod',
+})
+
+// Usage
+const user = new UserBuilder()
+  .withName('Alice')
+  .build(); // Uses Zod for mock generation
+```
 
 ## Format Support
 

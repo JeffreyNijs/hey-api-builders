@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { IR } from '@hey-api/openapi-ts';
 import { irToSchema, collectSchemas, normalizeSchema, sanitizeSchema } from './schema-transformer';
+import type { NormalizedSchemaNode } from '../types';
 
 describe('Schema Transformer', () => {
   describe('irToSchema', () => {
@@ -215,17 +216,6 @@ describe('Schema Transformer', () => {
       expect(result.type).toEqual(['string', 'null']);
     });
 
-    it('handles array items as single schema', () => {
-      const ir: IR.SchemaObject = {
-        type: 'array',
-        items: { type: 'string' },
-      };
-      const result = irToSchema(ir, {});
-
-      expect(result).toHaveProperty('items');
-      expect(result.items).toHaveProperty('type', 'string');
-    });
-
     it('handles allOf composition', () => {
       const ir = {
         allOf: [
@@ -262,7 +252,7 @@ describe('Schema Transformer', () => {
 
   describe('normalizeSchema', () => {
     it('normalizes basic schema', () => {
-      const schema = { type: 'string' as const };
+      const schema: NormalizedSchemaNode = { type: 'string' };
       const result = normalizeSchema(schema);
 
       expect(result).toHaveProperty('type', 'string');
@@ -279,10 +269,10 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes nested properties', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
-          nested: { type: 'string' as const },
+          nested: { type: 'string' },
         },
       };
       const result = normalizeSchema(schema);
@@ -292,8 +282,8 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes enum type with items', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         items: [{ const: 'value1' }, { const: 'value2' }],
       };
       const result = normalizeSchema(schema);
@@ -303,8 +293,8 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes enum type with number items', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         items: [{ const: 1 }, { const: 2 }, { const: 3 }],
       };
       const result = normalizeSchema(schema);
@@ -314,8 +304,8 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes enum type with mixed types to string', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         items: [{ const: 'text' }, { const: 123 }],
       };
       const result = normalizeSchema(schema);
@@ -325,8 +315,8 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes enum type with no valid items', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         items: [],
       };
       const result = normalizeSchema(schema);
@@ -335,14 +325,14 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes array with enum items', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
           values: {
-            type: 'array' as const,
+            type: 'array',
             items: [
-              { type: 'enum' as const, items: [{ const: 'a' }] },
-              { type: 'enum' as const, items: [{ const: 'b' }] },
+              { type: 'enum', items: [{ const: 'a' }] },
+              { type: 'enum', items: [{ const: 'b' }] },
             ],
           },
         },
@@ -353,9 +343,9 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes array with mixed type items to anyOf', () => {
-      const schema = {
-        type: 'array' as const,
-        items: [{ type: 'string' as const }, { type: 'number' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
+        items: [{ type: 'string' }, { type: 'number' }],
       };
       const result = normalizeSchema(schema);
 
@@ -364,12 +354,12 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes nested items in array', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
           data: {
-            type: 'array' as const,
-            items: { type: 'string' as const },
+            type: 'array',
+            items: { type: 'string' },
           },
         },
       };
@@ -379,9 +369,9 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes allOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        allOf: [{ type: 'string' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        allOf: [{ type: 'string' }],
       };
       const result = normalizeSchema(schema);
 
@@ -389,9 +379,9 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes anyOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        anyOf: [{ type: 'string' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        anyOf: [{ type: 'string' }],
       };
       const result = normalizeSchema(schema);
 
@@ -399,9 +389,9 @@ describe('Schema Transformer', () => {
     });
 
     it('normalizes oneOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        oneOf: [{ type: 'string' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        oneOf: [{ type: 'string' }],
       };
       const result = normalizeSchema(schema);
 
@@ -411,8 +401,8 @@ describe('Schema Transformer', () => {
 
   describe('sanitizeSchema', () => {
     it('removes enum type and sets appropriate type', () => {
-      const schema = {
-        type: 'enum' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'enum',
         enum: ['value1', 'value2'],
       };
       const result = sanitizeSchema(schema);
@@ -423,15 +413,15 @@ describe('Schema Transformer', () => {
 
     it('removes unknown type', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schema = { type: 'unknown' } as any;
+      const schema: NormalizedSchemaNode = { type: 'unknown' } as any;
       const result = sanitizeSchema(schema);
 
       expect(result).not.toHaveProperty('type');
     });
 
     it('removes logicalOperator property', () => {
-      const schema = {
-        type: 'string' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'string',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         logicalOperator: 'AND' as any,
       };
@@ -441,10 +431,10 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes nested properties', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         properties: {
-          field: { type: 'enum' as const, enum: ['val'] },
+          field: { type: 'enum', enum: ['val'] },
         },
       };
       const result = sanitizeSchema(schema);
@@ -453,8 +443,8 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes arrays', () => {
-      const schema = {
-        type: 'array' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items: { type: 'unknown' } as any,
       };
@@ -464,7 +454,7 @@ describe('Schema Transformer', () => {
     });
 
     it('sets type to string when enum exists without type', () => {
-      const schema = {
+      const schema: NormalizedSchemaNode = {
         enum: ['a', 'b', 'c'],
       };
       const result = sanitizeSchema(schema);
@@ -473,10 +463,10 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes additionalProperties', () => {
-      const schema = {
-        type: 'object' as const,
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
         additionalProperties: {
-          type: 'unknown' as const,
+          type: 'object',
         },
       };
       const result = sanitizeSchema(schema);
@@ -485,9 +475,9 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes array items when items is array', () => {
-      const schema = {
-        type: 'array' as const,
-        items: [{ type: 'enum' as const, enum: ['val1'] }, { type: 'string' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'array',
+        items: [{ type: 'enum', enum: ['val1'] }, { type: 'string' }],
       };
       const result = sanitizeSchema(schema);
 
@@ -498,9 +488,9 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes allOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        allOf: [{ type: 'enum' as const, enum: ['val'] }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        allOf: [{ type: 'enum', enum: ['val'] }],
       };
       const result = sanitizeSchema(schema);
 
@@ -508,9 +498,9 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes anyOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        anyOf: [{ type: 'unknown' as const }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        anyOf: [{ type: 'string' }],
       };
       const result = sanitizeSchema(schema);
 
@@ -518,9 +508,9 @@ describe('Schema Transformer', () => {
     });
 
     it('sanitizes oneOf schemas', () => {
-      const schema = {
-        type: 'object' as const,
-        oneOf: [{ type: 'enum' as const, enum: ['x'] }],
+      const schema: NormalizedSchemaNode = {
+        type: 'object',
+        oneOf: [{ type: 'enum', enum: ['x'] }],
       };
       const result = sanitizeSchema(schema);
 

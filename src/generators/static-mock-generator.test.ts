@@ -180,5 +180,281 @@ describe('Static Mock Generator', () => {
       const result = generateStaticMockCode(schema, 'Number');
       expect(result).toBe('42');
     });
+
+    it('handles const value in schema default/example', () => {
+      // Static mock generator doesn't handle const value specially
+      // It just generates a default string
+      const schema: Schema = {
+        type: 'string',
+        default: 'constant-value',
+      };
+      const result = generateStaticMockCode(schema, 'Const');
+      expect(result).toBe('"constant-value"');
+    });
+
+    it('handles oneOf schemas', () => {
+      const schema: Schema = {
+        oneOf: [{ type: 'string' }, { type: 'number' }],
+      };
+      const result = generateStaticMockCode(schema, 'Union');
+      // oneOf is not directly supported, returns null
+      expect(result).toBe('null');
+    });
+
+    it('handles anyOf schemas with enums', () => {
+      const schema: Schema = {
+        anyOf: [{ const: 'value1' }, { const: 'value2' }],
+      };
+      const result = generateStaticMockCode(schema, 'AnyUnion');
+      expect(result).toBe('"value1"');
+    });
+
+    it('handles allOf schemas', () => {
+      const schema: Schema = {
+        allOf: [
+          {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+          {
+            type: 'object',
+            properties: {
+              age: { type: 'number' },
+            },
+          },
+        ],
+      };
+      const result = generateStaticMockCode(schema, 'Combined');
+      // allOf is not directly supported, returns null
+      expect(result).toBe('null');
+    });
+
+    it('handles number with minimum constraint', () => {
+      const schema: Schema = {
+        type: 'number',
+        minimum: 100,
+      };
+      const result = generateStaticMockCode(schema, 'MinNum');
+      const value = Number(result);
+      expect(value).toBeGreaterThanOrEqual(100);
+    });
+
+    it('handles number with maximum constraint', () => {
+      const schema: Schema = {
+        type: 'number',
+        maximum: 10,
+      };
+      const result = generateStaticMockCode(schema, 'MaxNum');
+      const value = Number(result);
+      expect(value).toBeLessThanOrEqual(10);
+    });
+
+    it('handles integer type specifically', () => {
+      const schema: Schema = {
+        type: 'integer',
+      };
+      const result = generateStaticMockCode(schema, 'Int');
+      const value = Number(result);
+      expect(Number.isInteger(value)).toBe(true);
+    });
+
+    it('handles string with minLength', () => {
+      const schema: Schema = {
+        type: 'string',
+        minLength: 20,
+      };
+      const result = generateStaticMockCode(schema, 'LongString');
+      const unquoted = result.slice(1, -1); // Remove quotes
+      expect(unquoted.length).toBeGreaterThanOrEqual(20);
+    });
+
+    it('handles string with maxLength', () => {
+      const schema: Schema = {
+        type: 'string',
+        maxLength: 5,
+      };
+      const result = generateStaticMockCode(schema, 'ShortString');
+      const unquoted = result.slice(1, -1);
+      expect(unquoted.length).toBeLessThanOrEqual(5);
+    });
+
+    it('handles string with pattern as placeholder', () => {
+      const schema: Schema = {
+        type: 'string',
+        pattern: '^[0-9]{3}$',
+      };
+      const result = generateStaticMockCode(schema, 'Pattern');
+      // Pattern generates a placeholder value
+      expect(result).toBe('"pattern-match"');
+    });
+
+    it('handles uuid format', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'uuid',
+      };
+      const result = generateStaticMockCode(schema, 'UUID');
+      const unquoted = result.slice(1, -1);
+      expect(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(unquoted)
+      ).toBe(true);
+    });
+
+    it('handles email format', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'email',
+      };
+      const result = generateStaticMockCode(schema, 'Email');
+      const unquoted = result.slice(1, -1);
+      expect(unquoted).toMatch(/@/);
+    });
+
+    it('handles uri/url format', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'uri',
+      };
+      const result = generateStaticMockCode(schema, 'URI');
+      const unquoted = result.slice(1, -1);
+      expect(unquoted).toMatch(/^https?:\/\//);
+    });
+
+    it('handles date-time format', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'date-time',
+      };
+      const result = generateStaticMockCode(schema, 'DateTime');
+      const unquoted = result.slice(1, -1);
+      expect(!isNaN(Date.parse(unquoted))).toBe(true);
+    });
+
+    it('handles date format', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'date',
+      };
+      const result = generateStaticMockCode(schema, 'Date');
+      const unquoted = result.slice(1, -1);
+      expect(/^\d{4}-\d{2}-\d{2}$/.test(unquoted)).toBe(true);
+    });
+
+    it('handles time format with fallback', () => {
+      const schema: Schema = {
+        type: 'string',
+        format: 'time',
+      };
+      const result = generateStaticMockCode(schema, 'Time');
+      // Time format is not explicitly supported, falls back to random string
+      expect(typeof result).toBe('string');
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('handles array with minItems', () => {
+      const schema: Schema = {
+        type: 'array',
+        items: { type: 'number' },
+        minItems: 5,
+      };
+      const result = generateStaticMockCode(schema, 'MinArray');
+      const arr = JSON.parse(result);
+      expect(arr.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('handles array with maxItems', () => {
+      const schema: Schema = {
+        type: 'array',
+        items: { type: 'string' },
+        maxItems: 2,
+      };
+      const result = generateStaticMockCode(schema, 'MaxArray');
+      const arr = JSON.parse(result);
+      expect(arr.length).toBeLessThanOrEqual(2);
+    });
+
+    it('handles null type', () => {
+      const schema: Schema = {
+        type: 'null',
+      };
+      const result = generateStaticMockCode(schema, 'Null');
+      expect(result).toBe('null');
+    });
+
+    it('handles nullable string', () => {
+      const schema: Schema = {
+        type: 'string',
+        nullable: true,
+      };
+      const result = generateStaticMockCode(schema, 'NullableString');
+      expect(typeof result).toBe('string');
+    });
+
+    it('handles empty object without properties', () => {
+      const schema: Schema = {
+        type: 'object',
+      };
+      const result = generateStaticMockCode(schema, 'EmptyObj');
+      expect(result).toBe('{}');
+    });
+
+    it('handles complex nested structures', () => {
+      const schema: Schema = {
+        type: 'object',
+        properties: {
+          users: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                profile: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                  },
+                  required: ['name'],
+                },
+              },
+              required: ['profile'],
+            },
+          },
+        },
+        required: ['users'],
+      };
+      const result = generateStaticMockCode(schema, 'Nested');
+      expect(result).toContain('users:');
+      expect(result).toContain('profile:');
+      expect(result).toContain('name:');
+    });
+
+    it('handles schema without type', () => {
+      const schema: Schema = {};
+      const result = generateStaticMockCode(schema, 'Unknown');
+      expect(result).toBeTruthy();
+    });
+
+    it('handles multipleOf constraint for numbers', () => {
+      const schema: Schema = {
+        type: 'number',
+        multipleOf: 5,
+      };
+      const result = generateStaticMockCode(schema, 'Multiple');
+      const value = Number(result);
+      expect(value % 5).toBe(0);
+    });
+
+    it('handles number constraints with min and max', () => {
+      const schema: Schema = {
+        type: 'number',
+        minimum: 10,
+        maximum: 20,
+      };
+      const result = generateStaticMockCode(schema, 'Constrained');
+      const value = Number(result);
+      expect(value).toBeGreaterThanOrEqual(10);
+      expect(value).toBeLessThanOrEqual(20);
+    });
   });
 });

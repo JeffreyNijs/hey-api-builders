@@ -205,4 +205,128 @@ describe('Code Generator', () => {
       expect(result).toContain('"required"');
     });
   });
+
+  describe('generateImports edge cases', () => {
+    it('includes all imports when all options are enabled', () => {
+      const result = generateImports({
+        useStaticMocks: false,
+        useZodForMocks: true,
+        generateZod: true,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+      expect(result).toContain('generateMockFromZodSchema');
+      expect(result).toContain('import { z } from "zod"');
+    });
+
+    it('includes only base imports when no options are enabled', () => {
+      const result = generateImports({
+        useStaticMocks: false,
+        useZodForMocks: false,
+        generateZod: false,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+      expect(result).toContain('generateMock');
+    });
+
+    it('handles static mocks correctly', () => {
+      const result = generateImports({
+        useStaticMocks: true,
+        useZodForMocks: false,
+      });
+
+      expect(result).toContain('import type * as types from "./types.gen"');
+      // Static mocks don't import anything from hey-api-builders
+    });
+  });
+
+  describe('generateBuilderOptionsType edge cases', () => {
+    it('generates the correct type definition', () => {
+      const result = generateBuilderOptionsType();
+
+      expect(result).toContain('type BuilderOptions');
+      expect(result).toContain('useDefault');
+      expect(result).toContain('boolean');
+    });
+
+    it('includes proper formatting', () => {
+      const result = generateBuilderOptionsType();
+
+      expect(result).toMatch(/\n/); // Check for newlines
+      expect(result.includes('{')).toBe(true);
+      expect(result.includes('}')).toBe(true);
+    });
+  });
+
+  describe('generateWithMethods advanced cases', () => {
+    it('handles property names with special characters', () => {
+      const schema: Schema = {
+        type: 'object',
+        properties: {
+          'nested-property': { type: 'string' },
+          'another_nested': { type: 'number' },
+        },
+      };
+
+      const result = generateWithMethods(schema, 'Complex');
+      expect(result).toContain('withNestedProperty');
+      expect(result).toContain('withAnotherNested');
+    });
+
+    it('generates correct method signatures', () => {
+      const schema: Schema = {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+        },
+      };
+
+      const result = generateWithMethods(schema, 'Entity');
+      expect(result).toContain('withId(');
+      expect(result).toContain('value: types.Entity["id"]');
+      expect(result).toContain('return this');
+    });
+  });
+
+  describe('generateSchemaConstants advanced cases', () => {
+    it('handles schemas with multiple complex properties', () => {
+      const metas = [
+        {
+          constName: 'MultiPropertySchema',
+          schema: {
+            type: 'object',
+            properties: {
+              name: { type: 'string', minLength: 5 },
+              age: { type: 'number', minimum: 0, maximum: 120 },
+              email: { type: 'string', format: 'email' },
+              tags: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['name', 'email'],
+          } as Schema,
+        },
+      ];
+
+      const result = generateSchemaConstants(metas);
+      expect(result).toContain('MultiPropertySchema');
+      expect(result).toContain('minLength');
+      expect(result).toContain('minimum');
+      expect(result).toContain('format');
+    });
+
+    it('escapes special characters in schema values', () => {
+      const metas = [
+        {
+          constName: 'SpecialCharsSchema',
+          schema: {
+            type: 'string',
+            pattern: '^[a-z]+"test"\\s*$',
+          } as Schema,
+        },
+      ];
+
+      const result = generateSchemaConstants(metas);
+      expect(result).toContain('pattern');
+    });
+  });
 });

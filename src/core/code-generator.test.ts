@@ -265,7 +265,7 @@ describe('Code Generator', () => {
         type: 'object',
         properties: {
           'nested-property': { type: 'string' },
-          'another_nested': { type: 'number' },
+          another_nested: { type: 'number' },
         },
       };
 

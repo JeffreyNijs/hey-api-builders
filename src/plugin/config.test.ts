@@ -12,10 +12,7 @@ describe('config', () => {
     });
 
     it('should have required dependencies', () => {
-      expect(defaultConfig.dependencies).toEqual([
-        '@hey-api/schemas',
-        '@hey-api/typescript',
-      ]);
+      expect(defaultConfig.dependencies).toEqual(['@hey-api/schemas', '@hey-api/typescript']);
     });
 
     it('should have handler function', () => {

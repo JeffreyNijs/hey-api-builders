@@ -15,8 +15,7 @@ describe('Builder Generator', () => {
 
     it('generates basic enum builder structure', () => {
       const result = generateEnumBuilder(enumMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('export class StatusBuilder');
@@ -27,8 +26,7 @@ describe('Builder Generator', () => {
 
     it('generates custom runtime build method by default', () => {
       const result = generateEnumBuilder(enumMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('generateMock');
@@ -37,10 +35,9 @@ describe('Builder Generator', () => {
       expect(result).toContain('useExamples');
     });
 
-    it('generates static mock build method when useStaticMocks is true', () => {
+    it('generates static mock build method when mockStrategy is static', () => {
       const result = generateEnumBuilder(enumMeta, {
-        useStaticMocks: true,
-        useZodForMocks: false,
+        mockStrategy: 'static',
       });
 
       expect(result).not.toContain('generateMock');
@@ -48,10 +45,9 @@ describe('Builder Generator', () => {
       expect(result).toContain('as types.Status');
     });
 
-    it('generates Zod build method when useZodForMocks is true', () => {
+    it('generates Zod build method when mockStrategy is zod', () => {
       const result = generateEnumBuilder(enumMeta, {
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
       });
 
       expect(result).toContain('generateMockFromZodSchema');
@@ -62,8 +58,7 @@ describe('Builder Generator', () => {
 
     it('includes all builder option properties', () => {
       const result = generateEnumBuilder(enumMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('useDefault');
@@ -93,8 +88,7 @@ describe('Builder Generator', () => {
 
     it('generates basic object builder structure', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('export class UserBuilder');
@@ -105,8 +99,7 @@ describe('Builder Generator', () => {
 
     it('generates with methods for properties', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('withName');
@@ -114,10 +107,9 @@ describe('Builder Generator', () => {
       expect(result).toContain('withAge');
     });
 
-    it('generates JSF build method with override merging', () => {
+    it('generates runtime build method with override merging', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('const mock = generateMock');
@@ -126,10 +118,9 @@ describe('Builder Generator', () => {
       expect(result).toContain('return mock');
     });
 
-    it('generates static mock build method when useStaticMocks is true', () => {
+    it('generates static mock build method when mockStrategy is static', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: true,
-        useZodForMocks: false,
+        mockStrategy: 'static',
       });
 
       expect(result).toContain('const baseMock =');
@@ -137,10 +128,9 @@ describe('Builder Generator', () => {
       expect(result).not.toContain('generateMock');
     });
 
-    it('generates Zod build method when useZodForMocks is true', () => {
+    it('generates Zod build method when mockStrategy is zod', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
       });
 
       expect(result).toContain('generateMockFromZodSchema');
@@ -158,8 +148,7 @@ describe('Builder Generator', () => {
       };
 
       const result = generateObjectBuilder(emptyMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('export class EmptyBuilder');
@@ -168,8 +157,7 @@ describe('Builder Generator', () => {
 
     it('preserves type safety in generated code', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('types.User');
@@ -179,8 +167,7 @@ describe('Builder Generator', () => {
 
     it('includes setOptions method', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('setOptions(o: BuilderOptions): this');
@@ -188,10 +175,9 @@ describe('Builder Generator', () => {
       expect(result).toContain('return this');
     });
 
-    it('uses correct schema reference in JSF mode', () => {
+    it('uses correct schema reference in runtime mode', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('schemas.UserSchema');
@@ -199,8 +185,7 @@ describe('Builder Generator', () => {
 
     it('generates type-safe override assignment', () => {
       const result = generateObjectBuilder(objectMeta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
       });
 
       expect(result).toContain('const typedMock = mock as Record<string, unknown>');
@@ -219,14 +204,12 @@ describe('Builder Generator', () => {
         isObject: true,
       };
 
-      const jsfResult = generateObjectBuilder(meta, {
-        useStaticMocks: false,
-        useZodForMocks: false,
+      const runtimeResult = generateObjectBuilder(meta, {
+        mockStrategy: 'runtime',
       });
 
       const zodResult = generateObjectBuilder(meta, {
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
       });
 
       const options = [
@@ -238,7 +221,7 @@ describe('Builder Generator', () => {
       ];
 
       options.forEach((option) => {
-        expect(jsfResult).toContain(option);
+        expect(runtimeResult).toContain(option);
         expect(zodResult).toContain(option);
       });
     });

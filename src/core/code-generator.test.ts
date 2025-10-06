@@ -78,10 +78,9 @@ describe('Code Generator', () => {
   });
 
   describe('generateImports', () => {
-    it('generates JSF imports when useStaticMocks is false', () => {
+    it('generates runtime imports when mockStrategy is runtime', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
         generateZod: false,
       });
 
@@ -91,10 +90,9 @@ describe('Code Generator', () => {
       expect(result).not.toContain('import { z }');
     });
 
-    it('generates Zod imports when useZodForMocks is true', () => {
+    it('generates Zod imports when mockStrategy is zod', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
         generateZod: false,
       });
 
@@ -103,10 +101,9 @@ describe('Code Generator', () => {
       expect(result).not.toContain('import { generateMock }');
     });
 
-    it('generates no library imports when useStaticMocks is true', () => {
+    it('generates no library imports when mockStrategy is static', () => {
       const result = generateImports({
-        useStaticMocks: true,
-        useZodForMocks: false,
+        mockStrategy: 'static',
         generateZod: false,
       });
 
@@ -117,8 +114,7 @@ describe('Code Generator', () => {
 
     it('includes Zod import when generateZod is true', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
         generateZod: true,
       });
 
@@ -127,8 +123,7 @@ describe('Code Generator', () => {
 
     it('includes Zod import only once when both options use it', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
         generateZod: true,
       });
 
@@ -212,8 +207,7 @@ describe('Code Generator', () => {
   describe('generateImports edge cases', () => {
     it('includes all imports when all options are enabled', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: true,
+        mockStrategy: 'zod',
         generateZod: true,
       });
 
@@ -224,8 +218,7 @@ describe('Code Generator', () => {
 
     it('includes only base imports when no options are enabled', () => {
       const result = generateImports({
-        useStaticMocks: false,
-        useZodForMocks: false,
+        mockStrategy: 'runtime',
         generateZod: false,
       });
 
@@ -235,8 +228,7 @@ describe('Code Generator', () => {
 
     it('handles static mocks correctly', () => {
       const result = generateImports({
-        useStaticMocks: true,
-        useZodForMocks: false,
+        mockStrategy: 'static',
         generateZod: false,
       });
 

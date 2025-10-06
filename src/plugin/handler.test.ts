@@ -111,7 +111,7 @@ describe('handler integration tests', () => {
     const mockPlugin = {
       name: 'hey-api-builders',
       output: 'builders',
-      config: { useStaticMocks: true },
+      config: { mockStrategy: 'static' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Item', schema: itemSchema });
@@ -146,7 +146,7 @@ describe('handler integration tests', () => {
     const mockPlugin = {
       name: 'hey-api-builders',
       output: 'builders',
-      config: { useZodForMocks: true },
+      config: { mockStrategy: 'zod' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Order', schema: orderSchema });
@@ -160,6 +160,74 @@ describe('handler integration tests', () => {
     expect(output).toContain('zodSchemas');
     expect(output).toContain('generateMockFromZodSchema');
     expect(output).toContain('class OrderBuilder');
+  });
+
+  it('should support backward compatibility with useStaticMocks', () => {
+    const itemSchema: IR.SchemaObject = {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+      },
+      required: ['name'],
+    };
+
+    let output = '';
+    const mockFile = {
+      add: vi.fn((content: string) => {
+        output += content;
+      }),
+    };
+
+    const mockPlugin = {
+      name: 'hey-api-builders',
+      output: 'builders',
+      config: { useStaticMocks: true },
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
+        if (type === 'schema') {
+          callback({ name: 'Item', schema: itemSchema });
+        }
+      }),
+      createFile: vi.fn(() => mockFile),
+    };
+
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+
+    expect(output).not.toContain('schemas');
+    expect(output).toContain('class ItemBuilder');
+  });
+
+  it('should support backward compatibility with useZodForMocks', () => {
+    const orderSchema: IR.SchemaObject = {
+      type: 'object',
+      properties: {
+        orderId: { type: 'string' },
+      },
+      required: ['orderId'],
+    };
+
+    let output = '';
+    const mockFile = {
+      add: vi.fn((content: string) => {
+        output += content;
+      }),
+    };
+
+    const mockPlugin = {
+      name: 'hey-api-builders',
+      output: 'builders',
+      config: { useZodForMocks: true },
+      forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
+        if (type === 'schema') {
+          callback({ name: 'Order', schema: orderSchema });
+        }
+      }),
+      createFile: vi.fn(() => mockFile),
+    };
+
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+
+    expect(output).toContain('zodSchemas');
+    expect(output).toContain('generateMockFromZodSchema');
   });
 
   it('should handle enum schemas correctly', () => {

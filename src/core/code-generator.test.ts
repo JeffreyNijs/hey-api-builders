@@ -73,7 +73,7 @@ describe('Code Generator', () => {
       const result = generateWithMethods(schema, 'Entity');
       const lines = result.split('\n').filter((l) => l.trim());
 
-      expect(lines.length).toBe(3); // One method per property
+      expect(lines.length).toBe(3);
     });
   });
 
@@ -241,7 +241,6 @@ describe('Code Generator', () => {
       });
 
       expect(result).toContain('import type * as types from "./types.gen"');
-      // Static mocks don't import anything from hey-api-builders
     });
   });
 
@@ -257,7 +256,7 @@ describe('Code Generator', () => {
     it('includes proper formatting', () => {
       const result = generateBuilderOptionsType();
 
-      expect(result).toMatch(/\n/); // Check for newlines
+      expect(result).toMatch(/\n/);
       expect(result.includes('{')).toBe(true);
       expect(result.includes('}')).toBe(true);
     });
@@ -388,7 +387,7 @@ describe('Code Generator', () => {
     it('handles code with existing indentation', () => {
       const code = '  const x = 1;\n  const y = 2;';
       const result = indent(code, 2);
-      // Should add 2 more spaces
+
       expect(result).toContain('    const x = 1;');
       expect(result).toContain('    const y = 2;');
     });

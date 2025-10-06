@@ -136,7 +136,7 @@ jobs:
             const fs = require('fs');
             const coverageReport = fs.readFileSync('coverage-report.md', 'utf8');
             
-            // Find existing coverage comment
+            
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -151,7 +151,7 @@ jobs:
             const commentBody = coverageReport;
             
             if (botComment) {
-              // Update existing comment
+              
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -160,7 +160,7 @@ jobs:
               });
               console.log('Updated existing coverage comment');
             } else {
-              // Create new comment
+              
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

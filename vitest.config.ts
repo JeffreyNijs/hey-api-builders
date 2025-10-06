@@ -14,7 +14,6 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/index.ts',
-        // Exclude root-level re-export files
         'config.ts',
         'plugin.ts',
         'static-mock-generator.ts',

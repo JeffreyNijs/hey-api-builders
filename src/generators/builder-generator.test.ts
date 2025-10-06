@@ -229,7 +229,6 @@ describe('Builder Generator', () => {
         useZodForMocks: true,
       });
 
-      // Both should have the same option properties available
       const options = [
         'useDefault',
         'useExamples',

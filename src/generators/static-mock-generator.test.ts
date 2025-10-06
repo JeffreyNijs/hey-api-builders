@@ -182,8 +182,6 @@ describe('Static Mock Generator', () => {
     });
 
     it('handles const value in schema default/example', () => {
-      // Static mock generator doesn't handle const value specially
-      // It just generates a default string
       const schema: Schema = {
         type: 'string',
         default: 'constant-value',
@@ -197,7 +195,7 @@ describe('Static Mock Generator', () => {
         oneOf: [{ type: 'string' }, { type: 'number' }],
       };
       const result = generateStaticMockCode(schema, 'Union');
-      // oneOf is not directly supported, returns null
+
       expect(result).toBe('null');
     });
 
@@ -227,7 +225,7 @@ describe('Static Mock Generator', () => {
         ],
       };
       const result = generateStaticMockCode(schema, 'Combined');
-      // allOf is not directly supported, returns null
+
       expect(result).toBe('null');
     });
 
@@ -266,7 +264,7 @@ describe('Static Mock Generator', () => {
         minLength: 20,
       };
       const result = generateStaticMockCode(schema, 'LongString');
-      const unquoted = result.slice(1, -1); // Remove quotes
+      const unquoted = result.slice(1, -1);
       expect(unquoted.length).toBeGreaterThanOrEqual(20);
     });
 
@@ -286,7 +284,7 @@ describe('Static Mock Generator', () => {
         pattern: '^[0-9]{3}$',
       };
       const result = generateStaticMockCode(schema, 'Pattern');
-      // Pattern generates a placeholder value
+
       expect(result).toBe('"pattern-match"');
     });
 
@@ -348,7 +346,7 @@ describe('Static Mock Generator', () => {
         format: 'time',
       };
       const result = generateStaticMockCode(schema, 'Time');
-      // Time format is not explicitly supported, falls back to random string
+
       expect(typeof result).toBe('string');
       expect(result.length).toBeGreaterThan(0);
     });

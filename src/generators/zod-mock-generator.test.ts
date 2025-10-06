@@ -160,7 +160,6 @@ describe('Zod Mock Generator', () => {
 
   describe('generateMockFromZodSchema', () => {
     beforeEach(() => {
-      // Reset random number generator for consistent tests
       vi.spyOn(Math, 'random').mockReturnValue(0.5);
     });
 
@@ -301,12 +300,9 @@ describe('Zod Mock Generator', () => {
 
     describe('array types', () => {
       it('generates empty array when items schema cannot be parsed', () => {
-        // Note: The regex pattern [^)]+ in the implementation cannot correctly
-        // extract nested function calls like z.string()
         const zodSchema = 'z.array(z.string())';
         const result = generateMockFromZodSchema(zodSchema);
         expect(Array.isArray(result)).toBe(true);
-        // Due to regex limitation, it may generate null items
       });
 
       it('generates array with overrides using items property', () => {
@@ -327,7 +323,7 @@ describe('Zod Mock Generator', () => {
         const zodSchema = 'z.array(z.number())';
         const result = generateMockFromZodSchema(zodSchema);
         expect(Array.isArray(result)).toBe(true);
-        // Default is 1-3 items
+
         expect((result as unknown[]).length).toBeGreaterThanOrEqual(1);
         expect((result as unknown[]).length).toBeLessThanOrEqual(3);
       });
@@ -349,7 +345,6 @@ describe('Zod Mock Generator', () => {
         const result = generateMockFromZodSchema(zodSchema);
         expect(typeof result).toBe('object');
         expect(result).toHaveProperty('name');
-        // age might or might not be present depending on probability
       });
 
       it('always includes optionals when alwaysIncludeOptionals is true', () => {
@@ -410,7 +405,7 @@ describe('Zod Mock Generator', () => {
       it('omits null in nullable unions when omitNulls is true', () => {
         const zodSchema = 'z.union([z.string(), z.null()])';
         const result = generateMockFromZodSchema(zodSchema, {}, { omitNulls: true });
-        // Should preferably generate string instead of null
+
         if (result === null) {
           expect(result).toBe(undefined);
         } else {
@@ -421,7 +416,6 @@ describe('Zod Mock Generator', () => {
 
     describe('complex nested schemas', () => {
       it('generates mock for complex object structure', () => {
-        // Test with a schema structure that works with the current implementation
         const zodSchema = `z.object({
           id: z.string().uuid(),
           user: z.object({
@@ -451,7 +445,6 @@ describe('Zod Mock Generator', () => {
       });
 
       it('generates array using overrides for simple types', () => {
-        // Use a simple type that doesn't conflict with the object pattern matching
         const zodSchema = `z.array(z.number())`;
         const result = generateMockFromZodSchema(zodSchema, {
           items: [1, 2, 3],
@@ -467,22 +460,18 @@ describe('Zod Mock Generator', () => {
         const zodSchema =
           'z.object({ optional1: z.string().optional(), optional2: z.string().optional(), optional3: z.string().optional() })';
 
-        // Set probability to 0 - should skip all optionals
         vi.spyOn(Math, 'random').mockReturnValue(0.9);
         const _result1 = generateMockFromZodSchema(zodSchema, {}, { optionalsProbability: 0 });
-        // With probability 0 and random returning 0.9, optionals should be skipped
 
-        // Set probability to 1 - should include all optionals
         vi.spyOn(Math, 'random').mockReturnValue(0.5);
         const _result2 = generateMockFromZodSchema(zodSchema, {}, { optionalsProbability: 1 });
-        // With probability 1 and random returning 0.5, optionals should be included
       });
 
       it('handles optionalsProbability as false', () => {
         const zodSchema = 'z.object({ optional: z.string().optional() })';
         vi.spyOn(Math, 'random').mockReturnValue(0.5);
         const result = generateMockFromZodSchema(zodSchema, {}, { optionalsProbability: false });
-        // Should use default 0.8 probability
+
         expect(typeof result).toBe('object');
       });
     });
@@ -575,7 +564,7 @@ describe('Zod Mock Generator', () => {
         const zodSchema = 'z.string().regex(/^[A-Z]{5}$/)';
         const result = generateMockFromZodSchema(zodSchema);
         expect(typeof result).toBe('string');
-        expect((result as string).length).toBe(10); // Falls back to generateRandomString(10)
+        expect((result as string).length).toBe(10);
       });
     });
 

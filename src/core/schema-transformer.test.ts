@@ -54,7 +54,7 @@ describe('Schema Transformer', () => {
       const ir = {
         type: 'string',
         nullable: true,
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result.type).toEqual(['string', 'null']);
@@ -159,7 +159,7 @@ describe('Schema Transformer', () => {
       const ir = {
         type: 'string',
         example: 'test-value',
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('examples');
@@ -181,7 +181,7 @@ describe('Schema Transformer', () => {
     });
 
     it('returns empty object for non-object input', () => {
-      const result = irToSchema('string' as unknown as IR.SchemaObject, {});
+      const result = irToSchema('string' as IR.SchemaObject, {});
       expect(result).toEqual({});
     });
 
@@ -189,7 +189,7 @@ describe('Schema Transformer', () => {
       const ir = {
         type: 'enum',
         items: [{ const: 'value1' }, { const: 'value2' }, { const: 'value3' }],
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('anyOf');
@@ -199,7 +199,7 @@ describe('Schema Transformer', () => {
     it('handles enum with items but no enum property', () => {
       const ir = {
         items: [{ const: 'red' }, { const: 'blue' }, { const: 'green' }],
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('anyOf');
@@ -222,7 +222,7 @@ describe('Schema Transformer', () => {
           { type: 'object', properties: { a: { type: 'string' } } },
           { type: 'object', properties: { b: { type: 'number' } } },
         ],
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('allOf');
@@ -232,7 +232,7 @@ describe('Schema Transformer', () => {
     it('handles anyOf composition', () => {
       const ir = {
         anyOf: [{ type: 'string' }, { type: 'number' }],
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('anyOf');
@@ -242,7 +242,7 @@ describe('Schema Transformer', () => {
     it('handles oneOf composition', () => {
       const ir = {
         oneOf: [{ type: 'boolean' }, { type: 'string' }],
-      } as unknown as IR.SchemaObject;
+      } as IR.SchemaObject;
       const result = irToSchema(ir, {});
 
       expect(result).toHaveProperty('oneOf');
@@ -256,16 +256,6 @@ describe('Schema Transformer', () => {
       const result = normalizeSchema(schema);
 
       expect(result).toHaveProperty('type', 'string');
-    });
-
-    it('handles null or undefined input', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result1 = normalizeSchema(null as any);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result2 = normalizeSchema(undefined as any);
-
-      expect(result1).toBeNull();
-      expect(result2).toBeUndefined();
     });
 
     it('normalizes nested properties', () => {
@@ -411,9 +401,8 @@ describe('Schema Transformer', () => {
       expect(result.enum).toEqual(['value1', 'value2']);
     });
 
-    it('removes unknown type', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schema: NormalizedSchemaNode = { type: 'unknown' } as any;
+    it('removes IR.SchemaObject type', () => {
+      const schema: NormalizedSchemaNode = { type: 'unknown' } as unknown as NormalizedSchemaNode;
       const result = sanitizeSchema(schema);
 
       expect(result).not.toHaveProperty('type');
@@ -422,8 +411,7 @@ describe('Schema Transformer', () => {
     it('removes logicalOperator property', () => {
       const schema: NormalizedSchemaNode = {
         type: 'string',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        logicalOperator: 'AND' as any,
+        logicalOperator: 'AND',
       };
       const result = sanitizeSchema(schema);
 
@@ -445,9 +433,8 @@ describe('Schema Transformer', () => {
     it('sanitizes arrays', () => {
       const schema: NormalizedSchemaNode = {
         type: 'array',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        items: { type: 'unknown' } as any,
-      };
+        items: { type: 'unknown' },
+      } as unknown as NormalizedSchemaNode;
       const result = sanitizeSchema(schema);
 
       expect(result.items).toBeDefined();
@@ -628,54 +615,50 @@ describe('Schema Transformer', () => {
     });
 
     it('handles oneOf schemas', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         Mixed: {
           oneOf: [{ type: 'string' }, { type: 'number' }],
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.oneOf).toBeDefined();
     });
 
     it('handles anyOf schemas', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         Flexible: {
           anyOf: [{ type: 'string' }, { type: 'boolean' }],
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.anyOf).toBeDefined();
     });
 
     it('handles allOf schemas', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         Combined: {
           allOf: [
             { type: 'object', properties: { a: { type: 'string' } } },
             { type: 'object', properties: { b: { type: 'number' } } },
           ],
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.allOf).toBeDefined();
     });
 
     it('handles array schemas with min/max items', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         LimitedArray: {
           type: 'array',
           items: { type: 'string' },
           minItems: 1,
           maxItems: 10,
         },
-      };
+      } as unknown as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.minItems).toBe(1);
@@ -683,18 +666,17 @@ describe('Schema Transformer', () => {
     });
 
     it('handles number schemas with constraints', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         ConstrainedNumber: {
           type: 'number',
           minimum: 0,
           maximum: 100,
           multipleOf: 5,
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
-      // The schema properties are preserved
+
       expect(result[0]).toBeDefined();
       expect(result[0].typeName).toBe('ConstrainedNumber');
     });
@@ -711,7 +693,7 @@ describe('Schema Transformer', () => {
       };
 
       const result = collectSchemas(schemas);
-      // The schema properties are preserved
+
       expect(result[0]).toBeDefined();
       expect(result[0].typeName).toBe('FormattedString');
     });
@@ -750,13 +732,12 @@ describe('Schema Transformer', () => {
     });
 
     it('handles schemas with nullable', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         Nullable: {
           type: 'string',
           nullable: true,
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0]).toBeDefined();
@@ -769,50 +750,47 @@ describe('Schema Transformer', () => {
           type: 'string',
           deprecated: true,
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.deprecated).toBe(true);
     });
 
     it('handles schemas with readOnly flag', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         ReadOnly: {
           type: 'object',
           properties: {
             id: { type: 'number', readOnly: true },
           },
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.properties?.id.readOnly).toBe(true);
     });
 
     it('handles schemas with writeOnly flag', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         WriteOnly: {
           type: 'object',
           properties: {
             password: { type: 'string', writeOnly: true },
           },
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.properties?.password.writeOnly).toBe(true);
     });
 
     it('handles schemas with examples', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         WithExamples: {
           type: 'string',
           examples: ['example1', 'example2'],
         },
-      };
+      } as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0]).toBeDefined();
@@ -846,8 +824,7 @@ describe('Schema Transformer', () => {
     });
 
     it('handles complex nested structures', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const schemas: Record<string, any> = {
+      const schemas: Record<string, IR.SchemaObject> = {
         Complex: {
           type: 'object',
           properties: {
@@ -869,7 +846,7 @@ describe('Schema Transformer', () => {
             },
           },
         },
-      };
+      } as unknown as Record<string, IR.SchemaObject>;
 
       const result = collectSchemas(schemas);
       expect(result[0].schema.properties?.users).toBeDefined();

@@ -135,20 +135,16 @@ function normalizeSchema(node: NormalizedSchemaNode | ExtendedSchema | Schema): 
     } else {
       workingNode.type = 'string';
     }
-    // Clean up enum-specific properties
     delete workingNode.items;
     delete workingNode.logicalOperator;
   }
 
-  // Handle arrays with enum items
   if (Array.isArray(workingNode.items)) {
-    // Check if all items are enum-like (have type: "enum")
     const hasEnumItems = workingNode.items.some((item: NormalizedSchemaNode) =>
       item && typeof item === 'object' && item.type === 'enum'
     );
 
     if (hasEnumItems) {
-      // Process enum items and convert them
       workingNode.items = workingNode.items.map((item: NormalizedSchemaNode) => {
         if (item && typeof item === 'object' && item.type === 'enum') {
           return normalizeSchema(item);
@@ -197,19 +193,16 @@ function sanitizeSchema(node: NormalizedSchemaNode): Schema {
 
   const workingNode = { ...node } as Record<string, unknown>;
 
-  // Handle type: "enum" by removing it and setting appropriate type
   if (workingNode.type === 'enum') {
     delete workingNode.type;
-    // If we have enum values, infer the type from them
     if (Array.isArray(workingNode.enum)) {
-      workingNode.type = 'string'; // Default to string for enums
+      workingNode.type = 'string';
     }
   }
 
   if (workingNode.type === 'unknown') delete workingNode.type;
   if (!workingNode.type && Array.isArray(workingNode.enum)) workingNode.type = 'string';
 
-  // Clean up any remaining enum-specific properties that shouldn't be in JSON Schema
   delete workingNode.logicalOperator;
 
   if (workingNode.properties && typeof workingNode.properties === 'object') {
@@ -268,15 +261,13 @@ export function safeTypeName(name: string): string {
 export function collectSchemas(all: Record<string, IR.SchemaObject>): GeneratedSchemaMeta[] {
   const metas: GeneratedSchemaMeta[] = [];
   for (const [name, irSchema] of Object.entries(all)) {
-    // Use the name as-is from the schema, just remove "Schema" suffix if present
     let typeName = name.replace(/Schema$/, '');
 
-    // Fix common naming issues: UITheme -> UiTheme, APIKey -> ApiKey, etc.
-    typeName = typeName.replace(/^UI([A-Z])/g, 'Ui$1'); // UITheme -> UiTheme
-    typeName = typeName.replace(/^API([A-Z])/g, 'Api$1'); // APIKey -> ApiKey
-    typeName = typeName.replace(/^HTTP([A-Z])/g, 'Http$1'); // HTTPResponse -> HttpResponse
-    typeName = typeName.replace(/^URL([A-Z])/g, 'Url$1'); // URLConfig -> UrlConfig
-    typeName = typeName.replace(/^ID([A-Z])/g, 'Id$1'); // IDType -> IdType
+    typeName = typeName.replace(/^UI([A-Z])/g, 'Ui$1');
+    typeName = typeName.replace(/^API([A-Z])/g, 'Api$1');
+    typeName = typeName.replace(/^HTTP([A-Z])/g, 'Http$1');
+    typeName = typeName.replace(/^URL([A-Z])/g, 'Url$1');
+    typeName = typeName.replace(/^ID([A-Z])/g, 'Id$1');
 
     const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema as IR.SchemaObject, all)));
     const schemaWithType = jsf as ExtendedSchema;

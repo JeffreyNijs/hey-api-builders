@@ -310,7 +310,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      // Pattern generates placeholder value (repeated x)
+
       expect(result).toMatch(/^x+$/);
     });
 
@@ -321,7 +321,7 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
-      // UUID generates placeholder value
+
       expect(result).toBe('00000000-0000-0000-0000-000000000000');
     });
 
@@ -375,10 +375,7 @@ describe('Custom Mock Runtime', () => {
       expect(/^\d{2}:\d{2}:\d{2}/.test(result as string)).toBe(true);
     });
 
-    it('applies overrides to nested properties', () => {
-      // This test is removed because generateMock doesn't support overrides parameter
-      // Overrides should be applied at the builder level, not the mock generator level
-    });
+    it('applies overrides to nested properties', () => {});
 
     it('handles schemas with const value', () => {
       const schema = {
@@ -428,12 +425,11 @@ describe('Custom Mock Runtime', () => {
           },
         },
         required: ['level1'],
-      };
-      const result = generateMock<Record<string, unknown>>(schema);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((result.level1 as any).level2.level3).toBeDefined();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(typeof (result.level1 as any).level2.level3).toBe('string');
+      } as const;
+
+      const result = generateMock<{ level1: { level2: { level3: string } } }>(schema);
+      expect(result.level1.level2.level3).toBeDefined();
+      expect(typeof result.level1.level2.level3).toBe('string');
     });
 
     it('handles array within object within array', () => {
@@ -489,11 +485,6 @@ describe('Custom Mock Runtime', () => {
       };
       const result = generateMock(schema);
       expect((result as number) % 5).toBe(0);
-    });
-
-    it('merges mock data correctly', () => {
-      // This test is removed because generateMock doesn't support overrides parameter
-      // Overrides should be applied at the builder level, not the mock generator level
     });
 
     it('handles empty object schema', () => {

@@ -33,14 +33,12 @@ export function irToSchema(
   }
   seenSet.add(ir);
 
-  // Handle references
   if (ir.$ref) {
     const name = ir.$ref.replace('#/components/schemas/', '');
     const target = all[name];
     return target ? irToSchema(target, all, seenSet) : {};
   }
 
-  // Handle enums
   if (isEnum(ir)) {
     const enumIr = ir as EnumSchemaObject;
 
@@ -76,7 +74,6 @@ export function irToSchema(
 
   const out: Record<string, unknown> = {};
 
-  // Infer type
   if (ir.type) {
     out.type = ir.type;
   } else if (ir.properties) {
@@ -85,7 +82,6 @@ export function irToSchema(
     out.type = 'array';
   }
 
-  // Handle nullable
   const extendedIr = ir as EnumSchemaObject;
   if (extendedIr.nullable) {
     if (typeof out.type === 'string') {
@@ -95,7 +91,6 @@ export function irToSchema(
     }
   }
 
-  // Properties
   if (ir.properties) {
     out.properties = {};
     for (const [k, v] of Object.entries(ir.properties)) {
@@ -107,12 +102,10 @@ export function irToSchema(
     }
   }
 
-  // Required fields
   if (ir.required && ir.required.length) {
     out.required = [...ir.required];
   }
 
-  // Additional properties
   if (typeof ir.additionalProperties !== 'undefined') {
     if (typeof ir.additionalProperties === 'boolean') {
       out.additionalProperties = ir.additionalProperties;
@@ -125,7 +118,6 @@ export function irToSchema(
     }
   }
 
-  // Items
   if (ir.items) {
     if (Array.isArray(ir.items)) {
       out.items = ir.items.map((i) => irToSchema(i as IR.SchemaObject, all, seenSet));
@@ -134,7 +126,6 @@ export function irToSchema(
     }
   }
 
-  // Composition keywords
   const extendedIrWithComposition = ir as IR.SchemaObject & {
     allOf?: IR.SchemaObject[];
     anyOf?: IR.SchemaObject[];
@@ -157,7 +148,6 @@ export function irToSchema(
     );
   }
 
-  // Copy additional properties
   const copy: (keyof IR.SchemaObject | string)[] = [
     'format',
     'pattern',
@@ -208,7 +198,6 @@ export function normalizeSchema(
 
   const workingNode = { ...node } as NormalizedSchemaNode;
 
-  // Handle enum type
   if (workingNode.type === 'enum') {
     const enumValues: JsonValue[] = [];
     if (Array.isArray(workingNode.items)) {
@@ -247,7 +236,6 @@ export function normalizeSchema(
     delete workingNode.logicalOperator;
   }
 
-  // Handle arrays with enum items
   if (Array.isArray(workingNode.items)) {
     const hasEnumItems = workingNode.items.some(
       (item: NormalizedSchemaNode) => item && typeof item === 'object' && item.type === 'enum'
@@ -263,7 +251,6 @@ export function normalizeSchema(
     }
   }
 
-  // Handle array with mixed types
   if (
     workingNode.type === 'array' &&
     Array.isArray(workingNode.items) &&
@@ -286,7 +273,6 @@ export function normalizeSchema(
     delete workingNode.items;
   }
 
-  // Recursively normalize nested structures
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     for (const key of Object.keys(workingNode.properties)) {
       const prop = workingNode.properties[key];
@@ -323,7 +309,6 @@ export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
 
   const workingNode = { ...node } as Record<string, unknown>;
 
-  // Handle type: "enum"
   if (workingNode.type === 'enum') {
     delete workingNode.type;
     if (Array.isArray(workingNode.enum)) {
@@ -340,7 +325,6 @@ export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
 
   delete workingNode.logicalOperator;
 
-  // Recursively sanitize nested structures
   if (workingNode.properties && typeof workingNode.properties === 'object') {
     const properties = workingNode.properties as Record<string, NormalizedSchemaNode>;
     for (const k of Object.keys(properties)) {

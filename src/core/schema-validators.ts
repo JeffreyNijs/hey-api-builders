@@ -16,17 +16,14 @@ export function isEnum(ir: IR.SchemaObject): boolean {
   }
   const enumIr = ir as EnumSchemaObject;
 
-  // Direct enum property
   if (Array.isArray(enumIr.enum)) {
     return true;
   }
 
-  // Type is explicitly "enum"
   if (enumIr.type === 'enum') {
     return true;
   }
 
-  // Items array with const values (enum-like)
   if (!enumIr.enum && Array.isArray(enumIr.items)) {
     const items = enumIr.items as EnumItem[];
     if (

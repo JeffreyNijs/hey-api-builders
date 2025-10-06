@@ -13,17 +13,14 @@ import {
  * Main plugin handler for generating builder classes
  */
 export const handler: BuildersHandler = ({ plugin }) => {
-  // Collect schemas from IR
   const rawSchemas: Record<string, IR.SchemaObject> = {};
   plugin.forEach('schema', (event) => {
     rawSchemas[event.name] = event.schema;
   });
   const metas = collectSchemas(rawSchemas);
 
-  // Create output file
   const file = plugin.createFile({ id: plugin.name, path: plugin.output });
 
-  // Get configuration
   const config = plugin.config;
   const generateZod = config.generateZod || false;
   const useZodForMocks = config.useZodForMocks || false;
@@ -31,18 +28,14 @@ export const handler: BuildersHandler = ({ plugin }) => {
 
   let out = '';
 
-  // Generate imports
   out += generateImports({ useStaticMocks, useZodForMocks, generateZod });
 
-  // Generate BuilderOptions type
   out += generateBuilderOptionsType();
 
-  // Generate JSON schemas for JSF (only if not using static or zod mocks)
   if (!useZodForMocks && !useStaticMocks) {
     out += generateSchemaConstants(metas);
   }
 
-  // Generate Zod schemas if requested
   if (generateZod || useZodForMocks) {
     const zodSchemaEntries: string[] = [];
     for (const m of metas) {
@@ -52,7 +45,6 @@ export const handler: BuildersHandler = ({ plugin }) => {
     out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
   }
 
-  // Generate builders
   const builderOptions = { useStaticMocks, useZodForMocks };
   for (const m of metas) {
     if (m.isEnum) {

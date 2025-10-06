@@ -41,8 +41,10 @@ export function generateImports(options: {
   const needsZodImport = generateZod || useZodForMocks;
 
   if (useStaticMocks) {
-    // Static mocks don't need any imports from the library
-  } else if (useZodForMocks) {
+    return 'import type * as types from "./types.gen"\n\n';
+  }
+
+  if (useZodForMocks) {
     imports += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
   } else {
     imports += 'import { generateMock } from "hey-api-builders"\n';

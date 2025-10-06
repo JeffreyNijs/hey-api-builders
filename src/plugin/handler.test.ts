@@ -20,11 +20,10 @@ describe('handler integration tests', () => {
       required: ['id', 'name', 'email'],
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const statusSchema: any = {
+    const statusSchema: IR.SchemaObject = {
       type: 'string',
       enum: ['active', 'inactive', 'pending'],
-    };
+    } as IR.SchemaObject;
 
     let output = '';
     const mockFile = {
@@ -48,7 +47,6 @@ describe('handler integration tests', () => {
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
-    // Verify complete output structure
     expect(output).toContain('import');
     expect(output).toContain('type BuilderOptions');
     expect(output).toContain('class UserBuilder');
@@ -165,11 +163,10 @@ describe('handler integration tests', () => {
   });
 
   it('should handle enum schemas correctly', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const roleSchema: any = {
+    const roleSchema: IR.SchemaObject = {
       type: 'string',
       enum: ['admin', 'user', 'guest'],
-    };
+    } as IR.SchemaObject;
 
     let output = '';
     const mockFile = {
@@ -210,9 +207,7 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: {},
-      forEach: vi.fn((_type: string, _callback: (event: unknown) => void) => {
-        // No schemas
-      }),
+      forEach: vi.fn((_type: string, _callback: (event: unknown) => void) => {}),
       createFile: vi.fn(() => mockFile),
     };
 

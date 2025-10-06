@@ -37,7 +37,6 @@ export class MockGenerator {
   }
 
   private generateValue(schema: Schema): unknown {
-    // Handle $ref (prevent circular references)
     if (schema.$ref) {
       if (this.seenRefs.has(schema.$ref)) {
         return null;
@@ -45,37 +44,30 @@ export class MockGenerator {
       this.seenRefs.add(schema.$ref);
     }
 
-    // Use default if configured
     if (this.options.useDefault && schema.default !== undefined) {
       return schema.default;
     }
 
-    // Use examples if configured
     if (this.options.useExamples && schema.examples && schema.examples.length > 0) {
       return schema.examples[0];
     }
 
-    // Handle const
     if (schema.const !== undefined) {
       return schema.const;
     }
 
-    // Handle enum
     if (schema.enum && schema.enum.length > 0) {
       return schema.enum[0];
     }
 
-    // Handle nullable
     if (schema.nullable && this.shouldIncludeNull()) {
       return null;
     }
 
-    // Handle allOf (merge schemas)
     if (schema.allOf && schema.allOf.length > 0) {
       return this.generateAllOf(schema.allOf);
     }
 
-    // Handle anyOf/oneOf (use first option)
     if (schema.anyOf && schema.anyOf.length > 0) {
       return this.generateValue(schema.anyOf[0]);
     }
@@ -83,14 +75,12 @@ export class MockGenerator {
       return this.generateValue(schema.oneOf[0]);
     }
 
-    // Handle array of types
     if (Array.isArray(schema.type)) {
       const nonNullTypes = schema.type.filter((t) => t !== 'null');
       const type = nonNullTypes.length > 0 ? nonNullTypes[0] : 'null';
       return this.generateByType({ ...schema, type });
     }
 
-    // Handle single type
     return this.generateByType(schema);
   }
 
@@ -140,7 +130,6 @@ export class MockGenerator {
 
     let value = min;
 
-    // Handle multipleOf
     if (schema.multipleOf) {
       value = Math.ceil(min / schema.multipleOf) * schema.multipleOf;
       if (value > max) {
@@ -155,17 +144,14 @@ export class MockGenerator {
     const minLength = schema.minLength ?? 0;
     const maxLength = schema.maxLength ?? 10;
 
-    // Handle format
     if (schema.format) {
       return this.generateStringByFormat(schema.format, minLength, maxLength);
     }
 
-    // Handle pattern (simple approach)
     if (schema.pattern) {
       return this.generateStringForPattern(schema.pattern, minLength, maxLength);
     }
 
-    // Generate random string
     const length = Math.max(minLength, Math.min(maxLength, 10));
     return 'a'.repeat(length);
   }
@@ -201,8 +187,6 @@ export class MockGenerator {
   }
 
   private generateStringForPattern(pattern: string, minLength: number, maxLength: number): string {
-    // Very basic pattern handling - just generate something that might match
-    // For production, you'd want a proper regex generator
     const length = Math.max(minLength, Math.min(maxLength, 10));
     return 'x'.repeat(length);
   }
@@ -216,12 +200,10 @@ export class MockGenerator {
       return Array(length).fill(null);
     }
 
-    // Handle tuple (array of schemas)
     if (Array.isArray(schema.items)) {
       return schema.items.map((itemSchema) => this.generateValue(itemSchema));
     }
 
-    // Handle single schema for all items
     return Array.from({ length }, () => this.generateValue(schema.items as Schema));
   }
 
@@ -237,19 +219,16 @@ export class MockGenerator {
     for (const [propName, propSchema] of Object.entries(schema.properties)) {
       const isRequired = required.has(propName);
 
-      // Skip optional properties if requiredOnly is true
       if (this.options.requiredOnly && !isRequired) {
         continue;
       }
 
-      // Handle optional properties
       if (!isRequired && !this.shouldIncludeOptional()) {
         continue;
       }
 
       const value = this.generateValue(propSchema);
 
-      // Skip nulls if omitNulls is true
       if (this.options.omitNulls && value === null) {
         continue;
       }
@@ -261,7 +240,6 @@ export class MockGenerator {
   }
 
   private generateAllOf(schemas: Schema[]): unknown {
-    // Merge all schemas into a single object
     const merged: Record<string, unknown> = {};
 
     for (const schema of schemas) {

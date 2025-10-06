@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pnpm run test:run -- --coverage --coverage.reporter=json --coverage.reporter=json-summary --coverage.reporter=text --coverage.reporter=html | tee coverage-output.txt || true
+          pnpm run test:coverage | tee coverage-output.txt || true
           # Save text output for later use
           if [ -d coverage ]; then
             cp coverage-output.txt coverage/coverage.txt || true

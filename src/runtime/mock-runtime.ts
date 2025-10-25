@@ -275,9 +275,9 @@ export class MockGenerator {
  * @param options - Generation options
  * @returns Generated mock data
  */
-export function generateMock<T = unknown>(schema: unknown, options?: MockOptions): T {
+export function generateMock(schema: unknown, options?: MockOptions): unknown {
   const generator = new MockGenerator(options);
-  return generator.generate(schema as Schema) as T;
+  return generator.generate(schema as Schema);
 }
 
 export type { BuilderOptions } from '../types';

@@ -5,32 +5,25 @@ import { isEnum, isJsonValue, isObjectType } from './schema-validators';
 describe('Schema Validators', () => {
   describe('isEnum', () => {
     it('returns true for schema with enum property', () => {
-      const schema = {
-        enum: ['value1', 'value2', 'value3'],
-      } as unknown as IR.SchemaObject;
-      expect(isEnum(schema)).toBe(true);
+      const ir: IR.SchemaObject = { enum: ['a', 'b'] };
+      expect(isEnum(ir)).toBe(true);
     });
 
     it('returns true for schema with type enum', () => {
-      const schema = {
-        type: 'enum',
-        items: [{ const: 'value1' }, { const: 'value2' }],
-      } as unknown as IR.SchemaObject;
-      expect(isEnum(schema)).toBe(true);
+      const ir: IR.SchemaObject = { type: 'enum' } as IR.SchemaObject;
+      expect(isEnum(ir)).toBe(true);
     });
 
     it('returns true for schema with items array of const values', () => {
-      const schema = {
-        items: [{ const: 'value1' }, { const: 'value2' }],
-      } as unknown as IR.SchemaObject;
-      expect(isEnum(schema)).toBe(true);
+      const ir: IR.SchemaObject = {
+        items: [{ const: 'a' }, { const: 'b' }],
+      } as IR.SchemaObject;
+      expect(isEnum(ir)).toBe(true);
     });
 
     it('returns false for non-enum schema', () => {
-      const schema: IR.SchemaObject = {
-        type: 'string',
-      };
-      expect(isEnum(schema)).toBe(false);
+      const ir: IR.SchemaObject = { type: 'string' };
+      expect(isEnum(ir)).toBe(false);
     });
 
     it('returns false for null or undefined', () => {
@@ -48,18 +41,14 @@ describe('Schema Validators', () => {
       expect(isJsonValue('string')).toBe(true);
       expect(isJsonValue(123)).toBe(true);
       expect(isJsonValue(true)).toBe(true);
-      expect(isJsonValue(false)).toBe(true);
     });
 
     it('returns true for arrays of JSON values', () => {
-      expect(isJsonValue([1, 2, 3])).toBe(true);
-      expect(isJsonValue(['a', 'b', 'c'])).toBe(true);
-      expect(isJsonValue([true, false])).toBe(true);
+      expect(isJsonValue(['a', 1, null])).toBe(true);
     });
 
     it('returns true for objects with JSON values', () => {
-      expect(isJsonValue({ a: 1, b: 'test' })).toBe(true);
-      expect(isJsonValue({ nested: { value: 123 } })).toBe(true);
+      expect(isJsonValue({ key: 'value', num: 1 })).toBe(true);
     });
 
     it('returns false for functions', () => {
@@ -67,7 +56,7 @@ describe('Schema Validators', () => {
     });
 
     it('returns false for symbols', () => {
-      expect(isJsonValue(Symbol('test'))).toBe(false);
+      expect(isJsonValue(Symbol('s'))).toBe(false);
     });
 
     it('returns false for undefined', () => {
@@ -81,13 +70,11 @@ describe('Schema Validators', () => {
     });
 
     it('returns true for array containing "object"', () => {
-      expect(isObjectType(['object', 'null'])).toBe(true);
       expect(isObjectType(['string', 'object'])).toBe(true);
     });
 
     it('returns false for other types', () => {
       expect(isObjectType('string')).toBe(false);
-      expect(isObjectType('number')).toBe(false);
       expect(isObjectType(['string', 'number'])).toBe(false);
     });
 

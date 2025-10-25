@@ -162,7 +162,7 @@ export interface EnumItem {
  */
 export interface EnumSchemaObject {
   enum?: JsonValue[];
-  type?: string | 'enum';
+  type?: string;
   items?: EnumItem[] | IR.SchemaObject | IR.SchemaObject[];
   nullable?: boolean;
   $ref?: string;
@@ -255,4 +255,15 @@ export interface ZodMockOptions {
 export interface ZodGeneratorOptions {
   useOptional?: boolean;
   useNullable?: boolean;
+}
+
+export interface Plugin<TConfig extends Record<string, unknown> = Record<string, unknown>> {
+  name: string;
+  output: string;
+  config: TConfig;
+  createFile: (file: { id: string; path: string }) => { add: (content: string) => void };
+  forEach: (
+    type: 'schema',
+    callback: (event: { name: string; schema: IR.SchemaObject }) => void
+  ) => void;
 }

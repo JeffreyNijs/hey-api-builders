@@ -20,7 +20,7 @@ function generateStaticMockInternal(
   typeName: string,
   depth: number
 ): string {
-  if (!schema || typeof schema !== 'object') {
+  if (typeof schema !== 'object') {
     return 'null';
   }
 

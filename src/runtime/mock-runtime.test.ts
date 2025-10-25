@@ -428,8 +428,8 @@ describe('Custom Mock Runtime', () => {
       } as const;
 
       const result = generateMock<{ level1: { level2: { level3: string } } }>(schema);
-      expect(result.level1.level2.level3).toBeDefined();
-      expect(typeof result.level1.level2.level3).toBe('string');
+      expect((result as any).level1.level2.level3).toBeDefined();
+      expect(typeof (result as any).level1.level2.level3).toBe('string');
     });
 
     it('handles array within object within array', () => {
@@ -449,7 +449,7 @@ describe('Custom Mock Runtime', () => {
       const result = generateMock<Array<{ tags: string[] }>>(schema);
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeGreaterThan(0);
-      expect(Array.isArray(result[0].tags)).toBe(true);
+      expect(Array.isArray((result[0] as any).tags)).toBe(true);
     });
 
     it('returns null for unknown schema type', () => {

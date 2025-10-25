@@ -358,7 +358,7 @@ describe('Static Mock Generator', () => {
         minItems: 5,
       };
       const result = generateStaticMockCode(schema, 'MinArray');
-      const arr = JSON.parse(result);
+      const arr = JSON.parse(result) as unknown[];
       expect(arr.length).toBeGreaterThanOrEqual(5);
     });
 
@@ -369,7 +369,7 @@ describe('Static Mock Generator', () => {
         maxItems: 2,
       };
       const result = generateStaticMockCode(schema, 'MaxArray');
-      const arr = JSON.parse(result);
+      const arr = JSON.parse(result) as unknown[];
       expect(arr.length).toBeLessThanOrEqual(2);
     });
 

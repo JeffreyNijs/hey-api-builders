@@ -9,7 +9,7 @@
  */
 export function toPascal(str: string): string {
   return str
-    .replace(/([_-]+|\s+)([a-zA-Z0-9])/g, (_, __, c) => c.toUpperCase())
+    .replace(/([_-]+|\s+)([a-zA-Z0-9])/g, (_, __, c) => (c as string).toUpperCase())
     .replace(/^[a-z]/, (c) => c.toUpperCase());
 }
 

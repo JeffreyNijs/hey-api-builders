@@ -1,26 +1,23 @@
 import { collectSchemas } from '../core/schema-transformer';
-import {
-  generateEnumBuilder,
-  generateObjectBuilder,
-} from '../generators/builder-generator';
+import { generateEnumBuilder, generateObjectBuilder } from '../generators/builder-generator';
 import { ZodSchemaGenerator } from '../generators/zod-schema-generator';
-import type { BuildersHandler } from '../types';
+import type { BuildersHandler, Plugin } from '../types';
 import type { IR } from '@hey-api/openapi-ts';
 import { MOCK_STRATEGIES } from '../core/constants';
 import { getPluginConfig } from '../plugin/config';
 
 export const handler: BuildersHandler = ({ plugin }) => {
   const rawSchemas: Record<string, IR.SchemaObject> = {};
-  plugin.forEach('schema', (event) => {
+  (plugin as Plugin).forEach('schema', (event) => {
     rawSchemas[event.name] = event.schema;
   });
   const metas = collectSchemas(rawSchemas);
-  const file = plugin.createFile({
-    id: plugin.name,
-    path: plugin.output,
+  const file = (plugin as Plugin).createFile({
+    id: (plugin as Plugin).name,
+    path: (plugin as Plugin).output,
   });
 
-  const config = getPluginConfig(plugin.config);
+  const config = getPluginConfig((plugin as Plugin).config);
 
   let out = '';
 
@@ -51,7 +48,7 @@ export const handler: BuildersHandler = ({ plugin }) => {
     for (const m of metas) {
       zodSchemaGenerator.generate(m.schema, m.typeName);
     }
-    const zodFile = plugin.createFile({ id: 'zod', path: 'zod.gen.ts' });
+    const zodFile = (plugin as Plugin).createFile({ id: 'zod', path: 'zod.gen.ts' });
     zodFile.add(zodSchemaGenerator.getGeneratedSchemas());
   }
 

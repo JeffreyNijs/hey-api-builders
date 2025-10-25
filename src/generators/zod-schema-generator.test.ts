@@ -25,7 +25,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.number().int()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.number().int()'
+      );
     });
 
     it('generates z.boolean() for boolean type', () => {
@@ -49,7 +51,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().uuid()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().uuid()'
+      );
     });
 
     it('handles string with email format', () => {
@@ -57,7 +61,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().email()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().email()'
+      );
     });
 
     it('handles string with url format', () => {
@@ -65,7 +71,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().url()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().url()'
+      );
     });
 
     it('handles string with date format', () => {
@@ -73,7 +81,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().date()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().date()'
+      );
     });
 
     it('handles string with date-time format', () => {
@@ -81,7 +91,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().datetime()');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().datetime()'
+      );
     });
 
     it('handles string with phone format', () => {
@@ -97,7 +109,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().min(5)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().min(5)'
+      );
     });
 
     it('handles string with maxLength', () => {
@@ -105,7 +119,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.string().max(100)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.string().max(100)'
+      );
     });
 
     it('handles string with min and max length', () => {
@@ -130,7 +146,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.number().min(0)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.number().min(0)'
+      );
     });
 
     it('handles number with maximum', () => {
@@ -138,7 +156,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.number().max(100)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.number().max(100)'
+      );
     });
 
     it('handles number with exclusive minimum', () => {
@@ -146,7 +166,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.number().gt(0)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.number().gt(0)'
+      );
     });
 
     it('handles number with exclusive maximum', () => {
@@ -154,7 +176,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.number().lt(100)');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.number().lt(100)'
+      );
     });
 
     it('handles enum values', () => {
@@ -162,7 +186,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.enum(["active", "inactive", "pending"])');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.enum(["active", "inactive", "pending"])'
+      );
     });
 
     it('handles anyOf with enum-like structure', () => {
@@ -172,7 +198,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.enum(["value1", "value2"])');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.enum(["value1", "value2"])'
+      );
     });
 
     it('handles array type', () => {
@@ -183,7 +211,9 @@ describe('Zod Schema Generator', () => {
       const generator = new ZodSchemaGenerator();
       const result = generator.generate(schema, 'test');
       expect(result).toBe('testSchema');
-      expect(generator.getGeneratedSchemas()).toContain('export const testSchema = z.array(z.string())');
+      expect(generator.getGeneratedSchemas()).toContain(
+        'export const testSchema = z.array(z.string())'
+      );
     });
 
     it('handles array with minItems', () => {

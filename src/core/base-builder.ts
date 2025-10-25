@@ -23,7 +23,7 @@ export abstract class BaseBuilder<T> {
    * @returns The builder instance.
    */
   setOptions(o: BuilderOptions): this {
-    this.options = o || {};
+    this.options = o;
     return this;
   }
 

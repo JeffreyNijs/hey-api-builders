@@ -50,7 +50,7 @@ export function irToSchema(
 
     if (enumIr.type === 'enum' && Array.isArray(enumIr.items)) {
       const enumValues = (enumIr.items as EnumItem[])
-        .filter((item: EnumItem) => item && typeof item === 'object' && 'const' in item)
+        .filter((item: EnumItem) => typeof item === 'object' && 'const' in item)
         .map((item: EnumItem) => item.const);
 
       if (enumValues.length > 0) {
@@ -63,7 +63,7 @@ export function irToSchema(
       const items = enumIr.items as EnumItem[];
       if (
         items.length > 0 &&
-        items.every((it: EnumItem) => it && typeof it === 'object' && 'const' in it)
+        items.every((it: EnumItem) => typeof it === 'object' && 'const' in it)
       ) {
         const enumValues = items.map((it: EnumItem) => it.const);
         const anyOfSchemas = enumValues.map((value: JsonValue) => ({ const: value }));
@@ -94,11 +94,7 @@ export function irToSchema(
   if (ir.properties) {
     out.properties = {};
     for (const [k, v] of Object.entries(ir.properties)) {
-      (out.properties as Record<string, Schema>)[k] = irToSchema(
-        v as IR.SchemaObject,
-        all,
-        seenSet
-      );
+      (out.properties as Record<string, Schema>)[k] = irToSchema(v, all, seenSet);
     }
   }
 
@@ -110,11 +106,7 @@ export function irToSchema(
     if (typeof ir.additionalProperties === 'boolean') {
       out.additionalProperties = ir.additionalProperties;
     } else {
-      out.additionalProperties = irToSchema(
-        ir.additionalProperties as IR.SchemaObject,
-        all,
-        seenSet
-      );
+      out.additionalProperties = irToSchema(ir.additionalProperties, all, seenSet);
     }
   }
 
@@ -192,7 +184,7 @@ export function irToSchema(
 export function normalizeSchema(
   node: NormalizedSchemaNode | ExtendedSchema | Schema
 ): NormalizedSchemaNode {
-  if (!node || typeof node !== 'object') {
+  if (typeof node !== 'object' || !node) {
     return node as NormalizedSchemaNode;
   }
 
@@ -202,7 +194,7 @@ export function normalizeSchema(
     const enumValues: JsonValue[] = [];
     if (Array.isArray(workingNode.items)) {
       for (const item of workingNode.items) {
-        if (item && typeof item === 'object' && 'const' in item) {
+        if (typeof item === 'object' && item && 'const' in item) {
           enumValues.push((item as { const: JsonValue }).const);
         }
       }
@@ -238,12 +230,12 @@ export function normalizeSchema(
 
   if (Array.isArray(workingNode.items)) {
     const hasEnumItems = workingNode.items.some(
-      (item: NormalizedSchemaNode) => item && typeof item === 'object' && item.type === 'enum'
+      (item: NormalizedSchemaNode) => typeof item === 'object' && item && item.type === 'enum'
     );
 
     if (hasEnumItems) {
       workingNode.items = workingNode.items.map((item: NormalizedSchemaNode) => {
-        if (item && typeof item === 'object' && item.type === 'enum') {
+        if (typeof item === 'object' && item && item.type === 'enum') {
           return normalizeSchema(item);
         }
         return item;
@@ -257,8 +249,8 @@ export function normalizeSchema(
     workingNode.items.length > 0 &&
     workingNode.items.every(
       (item: NormalizedSchemaNode) =>
-        item &&
         typeof item === 'object' &&
+        item &&
         'type' in item &&
         (item.type === 'string' ||
           item.type === 'null' ||
@@ -303,7 +295,7 @@ export function normalizeSchema(
  * @returns Sanitized schema
  */
 export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
-  if (!node || typeof node !== 'object') {
+  if (typeof node !== 'object' || !node) {
     return node as Schema;
   }
 
@@ -366,14 +358,14 @@ export function collectSchemas(all: Record<string, IR.SchemaObject>): GeneratedS
     let typeName = name.replace(/Schema$/, '');
     typeName = normalizeTypeName(typeName);
 
-    const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema as IR.SchemaObject, all)));
+    const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema, all)));
     const schemaWithType = jsf as ExtendedSchema;
     const t = schemaWithType.type;
     const isObject = isObjectType(t);
     metas.push({
       typeName,
       constName: `${safeTypeName(typeName)}Schema`,
-      isEnum: isEnum(irSchema as IR.SchemaObject),
+      isEnum: isEnum(irSchema),
       schema: jsf,
       isObject,
     });

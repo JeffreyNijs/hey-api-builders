@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import type { IR } from '@hey-api/openapi-ts';
 import { handler } from './handler';
-import type { BuildersHandler } from '../types';
+import type { BuildersHandler, Plugin } from '../types';
 
 interface SchemaEvent {
   name: string;
@@ -43,7 +43,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -93,7 +93,7 @@ describe('handler integration tests', () => {
         }
         return mockFile;
       }),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -129,7 +129,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -164,7 +164,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -198,7 +198,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -232,7 +232,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -262,7 +262,7 @@ describe('handler integration tests', () => {
         }
       }),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
@@ -282,9 +282,9 @@ describe('handler integration tests', () => {
       name: 'hey-api-builders',
       output: 'builders',
       config: {},
-      forEach: vi.fn((_type: string, _callback: (event: unknown) => void) => {}),
+      forEach: vi.fn(() => {}),
       createFile: vi.fn(() => mockFile),
-    };
+    } as unknown as Plugin;
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 

@@ -47,7 +47,7 @@ export class ZodSchemaGenerator {
    * @returns Zod schema code
    */
   private generateZodSchemaInternal(schema: ExtendedSchema): string {
-    if (!schema || typeof schema !== 'object') {
+    if (typeof schema !== 'object') {
       return 'z.unknown()';
     }
 

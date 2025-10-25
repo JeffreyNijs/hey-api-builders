@@ -1,4 +1,4 @@
-import type { JsonValue } from '../types'
+import { ZOD_STRINGS, ZOD_REGEX } from './constants'
 
 export interface ZodMockOptions {
   useDefault?: boolean
@@ -59,21 +59,28 @@ class ZodMockGenerator {
     zodSchemaString: string,
     overrides: Record<string, unknown> = {}
   ): unknown {
-    if (zodSchemaString.includes('z.object(')) {
+    if (zodSchemaString.includes(ZOD_STRINGS.OBJECT)) {
       return this.generateObjectMock(zodSchemaString, overrides)
-    } else if (zodSchemaString.includes('z.array(')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.ARRAY)) {
       return this.generateArrayMock(zodSchemaString, overrides)
-    } else if (zodSchemaString.includes('z.enum(')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.ENUM)) {
       return this.generateEnumMock(zodSchemaString)
-    } else if (zodSchemaString.includes('z.string()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.STRING)) {
       return this.generateStringMock(zodSchemaString)
-    } else if (zodSchemaString.includes('z.number()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.NUMBER)) {
       return this.generateNumberMock(zodSchemaString)
-    } else if (zodSchemaString.includes('z.boolean()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.BOOLEAN)) {
       return this.generateBooleanMock()
-    } else if (zodSchemaString.includes('z.union(')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.UNION)) {
       return this.generateUnionMock(zodSchemaString, overrides)
-    } else if (zodSchemaString.includes('z.null()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.NULL)) {
       return this.options.omitNulls ? undefined : null
     }
 
@@ -97,7 +104,7 @@ class ZodMockGenerator {
       if (overrides[key] !== undefined) {
         mock[key] = overrides[key]
       } else {
-        const isOptional = propSchema.includes('.optional()')
+        const isOptional = propSchema.includes(ZOD_STRINGS.OPTIONAL)
 
         if (isOptional && !this.options.alwaysIncludeOptionals) {
           const probability =
@@ -121,12 +128,12 @@ class ZodMockGenerator {
   }
 
   private extractObjectProperties(zodSchemaString: string): string | null {
-    const objectStart = zodSchemaString.indexOf('z.object({')
+    const objectStart = zodSchemaString.indexOf(ZOD_STRINGS.OBJECT)
     if (objectStart === -1) {
       return null
     }
 
-    const contentStart = objectStart + 'z.object({'.length
+    const contentStart = objectStart + ZOD_STRINGS.OBJECT.length
     let depth = 1
     let i = contentStart
 
@@ -318,17 +325,22 @@ class ZodMockGenerator {
   }
 
   private generateStringMock(zodSchemaString: string): string {
-    if (zodSchemaString.includes('.uuid()')) {
+    if (zodSchemaString.includes(ZOD_STRINGS.UUID)) {
       return this.generateUUID()
-    } else if (zodSchemaString.includes('.email()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.EMAIL)) {
       return this.generateEmail()
-    } else if (zodSchemaString.includes('.url()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.URL)) {
       return this.generateURL()
-    } else if (zodSchemaString.includes('.date()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.DATE)) {
       return this.generateDate()
-    } else if (zodSchemaString.includes('.datetime()')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.DATETIME)) {
       return this.generateDateTime()
-    } else if (zodSchemaString.includes('.regex(')) {
+    }
+    if (zodSchemaString.includes(ZOD_STRINGS.REGEX)) {
       return this.generateFromRegex(zodSchemaString)
     }
 
@@ -343,7 +355,7 @@ class ZodMockGenerator {
   }
 
   private generateNumberMock(zodSchemaString: string): number {
-    const isInt = zodSchemaString.includes('.int()')
+    const isInt = zodSchemaString.includes(ZOD_STRINGS.INT)
     const minMatch = zodSchemaString.match(/\.min\(([^)]+)\)/)
     const maxMatch = zodSchemaString.match(/\.max\(([^)]+)\)/)
     const gtMatch = zodSchemaString.match(/\.gt\(([^)]+)\)/)
@@ -464,7 +476,7 @@ class ZodMockGenerator {
 
     const pattern = regexMatch[1]
 
-    if (pattern?.includes('\\+?[1-9]\\d{1,14}')) {
+    if (pattern?.includes(ZOD_REGEX.PHONE)) {
       return `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`
     }
 

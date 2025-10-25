@@ -1,5 +1,10 @@
+/**
+ * Zod schema generation from JSON schema
+ */
+
 import type { Schema } from '../types'
 import type { ExtendedSchema, JsonValue, ZodGeneratorOptions } from '../types'
+import { ZOD_STRINGS, ZOD_REGEX } from './constants'
 
 /**
  * Manages the generation of Zod schemas and their export to a file.
@@ -48,43 +53,27 @@ export class ZodSchemaGenerator {
    */
   private generateZodSchemaInternal(schema: ExtendedSchema): string {
     if (typeof schema !== 'object') {
-      return 'z.unknown()'
+      return ZOD_STRINGS.UNKNOWN
     }
 
-    if (schema.anyOf && Array.isArray(schema.anyOf)) {
+    if (Array.isArray(schema.anyOf)) {
       const enumValues = schema.anyOf
         .filter((item) => item && typeof item === 'object' && 'const' in item)
         .map((item) => (item as { const: JsonValue }).const)
 
       if (enumValues.length > 0) {
         const zodEnumValues = enumValues.map((val) => JSON.stringify(val)).join(', ')
-        return `z.enum([${zodEnumValues}])`
+        return `${ZOD_STRINGS.ENUM}([${zodEnumValues}])`
       }
     }
 
-    if (schema.enum && Array.isArray(schema.enum)) {
+    if (Array.isArray(schema.enum)) {
       const zodEnumValues = schema.enum.map((val) => JSON.stringify(val)).join(', ')
-      return `z.enum([${zodEnumValues}])`
+      return `${ZOD_STRINGS.ENUM}([${zodEnumValues}])`
     }
 
     if (Array.isArray(schema.type)) {
-      const types = schema.type.filter((t) => t !== 'null')
-      const isNullable = schema.type.includes('null')
-
-      if (types.length > 0 && types[0]) {
-        let zodType = this.generateZodForSingleType(types[0], schema)
-        if (isNullable) {
-          zodType += '.nullable()'
-        }
-        return zodType
-      } else if (types.length > 1) {
-        const unionTypes = types.map((t) => this.generateZodForSingleType(t, schema))
-        let zodType = `z.union([${unionTypes.join(', ')}])`
-        if (isNullable) {
-          zodType += '.nullable()'
-        }
-        return zodType
-      }
+      return this.generateUnionOrNullableType(schema)
     }
 
     if (typeof schema.type === 'string') {
@@ -99,7 +88,22 @@ export class ZodSchemaGenerator {
       return this.generateZodArray(schema)
     }
 
-    return 'z.unknown()'
+    return ZOD_STRINGS.UNKNOWN
+  }
+
+  private generateUnionOrNullableType(schema: ExtendedSchema): string {
+    const types = (schema.type as string[]).filter((t) => t !== 'null')
+    const isNullable = (schema.type as string[]).includes('null')
+
+    let zodType: string
+    if (types.length === 1 && types[0]) {
+      zodType = this.generateZodForSingleType(types[0], schema)
+    } else {
+      const unionTypes = types.map((t) => this.generateZodForSingleType(t, schema))
+      zodType = `${ZOD_STRINGS.UNION}([${unionTypes.join(', ')}])`
+    }
+
+    return isNullable ? `${zodType}.nullable()` : zodType
   }
 
   private generateZodForSingleType(type: string, schema: ExtendedSchema): string {
@@ -111,99 +115,98 @@ export class ZodSchemaGenerator {
       case 'integer':
         return this.generateZodInteger(schema)
       case 'boolean':
-        return 'z.boolean()'
+        return ZOD_STRINGS.BOOLEAN
       case 'null':
-        return 'z.null()'
+        return ZOD_STRINGS.NULL
       case 'array':
         return this.generateZodArray(schema)
       case 'object':
         return this.generateZodObject(schema)
       default:
-        return 'z.unknown()'
+        return ZOD_STRINGS.UNKNOWN
     }
   }
 
   private generateZodString(schema: ExtendedSchema): string {
-    let zodType = 'z.string()'
+    let zodType = ZOD_STRINGS.STRING
 
     if (schema.format) {
-      switch (schema.format) {
-        case 'uuid':
-          zodType += '.uuid()'
-          break
-        case 'email':
-          zodType += '.email()'
-          break
-        case 'uri':
-        case 'url':
-          zodType += '.url()'
-          break
-        case 'date':
-          zodType += '.date()'
-          break
-        case 'date-time':
-          zodType += '.datetime()'
-          break
-        case 'phone':
-          zodType += '.regex(/^\\+?[1-9]\\d{1,14}$/)'
-          break
-      }
+      zodType += this.getZodStringFormat(schema.format)
     }
 
     if (schema.pattern) {
-      zodType += `.regex(/${schema.pattern}/)`
+      zodType += `${ZOD_STRINGS.REGEX}(/${schema.pattern}/)`
     }
-
     if (typeof schema.minLength === 'number') {
-      zodType += `.min(${schema.minLength})`
+      zodType += `${ZOD_STRINGS.MIN}(${schema.minLength})`
     }
     if (typeof schema.maxLength === 'number') {
-      zodType += `.max(${schema.maxLength})`
+      zodType += `${ZOD_STRINGS.MAX}(${schema.maxLength})`
     }
 
     return zodType
   }
 
+  private getZodStringFormat(format: string): string {
+    switch (format) {
+      case 'uuid':
+        return ZOD_STRINGS.UUID
+      case 'email':
+        return ZOD_STRINGS.EMAIL
+      case 'uri':
+      case 'url':
+        return ZOD_STRINGS.URL
+      case 'date':
+        return ZOD_STRINGS.DATE
+      case 'date-time':
+        return ZOD_STRINGS.DATETIME
+      case 'phone':
+        return `${ZOD_STRINGS.REGEX}(/${ZOD_REGEX.PHONE}/)`
+      default:
+        return ''
+    }
+  }
+
   private generateZodNumber(schema: ExtendedSchema): string {
-    let zodType = 'z.number()'
+    let zodType = ZOD_STRINGS.NUMBER
 
     if (typeof schema.minimum === 'number') {
-      zodType += `.min(${schema.minimum})`
+      zodType += `${ZOD_STRINGS.MIN}(${schema.minimum})`
     }
     if (typeof schema.maximum === 'number') {
-      zodType += `.max(${schema.maximum})`
+      zodType += `${ZOD_STRINGS.MAX}(${schema.maximum})`
     }
     if (typeof schema.exclusiveMinimum === 'number') {
-      zodType += `.gt(${schema.exclusiveMinimum})`
+      zodType += `${ZOD_STRINGS.GT}(${schema.exclusiveMinimum})`
     }
     if (typeof schema.exclusiveMaximum === 'number') {
-      zodType += `.lt(${schema.exclusiveMaximum})`
+      zodType += `${ZOD_STRINGS.LT}(${schema.exclusiveMaximum})`
     }
 
     return zodType
   }
 
   private generateZodInteger(schema: ExtendedSchema): string {
-    let zodType = 'z.number().int()'
+    let zodType = `${ZOD_STRINGS.NUMBER}${ZOD_STRINGS.INT}`
 
     if (typeof schema.minimum === 'number') {
-      zodType += `.min(${schema.minimum})`
+      zodType += `${ZOD_STRINGS.MIN}(${schema.minimum})`
     }
     if (typeof schema.maximum === 'number') {
-      zodType += `.max(${schema.maximum})`
+      zodType += `${ZOD_STRINGS.MAX}(${schema.maximum})`
     }
     if (typeof schema.exclusiveMinimum === 'number') {
-      zodType += `.gt(${schema.exclusiveMinimum})`
+      zodType += `${ZOD_STRINGS.GT}(${schema.exclusiveMinimum})`
     }
     if (typeof schema.exclusiveMaximum === 'number') {
-      zodType += `.lt(${schema.exclusiveMaximum})`
+      zodType += `${ZOD_STRINGS.LT}(${schema.exclusiveMaximum})`
     }
 
     return zodType
   }
 
   private generateZodArray(schema: ExtendedSchema): string {
-    let itemType = 'z.unknown()'
+    let itemType = ZOD_STRINGS.UNKNOWN
 
     if (schema.items) {
       if (Array.isArray(schema.items)) {
@@ -216,13 +219,13 @@ export class ZodSchemaGenerator {
       }
     }
 
-    let zodType = `z.array(${itemType})`
+    let zodType = `${ZOD_STRINGS.ARRAY}${itemType})`
 
     if (typeof schema.minItems === 'number') {
-      zodType += `.min(${schema.minItems})`
+      zodType += `${ZOD_STRINGS.MIN}(${schema.minItems})`
     }
     if (typeof schema.maxItems === 'number') {
-      zodType += `.max(${schema.maxItems})`
+      zodType += `${ZOD_STRINGS.MAX}(${schema.maxItems})`
     }
 
     return zodType
@@ -237,11 +240,11 @@ export class ZodSchemaGenerator {
     const required = new Set(schema.required || [])
 
     for (const [key, propSchema] of Object.entries(schema.properties)) {
-      const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`
+      const safePropName = /^[a-zA-Z_]\w*$/.test(key) ? key : `"${key}"`
       let propType = this.generateZodSchemaInternal(propSchema as ExtendedSchema)
 
       if (!required.has(key)) {
-        propType += '.optional()'
+        propType += ZOD_STRINGS.OPTIONAL
       }
 
       properties.push(`${safePropName}: ${propType}`)
@@ -251,7 +254,7 @@ export class ZodSchemaGenerator {
 
     if (schema.additionalProperties === false) {
       zodType += '.strict()'
-    } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+    } else if (typeof schema.additionalProperties === 'object') {
       const additionalType = this.generateZodSchemaInternal(
         schema.additionalProperties as ExtendedSchema
       )

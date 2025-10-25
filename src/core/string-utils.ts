@@ -10,7 +10,7 @@
 export function toPascal(str: string): string {
   return str
     .replace(/([_-]+|\s+)([a-zA-Z0-9])/g, (_, __, c) => (c as string).toUpperCase())
-    .replace(/^[a-z]/, (c) => c.toUpperCase());
+    .replace(/^[a-z]/, (c) => c.toUpperCase())
 }
 
 /**
@@ -19,7 +19,7 @@ export function toPascal(str: string): string {
  * @returns Safe type name
  */
 export function safeTypeName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9_]/g, '_');
+  return name.replace(/[^a-zA-Z0-9_]/g, '_')
 }
 
 /**
@@ -33,7 +33,7 @@ export function normalizeTypeName(typeName: string): string {
     .replace(/^API([A-Z])/g, 'Api$1')
     .replace(/^HTTP([A-Z])/g, 'Http$1')
     .replace(/^URL([A-Z])/g, 'Url$1')
-    .replace(/^ID([A-Z])/g, 'Id$1');
+    .replace(/^ID([A-Z])/g, 'Id$1')
 }
 
 /**
@@ -42,7 +42,7 @@ export function normalizeTypeName(typeName: string): string {
  * @returns True if valid identifier
  */
 export function isValidIdentifier(key: string): boolean {
-  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key);
+  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)
 }
 
 /**
@@ -51,5 +51,5 @@ export function isValidIdentifier(key: string): boolean {
  * @returns Quoted key if needed, otherwise raw key
  */
 export function safePropName(key: string): string {
-  return isValidIdentifier(key) ? key : `"${key}"`;
+  return isValidIdentifier(key) ? key : `"${key}"`
 }

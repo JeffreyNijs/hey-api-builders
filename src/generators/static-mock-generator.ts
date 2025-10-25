@@ -1,5 +1,5 @@
-import type { Schema } from '../types';
-import type { ExtendedSchema, JsonValue } from '../types';
+import type { Schema } from '../types'
+import type { ExtendedSchema, JsonValue } from '../types'
 
 /**
  * Static mock value generators
@@ -12,7 +12,7 @@ import type { ExtendedSchema, JsonValue } from '../types';
  * @returns Static mock code
  */
 export function generateStaticMockCode(schema: Schema, typeName: string): string {
-  return generateStaticMockInternal(schema as ExtendedSchema, typeName, 0);
+  return generateStaticMockInternal(schema as ExtendedSchema, typeName, 0)
 }
 
 function generateStaticMockInternal(
@@ -21,43 +21,43 @@ function generateStaticMockInternal(
   depth: number
 ): string {
   if (typeof schema !== 'object') {
-    return 'null';
+    return 'null'
   }
 
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
     const enumValues = schema.anyOf
       .filter((item) => item && typeof item === 'object' && 'const' in item)
-      .map((item) => (item as { const: JsonValue }).const);
+      .map((item) => (item as { const: JsonValue }).const)
 
     if (enumValues.length > 0) {
-      return JSON.stringify(enumValues[0]);
+      return JSON.stringify(enumValues[0])
     }
   }
 
   if (schema.enum && Array.isArray(schema.enum)) {
-    return JSON.stringify(schema.enum[0]);
+    return JSON.stringify(schema.enum[0])
   }
 
   if (Array.isArray(schema.type)) {
-    const types = schema.type.filter((t) => t !== 'null');
+    const types = schema.type.filter((t) => t !== 'null')
     if (types.length > 0 && types[0]) {
-      return generateStaticForSingleType(types[0], schema, typeName, depth);
+      return generateStaticForSingleType(types[0], schema, typeName, depth)
     }
   }
 
   if (typeof schema.type === 'string') {
-    return generateStaticForSingleType(schema.type, schema, typeName, depth);
+    return generateStaticForSingleType(schema.type, schema, typeName, depth)
   }
 
   if (schema.properties && !schema.type) {
-    return generateStaticObject(schema, typeName, depth);
+    return generateStaticObject(schema, typeName, depth)
   }
 
   if (schema.items && !schema.type) {
-    return generateStaticArray(schema, typeName, depth);
+    return generateStaticArray(schema, typeName, depth)
   }
 
-  return 'null';
+  return 'null'
 }
 
 function generateStaticForSingleType(
@@ -68,21 +68,21 @@ function generateStaticForSingleType(
 ): string {
   switch (type) {
     case 'string':
-      return generateStaticString(schema);
+      return generateStaticString(schema)
     case 'number':
-      return generateStaticNumber(schema);
+      return generateStaticNumber(schema)
     case 'integer':
-      return generateStaticInteger(schema);
+      return generateStaticInteger(schema)
     case 'boolean':
-      return 'true';
+      return 'true'
     case 'null':
-      return 'null';
+      return 'null'
     case 'array':
-      return generateStaticArray(schema, typeName, depth);
+      return generateStaticArray(schema, typeName, depth)
     case 'object':
-      return generateStaticObject(schema, typeName, depth);
+      return generateStaticObject(schema, typeName, depth)
     default:
-      return 'null';
+      return 'null'
   }
 }
 
@@ -91,28 +91,28 @@ function generateStaticForSingleType(
  */
 function generateStaticString(schema: ExtendedSchema): string {
   if (schema.format) {
-    const formatValue = getFormatDefaultValue(schema.format);
+    const formatValue = getFormatDefaultValue(schema.format)
     if (formatValue) {
-      return JSON.stringify(formatValue);
+      return JSON.stringify(formatValue)
     }
   }
 
   if (schema.default !== undefined) {
-    return JSON.stringify(schema.default);
+    return JSON.stringify(schema.default)
   }
 
   if (schema.examples && Array.isArray(schema.examples) && schema.examples.length > 0) {
-    return JSON.stringify(schema.examples[0]);
+    return JSON.stringify(schema.examples[0])
   }
 
   if (schema.pattern) {
-    return '"pattern-match"';
+    return '"pattern-match"'
   }
 
-  const minLength = typeof schema.minLength === 'number' ? schema.minLength : 5;
-  const targetLength = Math.max(minLength, 5);
+  const minLength = typeof schema.minLength === 'number' ? schema.minLength : 5
+  const targetLength = Math.max(minLength, 5)
 
-  return JSON.stringify('a'.repeat(targetLength));
+  return JSON.stringify('a'.repeat(targetLength))
 }
 
 /**
@@ -127,8 +127,8 @@ function getFormatDefaultValue(format: string): string | null {
     date: '2024-01-01',
     'date-time': '2024-01-01T00:00:00.000Z',
     phone: '+15551234567',
-  };
-  return formatDefaults[format] || null;
+  }
+  return formatDefaults[format] || null
 }
 
 /**
@@ -136,21 +136,21 @@ function getFormatDefaultValue(format: string): string | null {
  */
 function generateStaticNumber(schema: ExtendedSchema): string {
   if (typeof schema.default === 'number') {
-    return String(schema.default);
+    return String(schema.default)
   }
 
   if (schema.examples && Array.isArray(schema.examples) && schema.examples.length > 0) {
-    const example = schema.examples[0];
+    const example = schema.examples[0]
     if (typeof example === 'number') {
-      return String(example);
+      return String(example)
     }
   }
 
-  const min = typeof schema.minimum === 'number' ? schema.minimum : 0;
-  const max = typeof schema.maximum === 'number' ? schema.maximum : 100;
+  const min = typeof schema.minimum === 'number' ? schema.minimum : 0
+  const max = typeof schema.maximum === 'number' ? schema.maximum : 100
 
-  const value = min + Math.floor((max - min) / 2);
-  return String(value);
+  const value = min + Math.floor((max - min) / 2)
+  return String(value)
 }
 
 /**
@@ -158,21 +158,21 @@ function generateStaticNumber(schema: ExtendedSchema): string {
  */
 function generateStaticInteger(schema: ExtendedSchema): string {
   if (typeof schema.default === 'number') {
-    return String(Math.floor(schema.default));
+    return String(Math.floor(schema.default))
   }
 
   if (schema.examples && Array.isArray(schema.examples) && schema.examples.length > 0) {
-    const example = schema.examples[0];
+    const example = schema.examples[0]
     if (typeof example === 'number') {
-      return String(Math.floor(example));
+      return String(Math.floor(example))
     }
   }
 
-  const min = typeof schema.minimum === 'number' ? Math.ceil(schema.minimum) : 0;
-  const max = typeof schema.maximum === 'number' ? Math.floor(schema.maximum) : 100;
+  const min = typeof schema.minimum === 'number' ? Math.ceil(schema.minimum) : 0
+  const max = typeof schema.maximum === 'number' ? Math.floor(schema.maximum) : 100
 
-  const value = min + Math.floor((max - min) / 2);
-  return String(value);
+  const value = min + Math.floor((max - min) / 2)
+  return String(value)
 }
 
 /**
@@ -180,33 +180,29 @@ function generateStaticInteger(schema: ExtendedSchema): string {
  */
 function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: number): string {
   if (!schema.items) {
-    return '[]';
+    return '[]'
   }
 
-  const indent = '  '.repeat(depth);
-  const nextIndent = '  '.repeat(depth + 1);
+  const indent = '  '.repeat(depth)
+  const nextIndent = '  '.repeat(depth + 1)
 
-  const minItems = typeof schema.minItems === 'number' ? schema.minItems : 1;
-  const itemCount = Math.max(minItems, 1);
+  const minItems = typeof schema.minItems === 'number' ? schema.minItems : 1
+  const itemCount = Math.max(minItems, 1)
 
   if (Array.isArray(schema.items)) {
     const items = schema.items.map((item) =>
       generateStaticMockInternal(item as ExtendedSchema, typeName, depth + 1)
-    );
-    return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`;
+    )
+    return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`
   } else {
-    const itemMock = generateStaticMockInternal(
-      schema.items as ExtendedSchema,
-      typeName,
-      depth + 1
-    );
+    const itemMock = generateStaticMockInternal(schema.items as ExtendedSchema, typeName, depth + 1)
 
     if (itemCount === 1) {
-      return `[${itemMock}]`;
+      return `[${itemMock}]`
     }
 
-    const items = Array(itemCount).fill(itemMock);
-    return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`;
+    const items = Array(itemCount).fill(itemMock)
+    return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`
   }
 }
 
@@ -215,27 +211,27 @@ function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: nu
  */
 function generateStaticObject(schema: ExtendedSchema, typeName: string, depth: number): string {
   if (!schema.properties) {
-    return '{}';
+    return '{}'
   }
 
-  const indent = '  '.repeat(depth);
-  const nextIndent = '  '.repeat(depth + 1);
-  const properties: string[] = [];
-  const required = new Set(schema.required || []);
+  const indent = '  '.repeat(depth)
+  const nextIndent = '  '.repeat(depth + 1)
+  const properties: string[] = []
+  const required = new Set(schema.required || [])
 
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     if (!required.has(key)) {
-      continue;
+      continue
     }
 
-    const propValue = generateStaticMockInternal(propSchema as ExtendedSchema, typeName, depth + 1);
-    const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`;
-    properties.push(`${safePropName}: ${propValue}`);
+    const propValue = generateStaticMockInternal(propSchema as ExtendedSchema, typeName, depth + 1)
+    const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`
+    properties.push(`${safePropName}: ${propValue}`)
   }
 
   if (properties.length === 0) {
-    return '{}';
+    return '{}'
   }
 
-  return `{\n${nextIndent}${properties.join(`,\n${nextIndent}`)}\n${indent}}`;
+  return `{\n${nextIndent}${properties.join(`,\n${nextIndent}`)}\n${indent}}`
 }

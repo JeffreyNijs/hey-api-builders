@@ -1,14 +1,14 @@
-import type { GeneratedSchemaMeta, MockStrategy } from '../types';
-import type { Schema } from '../types';
-import { generateZodSchema } from './zod-schema-generator';
-import { generateStaticMockCode } from './static-mock-generator';
-import { generateWithMethods } from '../core/code-generator';
+import type { GeneratedSchemaMeta, MockStrategy } from '../types'
+import type { Schema } from '../types'
+import { generateZodSchema } from './zod-schema-generator'
+import { generateStaticMockCode } from './static-mock-generator'
+import { generateWithMethods } from '../core/code-generator'
 
 /**
  * Represents the options for the builder generator.
  */
 export interface BuilderGeneratorOptions {
-  mockStrategy: MockStrategy;
+  mockStrategy: MockStrategy
 }
 
 /**
@@ -21,21 +21,21 @@ export function generateEnumBuilder(
   meta: GeneratedSchemaMeta,
   options: BuilderGeneratorOptions
 ): string {
-  const { typeName, schema } = meta;
-  const { mockStrategy } = options;
+  const { typeName, schema } = meta
+  const { mockStrategy } = options
 
-  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`;
+  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`
 
   if (mockStrategy === 'static') {
-    code += generateStaticEnumBuild(typeName, schema);
+    code += generateStaticEnumBuild(typeName, schema)
   } else if (mockStrategy === 'zod') {
-    code += generateZodEnumBuild(typeName, schema);
+    code += generateZodEnumBuild(typeName, schema)
   } else {
-    code += generateCustomEnumBuild(typeName, meta.constName);
+    code += generateCustomEnumBuild(typeName, meta.constName)
   }
 
-  code += `}\n\n`;
-  return code;
+  code += `}\n\n`
+  return code
 }
 
 /**
@@ -48,28 +48,28 @@ export function generateObjectBuilder(
   meta: GeneratedSchemaMeta,
   options: BuilderGeneratorOptions
 ): string {
-  const { typeName, schema, constName } = meta;
-  const { mockStrategy } = options;
+  const { typeName, schema, constName } = meta
+  const { mockStrategy } = options
 
-  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`;
+  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`
 
-  const withMethods = generateWithMethods(schema, typeName);
+  const withMethods = generateWithMethods(schema, typeName)
   if (withMethods) {
-    code += withMethods + '\n';
+    code += withMethods + '\n'
   }
 
-  code += '\n';
+  code += '\n'
 
   if (mockStrategy === 'static') {
-    code += generateStaticObjectBuild(typeName, schema);
+    code += generateStaticObjectBuild(typeName, schema)
   } else if (mockStrategy === 'zod') {
-    code += generateZodObjectBuild(typeName, schema);
+    code += generateZodObjectBuild(typeName, schema)
   } else {
-    code += generateCustomObjectBuild(typeName, constName);
+    code += generateCustomObjectBuild(typeName, constName)
   }
 
-  code += `}\n\n`;
-  return code;
+  code += `}\n\n`
+  return code
 }
 
 /**
@@ -79,8 +79,8 @@ export function generateObjectBuilder(
  * @returns The generated build method as a string.
  */
 function generateStaticEnumBuild(typeName: string, schema: Schema): string {
-  const staticMock = generateStaticMockCode(schema, typeName);
-  return `  build(): types.${typeName} {\n    return ${staticMock} as types.${typeName};\n  }\n`;
+  const staticMock = generateStaticMockCode(schema, typeName)
+  return `  build(): types.${typeName} {\n    return ${staticMock} as types.${typeName};\n  }\n`
 }
 
 /**
@@ -90,7 +90,7 @@ function generateStaticEnumBuild(typeName: string, schema: Schema): string {
  * @returns The generated build method as a string.
  */
 function generateZodEnumBuild(typeName: string, schema: Schema): string {
-  const zodSchemaString = generateZodSchema(schema);
+  const zodSchemaString = generateZodSchema(schema)
   return (
     `  build(): types.${typeName} {\n` +
     `    const zodSchemaString = \`${zodSchemaString}\`;\n` +
@@ -102,7 +102,7 @@ function generateZodEnumBuild(typeName: string, schema: Schema): string {
     `      omitNulls: this.options.omitNulls\n` +
     `    }) as types.${typeName};\n` +
     `  }\n`
-  );
+  )
 }
 
 /**
@@ -122,7 +122,7 @@ function generateCustomEnumBuild(typeName: string, constName: string): string {
     `      omitNulls: this.options.omitNulls\n` +
     `    })\n` +
     `  }\n`
-  );
+  )
 }
 
 /**
@@ -132,13 +132,13 @@ function generateCustomEnumBuild(typeName: string, constName: string): string {
  * @returns The generated build method as a string.
  */
 function generateStaticObjectBuild(typeName: string, schema: Schema): string {
-  const staticMock = generateStaticMockCode(schema, typeName);
+  const staticMock = generateStaticMockCode(schema, typeName)
   return (
     `  build(): types.${typeName} {\n` +
     `    const baseMock = ${staticMock};\n` +
     `    return { ...baseMock, ...this.overrides } as types.${typeName};\n` +
     `  }\n`
-  );
+  )
 }
 
 /**
@@ -148,7 +148,7 @@ function generateStaticObjectBuild(typeName: string, schema: Schema): string {
  * @returns The generated build method as a string.
  */
 function generateZodObjectBuild(typeName: string, schema: Schema): string {
-  const zodSchemaString = generateZodSchema(schema);
+  const zodSchemaString = generateZodSchema(schema)
   return (
     `  build(): types.${typeName} {\n` +
     `    const zodSchemaString = \`${zodSchemaString}\`;\n` +
@@ -160,7 +160,7 @@ function generateZodObjectBuild(typeName: string, schema: Schema): string {
     `      omitNulls: this.options.omitNulls\n` +
     `    }) as types.${typeName};\n` +
     `  }\n`
-  );
+  )
 }
 
 /**
@@ -181,5 +181,5 @@ function generateCustomObjectBuild(typeName: string, constName: string): string 
     `    });\n` +
     `    return { ...mock, ...this.overrides };\n` +
     `  }\n`
-  );
+  )
 }

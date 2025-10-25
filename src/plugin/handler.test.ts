@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import type { IR } from '@hey-api/openapi-ts';
-import { handler } from './handler';
-import type { BuildersHandler, Plugin } from '../types';
+import { describe, it, expect, vi } from 'vitest'
+import type { IR } from '@hey-api/openapi-ts'
+import { handler } from './handler'
+import type { BuildersHandler, Plugin } from '../types'
 
 interface SchemaEvent {
-  name: string;
-  schema: IR.SchemaObject;
+  name: string
+  schema: IR.SchemaObject
 }
 
 describe('handler integration tests', () => {
@@ -18,19 +18,19 @@ describe('handler integration tests', () => {
         email: { type: 'string', format: 'email' },
       },
       required: ['id', 'name', 'email'],
-    };
+    }
 
     const statusSchema: IR.SchemaObject = {
       type: 'string',
       enum: ['active', 'inactive', 'pending'],
-    } as IR.SchemaObject;
+    } as IR.SchemaObject
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -38,20 +38,20 @@ describe('handler integration tests', () => {
       config: {},
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'User', schema: userSchema });
-          callback({ name: 'Status', schema: statusSchema });
+          callback({ name: 'User', schema: userSchema })
+          callback({ name: 'Status', schema: statusSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('import');
-    expect(output).toContain('class UserBuilder');
-    expect(output).toContain('class StatusBuilder');
-    expect(output).toContain('schemas');
-  });
+    expect(output).toContain('import')
+    expect(output).toContain('class UserBuilder')
+    expect(output).toContain('class StatusBuilder')
+    expect(output).toContain('schemas')
+  })
 
   it('should generate output with Zod schemas', () => {
     const productSchema: IR.SchemaObject = {
@@ -62,21 +62,21 @@ describe('handler integration tests', () => {
         price: { type: 'number', minimum: 0 },
       },
       required: ['id', 'title', 'price'],
-    };
+    }
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
-    let zodOutput = '';
+    let zodOutput = ''
     const mockZodFile = {
       add: vi.fn((content: string) => {
-        zodOutput += content;
+        zodOutput += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -84,23 +84,23 @@ describe('handler integration tests', () => {
       config: { mockStrategy: 'zod' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Product', schema: productSchema });
+          callback({ name: 'Product', schema: productSchema })
         }
       }),
       createFile: vi.fn((options: { id: string }) => {
         if (options.id === 'zod') {
-          return mockZodFile;
+          return mockZodFile
         }
-        return mockFile;
+        return mockFile
       }),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('import * as zodSchemas from "./zod.gen"');
-    expect(output).toContain('class ProductBuilder');
-    expect(zodOutput).toContain('export const ProductSchema = z.object');
-  });
+    expect(output).toContain('import * as zodSchemas from "./zod.gen"')
+    expect(output).toContain('class ProductBuilder')
+    expect(zodOutput).toContain('export const ProductSchema = z.object')
+  })
 
   it('should generate output with static mocks', () => {
     const itemSchema: IR.SchemaObject = {
@@ -110,14 +110,14 @@ describe('handler integration tests', () => {
         quantity: { type: 'integer', minimum: 0 },
       },
       required: ['name', 'quantity'],
-    };
+    }
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -125,17 +125,17 @@ describe('handler integration tests', () => {
       config: { mockStrategy: 'static' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Item', schema: itemSchema });
+          callback({ name: 'Item', schema: itemSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).not.toContain('schemas');
-    expect(output).toContain('class ItemBuilder');
-  });
+    expect(output).not.toContain('schemas')
+    expect(output).toContain('class ItemBuilder')
+  })
 
   it('should generate output with Zod mocks', () => {
     const orderSchema: IR.SchemaObject = {
@@ -145,14 +145,14 @@ describe('handler integration tests', () => {
         amount: { type: 'number' },
       },
       required: ['orderId', 'amount'],
-    };
+    }
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -160,17 +160,17 @@ describe('handler integration tests', () => {
       config: { mockStrategy: 'zod' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Order', schema: orderSchema });
+          callback({ name: 'Order', schema: orderSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('generateMockFromZodSchema');
-    expect(output).toContain('class OrderBuilder');
-  });
+    expect(output).toContain('generateMockFromZodSchema')
+    expect(output).toContain('class OrderBuilder')
+  })
 
   it('should support backward compatibility with useStaticMocks', () => {
     const itemSchema: IR.SchemaObject = {
@@ -179,14 +179,14 @@ describe('handler integration tests', () => {
         name: { type: 'string' },
       },
       required: ['name'],
-    };
+    }
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -194,17 +194,17 @@ describe('handler integration tests', () => {
       config: { useStaticMocks: true },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Item', schema: itemSchema });
+          callback({ name: 'Item', schema: itemSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).not.toContain('schemas');
-    expect(output).toContain('class ItemBuilder');
-  });
+    expect(output).not.toContain('schemas')
+    expect(output).toContain('class ItemBuilder')
+  })
 
   it('should support backward compatibility with useZodForMocks', () => {
     const orderSchema: IR.SchemaObject = {
@@ -213,14 +213,14 @@ describe('handler integration tests', () => {
         orderId: { type: 'string' },
       },
       required: ['orderId'],
-    };
+    }
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -228,29 +228,29 @@ describe('handler integration tests', () => {
       config: { useZodForMocks: true },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Order', schema: orderSchema });
+          callback({ name: 'Order', schema: orderSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('generateMockFromZodSchema');
-  });
+    expect(output).toContain('generateMockFromZodSchema')
+  })
 
   it('should handle enum schemas correctly', () => {
     const roleSchema: IR.SchemaObject = {
       type: 'string',
       enum: ['admin', 'user', 'guest'],
-    } as IR.SchemaObject;
+    } as IR.SchemaObject
 
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -258,25 +258,25 @@ describe('handler integration tests', () => {
       config: {},
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
-          callback({ name: 'Role', schema: roleSchema });
+          callback({ name: 'Role', schema: roleSchema })
         }
       }),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('class RoleBuilder');
-    expect(output).toContain('schemas.RoleSchema');
-  });
+    expect(output).toContain('class RoleBuilder')
+    expect(output).toContain('schemas.RoleSchema')
+  })
 
   it('should handle empty schema collection', () => {
-    let output = '';
+    let output = ''
     const mockFile = {
       add: vi.fn((content: string) => {
-        output += content;
+        output += content
       }),
-    };
+    }
 
     const mockPlugin = {
       name: 'hey-api-builders',
@@ -284,11 +284,11 @@ describe('handler integration tests', () => {
       config: {},
       forEach: vi.fn(() => {}),
       createFile: vi.fn(() => mockFile),
-    } as unknown as Plugin;
+    } as unknown as Plugin
 
-    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
+    handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0])
 
-    expect(output).toContain('import');
-    expect(output).toContain('schemas = {');
-  });
-});
+    expect(output).toContain('import')
+    expect(output).toContain('schemas = {')
+  })
+})

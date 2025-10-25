@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { generateEnumBuilder, generateObjectBuilder } from './builder-generator';
-import type { GeneratedSchemaMeta } from '../types';
-import type { Schema } from '../types';
+import { describe, it, expect } from 'vitest'
+import { generateEnumBuilder, generateObjectBuilder } from './builder-generator'
+import type { GeneratedSchemaMeta } from '../types'
+import type { Schema } from '../types'
 
 describe('Builder Generator', () => {
   describe('generateEnumBuilder', () => {
@@ -11,61 +11,61 @@ describe('Builder Generator', () => {
       isEnum: true,
       schema: { enum: ['active', 'inactive'] } as Schema,
       isObject: false,
-    };
+    }
 
     it('generates basic enum builder structure', () => {
       const result = generateEnumBuilder(enumMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('export class StatusBuilder extends BaseBuilder<types.Status>');
-      expect(result).toContain('build(): types.Status');
-    });
+      expect(result).toContain('export class StatusBuilder extends BaseBuilder<types.Status>')
+      expect(result).toContain('build(): types.Status')
+    })
 
     it('generates custom runtime build method by default', () => {
       const result = generateEnumBuilder(enumMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('generateMock');
-      expect(result).toContain('schemas.StatusSchema');
-      expect(result).toContain('useDefault');
-      expect(result).toContain('useExamples');
-    });
+      expect(result).toContain('generateMock')
+      expect(result).toContain('schemas.StatusSchema')
+      expect(result).toContain('useDefault')
+      expect(result).toContain('useExamples')
+    })
 
     it('generates static mock build method when mockStrategy is static', () => {
       const result = generateEnumBuilder(enumMeta, {
         mockStrategy: 'static',
-      });
+      })
 
-      expect(result).not.toContain('generateMock');
-      expect(result).toContain('return');
-      expect(result).toContain('as types.Status');
-    });
+      expect(result).not.toContain('generateMock')
+      expect(result).toContain('return')
+      expect(result).toContain('as types.Status')
+    })
 
     it('generates Zod build method when mockStrategy is zod', () => {
       const result = generateEnumBuilder(enumMeta, {
         mockStrategy: 'zod',
-      });
+      })
 
-      expect(result).toContain('generateMockFromZodSchema');
-      expect(result).toContain('zodSchemaString');
-      expect(result).toContain('useDefault');
-      expect(result).toContain('alwaysIncludeOptionals');
-    });
+      expect(result).toContain('generateMockFromZodSchema')
+      expect(result).toContain('zodSchemaString')
+      expect(result).toContain('useDefault')
+      expect(result).toContain('alwaysIncludeOptionals')
+    })
 
     it('includes all builder option properties', () => {
       const result = generateEnumBuilder(enumMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('useDefault');
-      expect(result).toContain('useExamples');
-      expect(result).toContain('alwaysIncludeOptionals');
-      expect(result).toContain('optionalsProbability');
-      expect(result).toContain('omitNulls');
-    });
-  });
+      expect(result).toContain('useDefault')
+      expect(result).toContain('useExamples')
+      expect(result).toContain('alwaysIncludeOptionals')
+      expect(result).toContain('optionalsProbability')
+      expect(result).toContain('omitNulls')
+    })
+  })
 
   describe('generateObjectBuilder', () => {
     const objectMeta: GeneratedSchemaMeta = {
@@ -82,54 +82,54 @@ describe('Builder Generator', () => {
         required: ['name', 'email'],
       } as Schema,
       isObject: true,
-    };
+    }
 
     it('generates basic object builder structure', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('export class UserBuilder extends BaseBuilder<types.User>');
-      expect(result).toContain('build(): types.User');
-    });
+      expect(result).toContain('export class UserBuilder extends BaseBuilder<types.User>')
+      expect(result).toContain('build(): types.User')
+    })
 
     it('generates with methods for properties', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('withName');
-      expect(result).toContain('withEmail');
-      expect(result).toContain('withAge');
-    });
+      expect(result).toContain('withName')
+      expect(result).toContain('withEmail')
+      expect(result).toContain('withAge')
+    })
 
     it('generates runtime build method with override merging', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('const mock = generateMock');
-      expect(result).toContain('return { ...mock, ...this.overrides }');
-    });
+      expect(result).toContain('const mock = generateMock')
+      expect(result).toContain('return { ...mock, ...this.overrides }')
+    })
 
     it('generates static mock build method when mockStrategy is static', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'static',
-      });
+      })
 
-      expect(result).toContain('const baseMock =');
-      expect(result).toContain('{ ...baseMock, ...this.overrides }');
-      expect(result).not.toContain('generateMock');
-    });
+      expect(result).toContain('const baseMock =')
+      expect(result).toContain('{ ...baseMock, ...this.overrides }')
+      expect(result).not.toContain('generateMock')
+    })
 
     it('generates Zod build method when mockStrategy is zod', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'zod',
-      });
+      })
 
-      expect(result).toContain('generateMockFromZodSchema');
-      expect(result).toContain('this.overrides');
-    });
+      expect(result).toContain('generateMockFromZodSchema')
+      expect(result).toContain('this.overrides')
+    })
 
     it('handles objects without properties', () => {
       const emptyMeta: GeneratedSchemaMeta = {
@@ -138,33 +138,33 @@ describe('Builder Generator', () => {
         isEnum: false,
         schema: { type: 'object' } as Schema,
         isObject: true,
-      };
+      }
 
       const result = generateObjectBuilder(emptyMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('export class EmptyBuilder extends BaseBuilder<types.Empty>');
-      expect(result).toContain('build(): types.Empty');
-    });
+      expect(result).toContain('export class EmptyBuilder extends BaseBuilder<types.Empty>')
+      expect(result).toContain('build(): types.Empty')
+    })
 
     it('preserves type safety in generated code', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('types.User');
-      expect(result).toContain('types.User["name"]');
-    });
+      expect(result).toContain('types.User')
+      expect(result).toContain('types.User["name"]')
+    })
 
     it('uses correct schema reference in runtime mode', () => {
       const result = generateObjectBuilder(objectMeta, {
         mockStrategy: 'runtime',
-      });
+      })
 
-      expect(result).toContain('schemas.UserSchema');
-    });
-  });
+      expect(result).toContain('schemas.UserSchema')
+    })
+  })
 
   describe('Builder Options', () => {
     it('generates consistent builder options across all modes', () => {
@@ -174,15 +174,15 @@ describe('Builder Generator', () => {
         isEnum: false,
         schema: { type: 'object' } as Schema,
         isObject: true,
-      };
+      }
 
       const runtimeResult = generateObjectBuilder(meta, {
         mockStrategy: 'runtime',
-      });
+      })
 
       const zodResult = generateObjectBuilder(meta, {
         mockStrategy: 'zod',
-      });
+      })
 
       const options = [
         'useDefault',
@@ -190,12 +190,12 @@ describe('Builder Generator', () => {
         'alwaysIncludeOptionals',
         'optionalsProbability',
         'omitNulls',
-      ];
+      ]
 
       options.forEach((option) => {
-        expect(runtimeResult).toContain(option);
-        expect(zodResult).toContain(option);
-      });
-    });
-  });
-});
+        expect(runtimeResult).toContain(option)
+        expect(zodResult).toContain(option)
+      })
+    })
+  })
+})

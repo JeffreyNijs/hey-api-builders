@@ -1,79 +1,65 @@
-import type { IR } from '@hey-api/openapi-ts';
-import type { BuildersHandler, MockStrategy } from '../types';
 import { collectSchemas } from '../core/schema-transformer';
-import { generateZodSchema } from '../generators/zod-schema-generator';
-import { generateEnumBuilder, generateObjectBuilder } from '../generators/builder-generator';
 import {
-  generateImports,
-  generateBuilderOptionsType,
-  generateSchemaConstants,
-} from '../core/code-generator';
+  generateEnumBuilder,
+  generateObjectBuilder,
+} from '../generators/builder-generator';
+import { ZodSchemaGenerator } from '../generators/zod-schema-generator';
+import type { BuildersHandler } from '../types';
+import type { IR } from '@hey-api/openapi-ts';
+import { MOCK_STRATEGIES } from '../core/constants';
+import { getPluginConfig } from '../plugin/config';
 
-/**
- * Resolves the mock strategy from config, handling backward compatibility
- */
-function resolveMockStrategy(config: {
-  mockStrategy?: MockStrategy;
-  useZodForMocks?: boolean;
-  useStaticMocks?: boolean;
-}): MockStrategy {
-  // New config takes precedence
-  if (config.mockStrategy) {
-    return config.mockStrategy;
-  }
-
-  // Backward compatibility with old boolean flags
-  if (config.useStaticMocks) {
-    return 'static';
-  }
-  if (config.useZodForMocks) {
-    return 'zod';
-  }
-
-  // Default strategy
-  return 'runtime';
-}
-
-/**
- * Main plugin handler for generating builder classes
- */
 export const handler: BuildersHandler = ({ plugin }) => {
   const rawSchemas: Record<string, IR.SchemaObject> = {};
   plugin.forEach('schema', (event) => {
     rawSchemas[event.name] = event.schema;
   });
   const metas = collectSchemas(rawSchemas);
+  const file = plugin.createFile({
+    id: plugin.name,
+    path: plugin.output,
+  });
 
-  const file = plugin.createFile({ id: plugin.name, path: plugin.output });
-
-  const config = plugin.config;
-  const generateZod = config.generateZod || false;
-  const mockStrategy = resolveMockStrategy(config);
+  const config = getPluginConfig(plugin.config);
 
   let out = '';
 
-  out += generateImports({ mockStrategy, generateZod });
-
-  out += generateBuilderOptionsType();
-
-  if (mockStrategy === 'runtime') {
-    out += generateSchemaConstants(metas);
+  if (config.mockStrategy === MOCK_STRATEGIES.ZOD) {
+    out += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
+    out += `import * as zodSchemas from "./zod.gen"\n`;
+  } else if (config.mockStrategy === MOCK_STRATEGIES.RUNTIME) {
+    out += 'import { generateMock } from "hey-api-builders"\n';
+    out += 'import type { BuilderSchema } from "hey-api-builders"\n';
   }
 
-  if (generateZod || mockStrategy === 'zod') {
-    const zodSchemaEntries: string[] = [];
+  out += 'import type * as types from "./types.gen"\n';
+  out += 'import { BaseBuilder, BuilderOptions } from "hey-api-builders"\n\n';
+
+  if (config.mockStrategy === MOCK_STRATEGIES.RUNTIME) {
+    const schemaEntries: string[] = [];
     for (const m of metas) {
-      const zodSchemaString = generateZodSchema(m.schema);
-      zodSchemaEntries.push(`  ${m.constName}Zod: ${zodSchemaString}`);
+      schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`);
     }
-    out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
+    out +=
+      'const schemas = {\n' +
+      schemaEntries.join(',\n') +
+      '\n} satisfies Record<string, BuilderSchema>\n\n';
+  }
+
+  if (config.mockStrategy === MOCK_STRATEGIES.ZOD) {
+    const zodSchemaGenerator = new ZodSchemaGenerator();
+    for (const m of metas) {
+      zodSchemaGenerator.generate(m.schema, m.typeName);
+    }
+    const zodFile = plugin.createFile({ id: 'zod', path: 'zod.gen.ts' });
+    zodFile.add(zodSchemaGenerator.getGeneratedSchemas());
   }
 
   for (const m of metas) {
     if (m.isEnum) {
-      out += generateEnumBuilder(m, { mockStrategy });
+      out += generateEnumBuilder(m, { mockStrategy: config.mockStrategy });
     } else {
-      out += generateObjectBuilder(m, { mockStrategy });
+      out += generateObjectBuilder(m, { mockStrategy: config.mockStrategy });
     }
   }
 

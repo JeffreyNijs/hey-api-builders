@@ -5,15 +5,17 @@ import { generateStaticMockCode } from './static-mock-generator';
 import { generateWithMethods } from '../core/code-generator';
 
 /**
- * Builder class generation
+ * Represents the options for the builder generator.
  */
-
 export interface BuilderGeneratorOptions {
   mockStrategy: MockStrategy;
 }
 
 /**
- * Generates a builder class for an enum schema
+ * Generates a builder class for an enum schema.
+ * @param meta - The metadata for the schema.
+ * @param options - The options for the generator.
+ * @returns The generated builder class as a string.
  */
 export function generateEnumBuilder(
   meta: GeneratedSchemaMeta,
@@ -22,9 +24,7 @@ export function generateEnumBuilder(
   const { typeName, schema } = meta;
   const { mockStrategy } = options;
 
-  let code = `export class ${typeName}Builder {\n`;
-  code += `  private options: BuilderOptions = {}\n`;
-  code += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n\n`;
+  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`;
 
   if (mockStrategy === 'static') {
     code += generateStaticEnumBuild(typeName, schema);
@@ -39,7 +39,10 @@ export function generateEnumBuilder(
 }
 
 /**
- * Generates a builder class for an object schema
+ * Generates a builder class for an object schema.
+ * @param meta - The metadata for the schema.
+ * @param options - The options for the generator.
+ * @returns The generated builder class as a string.
  */
 export function generateObjectBuilder(
   meta: GeneratedSchemaMeta,
@@ -48,10 +51,7 @@ export function generateObjectBuilder(
   const { typeName, schema, constName } = meta;
   const { mockStrategy } = options;
 
-  let code = `export class ${typeName}Builder {\n`;
-  code += `  private overrides: Partial<types.${typeName}> = {}\n`;
-  code += `  private options: BuilderOptions = {}\n`;
-  code += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
+  let code = `export class ${typeName}Builder extends BaseBuilder<types.${typeName}> {\n`;
 
   const withMethods = generateWithMethods(schema, typeName);
   if (withMethods) {
@@ -73,7 +73,10 @@ export function generateObjectBuilder(
 }
 
 /**
- * Static mock build method for enums
+ * Generates the build method for a static enum mock.
+ * @param typeName - The name of the type.
+ * @param schema - The schema for the type.
+ * @returns The generated build method as a string.
  */
 function generateStaticEnumBuild(typeName: string, schema: Schema): string {
   const staticMock = generateStaticMockCode(schema, typeName);
@@ -81,7 +84,10 @@ function generateStaticEnumBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * Zod mock build method for enums
+ * Generates the build method for a Zod enum mock.
+ * @param typeName - The name of the type.
+ * @param schema - The schema for the type.
+ * @returns The generated build method as a string.
  */
 function generateZodEnumBuild(typeName: string, schema: Schema): string {
   const zodSchemaString = generateZodSchema(schema);
@@ -100,7 +106,10 @@ function generateZodEnumBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * Custom runtime build method for enums
+ * Generates the build method for a custom enum mock.
+ * @param typeName - The name of the type.
+ * @param constName - The name of the constant for the schema.
+ * @returns The generated build method as a string.
  */
 function generateCustomEnumBuild(typeName: string, constName: string): string {
   return (
@@ -117,7 +126,10 @@ function generateCustomEnumBuild(typeName: string, constName: string): string {
 }
 
 /**
- * Static mock build method for objects
+ * Generates the build method for a static object mock.
+ * @param typeName - The name of the type.
+ * @param schema - The schema for the type.
+ * @returns The generated build method as a string.
  */
 function generateStaticObjectBuild(typeName: string, schema: Schema): string {
   const staticMock = generateStaticMockCode(schema, typeName);
@@ -130,7 +142,10 @@ function generateStaticObjectBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * Zod mock build method for objects
+ * Generates the build method for a Zod object mock.
+ * @param typeName - The name of the type.
+ * @param schema - The schema for the type.
+ * @returns The generated build method as a string.
  */
 function generateZodObjectBuild(typeName: string, schema: Schema): string {
   const zodSchemaString = generateZodSchema(schema);
@@ -149,7 +164,10 @@ function generateZodObjectBuild(typeName: string, schema: Schema): string {
 }
 
 /**
- * Custom runtime build method for objects
+ * Generates the build method for a custom object mock.
+ * @param typeName - The name of the type.
+ * @param constName - The name of the constant for the schema.
+ * @returns The generated build method as a string.
  */
 function generateCustomObjectBuild(typeName: string, constName: string): string {
   return (
@@ -160,15 +178,8 @@ function generateCustomObjectBuild(typeName: string, constName: string): string 
     `      alwaysIncludeOptionals: this.options.alwaysIncludeOptionals,\n` +
     `      optionalsProbability: this.options.optionalsProbability,\n` +
     `      omitNulls: this.options.omitNulls\n` +
-    `    })\n` +
-    `    for (const k in this.overrides) {\n` +
-    `      if (Object.prototype.hasOwnProperty.call(this.overrides, k)) {\n` +
-    `        const typedMock = mock as Record<string, unknown>;\n` +
-    `        const typedOverrides = this.overrides as Record<string, unknown>;\n` +
-    `        typedMock[k] = typedOverrides[k];\n` +
-    `      }\n` +
-    `    }\n` +
-    `    return mock\n` +
+    `    });\n` +
+    `    return { ...mock, ...this.overrides };\n` +
     `  }\n`
   );
 }

@@ -48,7 +48,6 @@ describe('handler integration tests', () => {
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('import');
-    expect(output).toContain('type BuilderOptions');
     expect(output).toContain('class UserBuilder');
     expect(output).toContain('class StatusBuilder');
     expect(output).toContain('schemas');
@@ -72,23 +71,35 @@ describe('handler integration tests', () => {
       }),
     };
 
+    let zodOutput = '';
+    const mockZodFile = {
+      add: vi.fn((content: string) => {
+        zodOutput += content;
+      }),
+    };
+
     const mockPlugin = {
       name: 'hey-api-builders',
       output: 'builders',
-      config: { generateZod: true },
+      config: { mockStrategy: 'zod' },
       forEach: vi.fn((type: string, callback: (event: SchemaEvent) => void) => {
         if (type === 'schema') {
           callback({ name: 'Product', schema: productSchema });
         }
       }),
-      createFile: vi.fn(() => mockFile),
+      createFile: vi.fn((options: { id: string }) => {
+        if (options.id === 'zod') {
+          return mockZodFile;
+        }
+        return mockFile;
+      }),
     };
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
-    expect(output).toContain('zodSchemas');
-    expect(output).toContain('z.object');
+    expect(output).toContain('import * as zodSchemas from "./zod.gen"');
     expect(output).toContain('class ProductBuilder');
+    expect(zodOutput).toContain('export const ProductSchema = z.object');
   });
 
   it('should generate output with static mocks', () => {
@@ -157,7 +168,6 @@ describe('handler integration tests', () => {
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
-    expect(output).toContain('zodSchemas');
     expect(output).toContain('generateMockFromZodSchema');
     expect(output).toContain('class OrderBuilder');
   });
@@ -226,7 +236,6 @@ describe('handler integration tests', () => {
 
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
-    expect(output).toContain('zodSchemas');
     expect(output).toContain('generateMockFromZodSchema');
   });
 
@@ -258,9 +267,7 @@ describe('handler integration tests', () => {
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('class RoleBuilder');
-    expect(output).toContain('admin');
-    expect(output).toContain('user');
-    expect(output).toContain('guest');
+    expect(output).toContain('schemas.RoleSchema');
   });
 
   it('should handle empty schema collection', () => {
@@ -282,7 +289,6 @@ describe('handler integration tests', () => {
     handler({ plugin: mockPlugin } as unknown as Parameters<BuildersHandler>[0]);
 
     expect(output).toContain('import');
-    expect(output).toContain('type BuilderOptions');
     expect(output).toContain('schemas = {');
   });
 });

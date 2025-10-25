@@ -18,9 +18,7 @@ describe('Builder Generator', () => {
         mockStrategy: 'runtime',
       });
 
-      expect(result).toContain('export class StatusBuilder');
-      expect(result).toContain('private options: BuilderOptions');
-      expect(result).toContain('setOptions(o: BuilderOptions)');
+      expect(result).toContain('export class StatusBuilder extends BaseBuilder<types.Status>');
       expect(result).toContain('build(): types.Status');
     });
 
@@ -91,9 +89,7 @@ describe('Builder Generator', () => {
         mockStrategy: 'runtime',
       });
 
-      expect(result).toContain('export class UserBuilder');
-      expect(result).toContain('private overrides: Partial<types.User>');
-      expect(result).toContain('private options: BuilderOptions');
+      expect(result).toContain('export class UserBuilder extends BaseBuilder<types.User>');
       expect(result).toContain('build(): types.User');
     });
 
@@ -113,9 +109,7 @@ describe('Builder Generator', () => {
       });
 
       expect(result).toContain('const mock = generateMock');
-      expect(result).toContain('for (const k in this.overrides)');
-      expect(result).toContain('Object.prototype.hasOwnProperty.call');
-      expect(result).toContain('return mock');
+      expect(result).toContain('return { ...mock, ...this.overrides }');
     });
 
     it('generates static mock build method when mockStrategy is static', () => {
@@ -135,7 +129,6 @@ describe('Builder Generator', () => {
 
       expect(result).toContain('generateMockFromZodSchema');
       expect(result).toContain('this.overrides');
-      expect(result).not.toContain('for (const k in this.overrides)');
     });
 
     it('handles objects without properties', () => {
@@ -151,7 +144,7 @@ describe('Builder Generator', () => {
         mockStrategy: 'runtime',
       });
 
-      expect(result).toContain('export class EmptyBuilder');
+      expect(result).toContain('export class EmptyBuilder extends BaseBuilder<types.Empty>');
       expect(result).toContain('build(): types.Empty');
     });
 
@@ -161,18 +154,7 @@ describe('Builder Generator', () => {
       });
 
       expect(result).toContain('types.User');
-      expect(result).toContain('Partial<types.User>');
       expect(result).toContain('types.User["name"]');
-    });
-
-    it('includes setOptions method', () => {
-      const result = generateObjectBuilder(objectMeta, {
-        mockStrategy: 'runtime',
-      });
-
-      expect(result).toContain('setOptions(o: BuilderOptions): this');
-      expect(result).toContain('this.options = o || {}');
-      expect(result).toContain('return this');
     });
 
     it('uses correct schema reference in runtime mode', () => {
@@ -181,16 +163,6 @@ describe('Builder Generator', () => {
       });
 
       expect(result).toContain('schemas.UserSchema');
-    });
-
-    it('generates type-safe override assignment', () => {
-      const result = generateObjectBuilder(objectMeta, {
-        mockStrategy: 'runtime',
-      });
-
-      expect(result).toContain('const typedMock = mock as Record<string, unknown>');
-      expect(result).toContain('const typedOverrides = this.overrides as Record<string, unknown>');
-      expect(result).toContain('typedMock[k] = typedOverrides[k]');
     });
   });
 

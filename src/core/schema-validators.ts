@@ -1,5 +1,5 @@
-import type { IR } from '@hey-api/openapi-ts';
-import type { EnumSchemaObject, EnumItem, JsonValue } from '../types';
+import type { IR } from '@hey-api/openapi-ts'
+import type { EnumSchemaObject, EnumItem, JsonValue } from '../types'
 
 /**
  * Schema validation utilities
@@ -12,29 +12,29 @@ import type { EnumSchemaObject, EnumItem, JsonValue } from '../types';
  */
 export function isEnum(ir: IR.SchemaObject): boolean {
   if (!ir || typeof ir !== 'object') {
-    return false;
+    return false
   }
-  const enumIr = ir as EnumSchemaObject;
+  const enumIr = ir as EnumSchemaObject
 
   if (Array.isArray(enumIr.enum)) {
-    return true;
+    return true
   }
 
   if (enumIr.type === 'enum') {
-    return true;
+    return true
   }
 
   if (!enumIr.enum && Array.isArray(enumIr.items)) {
-    const items = enumIr.items as EnumItem[];
+    const items = enumIr.items as EnumItem[]
     if (
       items.length > 0 &&
       items.every((it: EnumItem) => it && typeof it === 'object' && 'const' in it)
     ) {
-      return true;
+      return true
     }
   }
 
-  return false;
+  return false
 }
 
 /**
@@ -44,19 +44,19 @@ export function isEnum(ir: IR.SchemaObject): boolean {
  */
 export function isJsonValue(value: unknown): value is JsonValue {
   if (value === null) {
-    return true;
+    return true
   }
-  const type = typeof value;
+  const type = typeof value
   if (type === 'string' || type === 'number' || type === 'boolean') {
-    return true;
+    return true
   }
   if (Array.isArray(value)) {
-    return value.every(isJsonValue);
+    return value.every(isJsonValue)
   }
   if (type === 'object') {
-    return Object.values(value as object).every(isJsonValue);
+    return Object.values(value as object).every(isJsonValue)
   }
-  return false;
+  return false
 }
 
 /**
@@ -66,10 +66,10 @@ export function isJsonValue(value: unknown): value is JsonValue {
  */
 export function isObjectType(type: string | string[] | undefined): boolean {
   if (type === 'object') {
-    return true;
+    return true
   }
   if (Array.isArray(type) && type.includes('object')) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }

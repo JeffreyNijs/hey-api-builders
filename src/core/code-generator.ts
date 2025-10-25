@@ -1,6 +1,6 @@
-import type { Schema, MockStrategy } from '../types';
-import type { ExtendedSchema } from '../types';
-import { toPascal } from './string-utils';
+import type { Schema, MockStrategy } from '../types'
+import type { ExtendedSchema } from '../types'
+import { toPascal } from './string-utils'
 
 /**
  * Code generation utilities
@@ -13,16 +13,16 @@ import { toPascal } from './string-utils';
  * @returns Generated method code
  */
 export function generateWithMethods(schema: Schema, typeName: string): string {
-  const schemaWithProps = schema as ExtendedSchema;
+  const schemaWithProps = schema as ExtendedSchema
   if (schemaWithProps.type !== 'object' || !schemaWithProps.properties) {
-    return '';
+    return ''
   }
   return Object.keys(schemaWithProps.properties)
     .map(
       (p) =>
         `  with${toPascal(p)}(value: types.${typeName}["${p}"]): this { this.overrides["${p}"] = value; return this; }`
     )
-    .join('\n');
+    .join('\n')
 }
 
 /**
@@ -31,32 +31,32 @@ export function generateWithMethods(schema: Schema, typeName: string): string {
  * @returns Import statements
  */
 export function generateImports(options: {
-  mockStrategy: MockStrategy;
-  generateZod: boolean;
+  mockStrategy: MockStrategy
+  generateZod: boolean
 }): string {
-  const { mockStrategy, generateZod } = options;
-  let imports = '';
+  const { mockStrategy, generateZod } = options
+  let imports = ''
 
-  const needsZodImport = generateZod || mockStrategy === 'zod';
+  const needsZodImport = generateZod || mockStrategy === 'zod'
 
   if (mockStrategy === 'static') {
-    return 'import type * as types from "./types.gen"\n\n';
+    return 'import type * as types from "./types.gen"\n\n'
   }
 
   if (mockStrategy === 'zod') {
-    imports += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
+    imports += 'import { generateMockFromZodSchema } from "hey-api-builders"\n'
   } else {
-    imports += 'import { generateMock } from "hey-api-builders"\n';
-    imports += 'import type { BuilderSchema } from "hey-api-builders"\n';
+    imports += 'import { generateMock } from "hey-api-builders"\n'
+    imports += 'import type { BuilderSchema } from "hey-api-builders"\n'
   }
 
   if (needsZodImport) {
-    imports += 'import { z } from "zod"\n';
+    imports += 'import { z } from "zod"\n'
   }
 
-  imports += 'import type * as types from "./types.gen"\n\n';
+  imports += 'import type * as types from "./types.gen"\n\n'
 
-  return imports;
+  return imports
 }
 
 /**
@@ -70,7 +70,7 @@ export function generateBuilderOptionsType(): string {
   alwaysIncludeOptionals?: boolean;
   optionalsProbability?: number | false;
   omitNulls?: boolean;
-}\n\n`;
+}\n\n`
 }
 
 /**
@@ -81,15 +81,15 @@ export function generateBuilderOptionsType(): string {
 export function generateSchemaConstants(
   metas: Array<{ constName: string; schema: Schema }>
 ): string {
-  const schemaEntries: string[] = [];
+  const schemaEntries: string[] = []
   for (const m of metas) {
-    schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`);
+    schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`)
   }
   return (
     'const schemas = {\n' +
     schemaEntries.join(',\n') +
     '\n} satisfies Record<string, BuilderSchema>\n\n'
-  );
+  )
 }
 
 /**
@@ -100,7 +100,7 @@ export function generateSchemaConstants(
  * @returns Property declaration
  */
 export function generateProperty(name: string, type: string, value: string): string {
-  return `  private ${name}: ${type} = ${value}\n`;
+  return `  private ${name}: ${type} = ${value}\n`
 }
 
 /**
@@ -111,7 +111,7 @@ export function generateProperty(name: string, type: string, value: string): str
  * @returns Method declaration
  */
 export function generateMethod(name: string, returnType: string, body: string): string {
-  return `  ${name}(): ${returnType} {\n${body}  }\n`;
+  return `  ${name}(): ${returnType} {\n${body}  }\n`
 }
 
 /**
@@ -121,9 +121,9 @@ export function generateMethod(name: string, returnType: string, body: string): 
  * @returns Indented code
  */
 export function indent(code: string, spaces: number): string {
-  const indentation = ' '.repeat(spaces);
+  const indentation = ' '.repeat(spaces)
   return code
     .split('\n')
     .map((line) => (line.trim() ? indentation + line : line))
-    .join('\n');
+    .join('\n')
 }

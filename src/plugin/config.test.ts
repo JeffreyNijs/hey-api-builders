@@ -1,72 +1,42 @@
-import { describe, it, expect } from 'vitest';
-import { defaultConfig, defineConfig } from './config';
+import { describe, it, expect } from 'vitest'
+import { getPluginConfig } from './config'
+import { MOCK_STRATEGIES } from '../core/constants'
+import type { PluginConfig } from '../types'
 
 describe('config', () => {
-  describe('defaultConfig', () => {
-    it('should have correct name', () => {
-      expect(defaultConfig.name).toBe('hey-api-builders');
-    });
+  describe('getPluginConfig', () => {
+    it('should return runtime strategy by default', () => {
+      const config = getPluginConfig({} as PluginConfig)
+      expect(config.mockStrategy).toBe(MOCK_STRATEGIES.RUNTIME)
+    })
 
-    it('should have correct output', () => {
-      expect(defaultConfig.output).toBe('builders');
-    });
+    it('should return zod strategy when useZodForMocks is true', () => {
+      const config = getPluginConfig({ useZodForMocks: true } as PluginConfig)
+      expect(config.mockStrategy).toBe(MOCK_STRATEGIES.ZOD)
+    })
 
-    it('should have required dependencies', () => {
-      expect(defaultConfig.dependencies).toEqual(['@hey-api/schemas', '@hey-api/typescript']);
-    });
+    it('should return static strategy when useStaticMocks is true', () => {
+      const config = getPluginConfig({ useStaticMocks: true } as PluginConfig)
+      expect(config.mockStrategy).toBe(MOCK_STRATEGIES.STATIC)
+    })
 
-    it('should have handler function', () => {
-      expect(typeof defaultConfig.handler).toBe('function');
-    });
-
-    it('should have empty config by default', () => {
-      expect(defaultConfig.config).toEqual({});
-    });
-  });
-
-  describe('defineConfig', () => {
-    it('should return config with custom options', () => {
-      const config = defineConfig({
-        generateZod: true,
-        mockStrategy: 'static',
-      });
-      expect(config).toBeDefined();
-    });
-
-    it('should return config with mockStrategy zod', () => {
-      const config = defineConfig({
-        mockStrategy: 'zod',
-      });
-      expect(config).toBeDefined();
-    });
-
-    it('should return config with mockStrategy runtime', () => {
-      const config = defineConfig({
+    it('should prefer mockStrategy over deprecated flags', () => {
+      const config = getPluginConfig({
         mockStrategy: 'runtime',
-      });
-      expect(config).toBeDefined();
-    });
-
-    it('should return config with no options', () => {
-      const config = defineConfig({});
-      expect(config).toBeDefined();
-    });
-
-    it('should return config with all options', () => {
-      const config = defineConfig({
-        generateZod: true,
-        mockStrategy: 'zod',
-      });
-      expect(config).toBeDefined();
-    });
-
-    it('should support backward compatibility with deprecated flags', () => {
-      const config = defineConfig({
-        generateZod: true,
         useZodForMocks: true,
-        useStaticMocks: false,
-      });
-      expect(config).toBeDefined();
-    });
-  });
-});
+      } as PluginConfig)
+      expect(config.mockStrategy).toBe(MOCK_STRATEGIES.RUNTIME)
+    })
+
+    it('should handle all mockStrategy options', () => {
+      const runtimeConfig = getPluginConfig({ mockStrategy: 'runtime' } as PluginConfig)
+      expect(runtimeConfig.mockStrategy).toBe(MOCK_STRATEGIES.RUNTIME)
+
+      const zodConfig = getPluginConfig({ mockStrategy: 'zod' } as PluginConfig)
+      expect(zodConfig.mockStrategy).toBe(MOCK_STRATEGIES.ZOD)
+
+      const staticConfig = getPluginConfig({ mockStrategy: 'static' } as PluginConfig)
+      expect(staticConfig.mockStrategy).toBe(MOCK_STRATEGIES.STATIC)
+    })
+  })
+})

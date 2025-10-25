@@ -1,5 +1,5 @@
 import { collectSchemas, generateWithMethods } from './utils';
-import { generateZodSchema } from './zod-generator';
+import { ZodSchemaGenerator } from './zod-generator';
 import { generateStaticMockCode } from './static-mock-generator';
 import type { BuildersHandler } from './types';
 import type { IR } from '@hey-api/openapi-ts';
@@ -11,24 +11,16 @@ export const handler: BuildersHandler = ({ plugin }) => {
   const file = plugin.createFile({ id: plugin.name, path: plugin.output });
 
   const config = plugin.config;
-  const generateZod = config.generateZod || false;
-  const useZodForMocks = config.useZodForMocks || false;
-  const useStaticMocks = config.useStaticMocks || false;
+  const mockStrategy = config.mockStrategy || 'runtime';
 
   let out = '';
 
-  const needsZodImport = generateZod || useZodForMocks;
-
-  if (useStaticMocks) {
-  } else if (useZodForMocks) {
+  if (mockStrategy === 'zod') {
     out += 'import { generateMockFromZodSchema } from "hey-api-builders"\n';
-  } else {
+    out += 'import * as zodSchemas from "./zod.gen"\n';
+  } else if (mockStrategy === 'runtime') {
     out += 'import { generateMock } from "hey-api-builders"\n';
     out += 'import type { BuilderSchema } from "hey-api-builders"\n';
-  }
-
-  if (needsZodImport) {
-    out += 'import { z } from "zod"\n';
   }
 
   out += 'import type * as types from "./types.gen"\n\n';
@@ -41,7 +33,7 @@ export const handler: BuildersHandler = ({ plugin }) => {
   out += '  omitNulls?: boolean;\n';
   out += '}\n\n';
 
-  if (!useZodForMocks && !useStaticMocks) {
+  if (mockStrategy === 'runtime') {
     const schemaEntries: string[] = [];
     for (const m of metas) {
       schemaEntries.push(`  ${m.constName}: ${JSON.stringify(m.schema)}`);
@@ -49,13 +41,13 @@ export const handler: BuildersHandler = ({ plugin }) => {
     out += 'const schemas = {\n' + schemaEntries.join(',\n') + '\n} satisfies Record<string, BuilderSchema>\n\n';
   }
 
-  if (generateZod || useZodForMocks) {
-    const zodSchemaEntries: string[] = [];
+  if (mockStrategy === 'zod') {
+    const zodSchemaGenerator = new ZodSchemaGenerator();
     for (const m of metas) {
-      const zodSchemaString = generateZodSchema(m.schema);
-      zodSchemaEntries.push(`  ${m.constName}Zod: ${zodSchemaString}`);
+      zodSchemaGenerator.generate(m.schema, m.typeName);
     }
-    out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
+    const zodFile = plugin.createFile({ id: 'zod', path: 'zod.gen.ts' });
+    zodFile.add(zodSchemaGenerator.getGeneratedSchemas());
   }
 
   for (const m of metas) {
@@ -64,15 +56,14 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  private options: BuilderOptions = {}\n`;
       out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
 
-      if (useStaticMocks) {
+      if (mockStrategy === 'static') {
         const staticMock = generateStaticMockCode(m.schema, m.typeName);
         out += `  build(): types.${m.typeName} {\n`;
         out += `    return ${staticMock} as types.${m.typeName};\n`;
         out += `  }\n`;
-      } else if (useZodForMocks) {
+      } else if (mockStrategy === 'zod') {
         out += `  build(): types.${m.typeName} {\n`;
-        out += `    const zodSchemaString = \`${generateZodSchema(m.schema)}\`;\n`;
-        out += `    return generateMockFromZodSchema(zodSchemaString, {}, {\n`;
+        out += `    return generateMockFromZodSchema(zodSchemas.${m.typeName}Schema, {}, {\n`;
         out += `      useDefault: this.options.useDefault,\n`;
         out += `      useExamples: this.options.useExamples,\n`;
         out += `      alwaysIncludeOptionals: this.options.alwaysIncludeOptionals,\n`;
@@ -100,16 +91,15 @@ export const handler: BuildersHandler = ({ plugin }) => {
       out += `  setOptions(o: BuilderOptions): this { this.options = o || {}; return this }\n`;
       if (withMethods) out += withMethods + '\n';
 
-      if (useStaticMocks) {
+      if (mockStrategy === 'static') {
         const staticMock = generateStaticMockCode(m.schema, m.typeName);
         out += `  build(): types.${m.typeName} {\n`;
         out += `    const baseMock = ${staticMock};\n`;
         out += `    return { ...baseMock, ...this.overrides } as types.${m.typeName};\n`;
         out += `  }\n`;
-      } else if (useZodForMocks) {
+      } else if (mockStrategy === 'zod') {
         out += `  build(): types.${m.typeName} {\n`;
-        out += `    const zodSchemaString = \`${generateZodSchema(m.schema)}\`;\n`;
-        out += `    return generateMockFromZodSchema(zodSchemaString, this.overrides, {\n`;
+        out += `    return generateMockFromZodSchema(zodSchemas.${m.typeName}Schema, this.overrides, {\n`;
         out += `      useDefault: this.options.useDefault,\n`;
         out += `      useExamples: this.options.useExamples,\n`;
         out += `      alwaysIncludeOptionals: this.options.alwaysIncludeOptionals,\n`;

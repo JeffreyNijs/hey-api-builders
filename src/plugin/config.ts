@@ -1,15 +1,14 @@
-import { definePluginConfig } from '@hey-api/openapi-ts';
-import type { BuildersPlugin } from '../types';
-import { handler } from './handler';
+import type { PluginConfig, HeyApiBuildersConfig } from '../types'
+import { MOCK_STRATEGIES } from '../core/constants'
 
-export const defaultConfig: BuildersPlugin['Config'] = {
-  config: {},
-  dependencies: ['@hey-api/schemas', '@hey-api/typescript'],
-  handler,
-  name: 'hey-api-builders',
-  output: 'builders',
-};
+export function getPluginConfig(config: PluginConfig = {}): HeyApiBuildersConfig {
+  const mockStrategy =
+    config.mockStrategy ||
+    (config.useZodForMocks ? MOCK_STRATEGIES.ZOD : undefined) ||
+    (config.useStaticMocks ? MOCK_STRATEGIES.STATIC : undefined) ||
+    MOCK_STRATEGIES.RUNTIME
 
-export const defineConfig = definePluginConfig(defaultConfig);
-
-export default defineConfig;
+  return {
+    mockStrategy,
+  }
+}

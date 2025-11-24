@@ -1,24 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import { generateMock } from './mock-runtime';
+import type { Schema } from '../types';
 
 describe('Custom Mock Runtime', () => {
   describe('generateMock', () => {
     it('generates mock from simple string schema', () => {
-      const schema = { type: 'string' };
+      const schema = { type: 'string' } as Schema;
       const result = generateMock(schema);
 
       expect(typeof result).toBe('string');
     });
 
     it('generates mock from number schema', () => {
-      const schema = { type: 'number' };
+      const schema = { type: 'number' } as Schema;
       const result = generateMock(schema);
 
       expect(typeof result).toBe('number');
     });
 
     it('generates mock from boolean schema', () => {
-      const schema = { type: 'boolean' };
+      const schema = { type: 'boolean' } as Schema;
       const result = generateMock(schema);
 
       expect(typeof result).toBe('boolean');
@@ -32,7 +33,7 @@ describe('Custom Mock Runtime', () => {
           age: { type: 'number' },
         },
         required: ['name'],
-      };
+      } as Schema;
       const result = generateMock<{ name: string; age?: number }>(schema);
 
       expect(result).toHaveProperty('name');
@@ -43,7 +44,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'array',
         items: { type: 'string' },
-      };
+      } as Schema;
       const result = generateMock<string[]>(schema);
 
       expect(Array.isArray(result)).toBe(true);
@@ -53,7 +54,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         enum: ['active', 'inactive'],
-      };
+      } as Schema;
       const result = generateMock<string>(schema);
 
       expect(['active', 'inactive']).toContain(result);
@@ -63,7 +64,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         default: 'default-value',
-      };
+      } as Schema;
       const result = generateMock<string>(schema, { useDefault: true });
 
       expect(result).toBe('default-value');
@@ -73,7 +74,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         examples: ['example-value'],
-      };
+      } as Schema;
       const result = generateMock<string>(schema, { useExamples: true });
 
       expect(result).toBe('example-value');
@@ -83,7 +84,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         minLength: 10,
-      };
+      } as Schema;
       const result = generateMock<string>(schema);
 
       expect(result.length).toBeGreaterThanOrEqual(10);
@@ -93,7 +94,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         maxLength: 5,
-      };
+      } as Schema;
       const result = generateMock<string>(schema);
 
       expect(result.length).toBeLessThanOrEqual(5);
@@ -103,7 +104,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         minimum: 10,
-      };
+      } as Schema;
       const result = generateMock<number>(schema);
 
       expect(result).toBeGreaterThanOrEqual(10);
@@ -113,7 +114,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         maximum: 100,
-      };
+      } as Schema;
       const result = generateMock<number>(schema);
 
       expect(result).toBeLessThanOrEqual(100);
@@ -127,7 +128,7 @@ describe('Custom Mock Runtime', () => {
           optional1: { type: 'string' },
         },
         required: ['required1'],
-      };
+      } as Schema;
       const result = generateMock<Record<string, unknown>>(schema, { requiredOnly: true });
 
       expect(result).toHaveProperty('required1');
@@ -142,7 +143,7 @@ describe('Custom Mock Runtime', () => {
           count: { type: 'integer' },
         },
         required: ['id', 'email', 'count'],
-      };
+      } as Schema;
       const result = generateMock<{ id: string; email: string; count: number }>(schema);
 
       expect(typeof result.id).toBe('string');
@@ -163,7 +164,7 @@ describe('Custom Mock Runtime', () => {
           },
         },
         required: ['user'],
-      };
+      } as Schema;
       const result = generateMock<{ user: { name: string } }>(schema);
 
       expect(result).toHaveProperty('user');
@@ -181,7 +182,7 @@ describe('Custom Mock Runtime', () => {
           required: ['name'],
         },
         minItems: 1,
-      };
+      } as Schema;
       const result = generateMock<Array<{ name: string }>>(schema);
 
       expect(Array.isArray(result)).toBe(true);
@@ -190,7 +191,7 @@ describe('Custom Mock Runtime', () => {
     });
 
     it('handles null type', () => {
-      const schema = { type: 'null' };
+      const schema = { type: 'null' } as Schema;
       const result = generateMock(schema);
       expect(result).toBe(null);
     });
@@ -198,7 +199,7 @@ describe('Custom Mock Runtime', () => {
     it('handles oneOf schemas', () => {
       const schema = {
         oneOf: [{ type: 'string' }, { type: 'number' }],
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(['string', 'number']).toContain(typeof result);
     });
@@ -206,7 +207,7 @@ describe('Custom Mock Runtime', () => {
     it('handles anyOf schemas', () => {
       const schema = {
         anyOf: [{ type: 'string' }, { type: 'number' }],
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(['string', 'number']).toContain(typeof result);
     });
@@ -228,7 +229,7 @@ describe('Custom Mock Runtime', () => {
             },
           },
         ],
-      };
+      } as Schema;
       const result = generateMock<{ name: string; age?: number }>(schema);
       expect(result).toHaveProperty('name');
       expect(typeof result.name).toBe('string');
@@ -239,7 +240,7 @@ describe('Custom Mock Runtime', () => {
         type: 'array',
         items: { type: 'string' },
         minItems: 5,
-      };
+      } as Schema;
       const result = generateMock<string[]>(schema);
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeGreaterThanOrEqual(5);
@@ -250,7 +251,7 @@ describe('Custom Mock Runtime', () => {
         type: 'array',
         items: { type: 'string' },
         maxItems: 2,
-      };
+      } as Schema;
       const result = generateMock<string[]>(schema);
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeLessThanOrEqual(2);
@@ -259,7 +260,7 @@ describe('Custom Mock Runtime', () => {
     it('handles integer type specifically', () => {
       const schema = {
         type: 'integer',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('number');
       expect(Number.isInteger(result)).toBe(true);
@@ -269,7 +270,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         minimum: 100,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(result).toBeGreaterThanOrEqual(100);
     });
@@ -278,7 +279,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         maximum: 10,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(result).toBeLessThanOrEqual(10);
     });
@@ -287,7 +288,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         minLength: 20,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect((result as string).length).toBeGreaterThanOrEqual(20);
@@ -297,7 +298,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         maxLength: 5,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect((result as string).length).toBeLessThanOrEqual(5);
@@ -307,7 +308,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         pattern: '^[0-9]{3}$',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
 
@@ -318,7 +319,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'uuid',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
 
@@ -329,7 +330,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'email',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect(result).toMatch(/@/);
@@ -339,7 +340,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'uri',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect(result).toMatch(/^https?:\/\//);
@@ -349,7 +350,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'date-time',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect(!isNaN(Date.parse(result as string))).toBe(true);
@@ -359,7 +360,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'date',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect(/^\d{4}-\d{2}-\d{2}$/.test(result as string)).toBe(true);
@@ -369,7 +370,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         format: 'time',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
       expect(/^\d{2}:\d{2}:\d{2}/.test(result as string)).toBe(true);
@@ -381,7 +382,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         const: 'fixed-value',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(result).toBe('fixed-value');
     });
@@ -390,7 +391,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         default: 'default-value',
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
     });
@@ -399,7 +400,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'string',
         examples: ['example1', 'example2'],
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('string');
     });
@@ -425,7 +426,7 @@ describe('Custom Mock Runtime', () => {
           },
         },
         required: ['level1'],
-      } as const;
+      } as Schema;
 
       const result = generateMock<{ level1: { level2: { level3: string } } }>(schema);
       expect(result.level1.level2.level3).toBeDefined();
@@ -445,7 +446,7 @@ describe('Custom Mock Runtime', () => {
           },
           required: ['tags'],
         },
-      };
+      } as Schema;
       const result = generateMock<Array<{ tags: string[] }>>(schema);
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBeGreaterThan(0);
@@ -454,8 +455,8 @@ describe('Custom Mock Runtime', () => {
 
     it('returns null for unknown schema type', () => {
       const schema = {
-        type: 'unknown-type' as unknown as 'string',
-      };
+        type: 'unknown-type',
+      } as unknown as Schema;
       const result = generateMock(schema);
       expect(result).toBeNull();
     });
@@ -464,7 +465,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         exclusiveMinimum: 10,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(result).toBeGreaterThan(10);
     });
@@ -473,7 +474,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         exclusiveMaximum: 10,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(result).toBeLessThan(10);
     });
@@ -482,7 +483,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'number',
         multipleOf: 5,
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect((result as number) % 5).toBe(0);
     });
@@ -491,7 +492,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'object',
         properties: {},
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(typeof result).toBe('object');
       expect(result).toEqual({});
@@ -501,7 +502,7 @@ describe('Custom Mock Runtime', () => {
       const schema = {
         type: 'array',
         items: {},
-      };
+      } as Schema;
       const result = generateMock(schema);
       expect(Array.isArray(result)).toBe(true);
     });

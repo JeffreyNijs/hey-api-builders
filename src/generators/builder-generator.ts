@@ -161,13 +161,8 @@ function generateCustomObjectBuild(typeName: string, constName: string): string 
     `      optionalsProbability: this.options.optionalsProbability,\n` +
     `      omitNulls: this.options.omitNulls\n` +
     `    })\n` +
-    `    for (const k in this.overrides) {\n` +
-    `      if (Object.prototype.hasOwnProperty.call(this.overrides, k)) {\n` +
-    `        const typedMock = mock as Record<string, unknown>;\n` +
-    `        const typedOverrides = this.overrides as Record<string, unknown>;\n` +
-    `        typedMock[k] = typedOverrides[k];\n` +
-    `      }\n` +
-    `    }\n` +
+    `    // Apply overrides nicely\n` +
+    `    Object.assign(mock as object, this.overrides);\n` +
     `    return mock\n` +
     `  }\n`
   );

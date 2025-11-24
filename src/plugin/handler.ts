@@ -50,14 +50,14 @@ export const handler: BuildersHandler = ({ plugin }) => {
   const generateZod = config.generateZod || false;
   const mockStrategy = resolveMockStrategy(config);
 
-  let out = '';
+  const parts: string[] = [];
 
-  out += generateImports({ mockStrategy, generateZod });
+  parts.push(generateImports({ mockStrategy, generateZod }));
 
-  out += generateBuilderOptionsType();
+  parts.push(generateBuilderOptionsType());
 
   if (mockStrategy === 'runtime') {
-    out += generateSchemaConstants(metas);
+    parts.push(generateSchemaConstants(metas));
   }
 
   if (generateZod || mockStrategy === 'zod') {
@@ -66,16 +66,16 @@ export const handler: BuildersHandler = ({ plugin }) => {
       const zodSchemaString = generateZodSchema(m.schema);
       zodSchemaEntries.push(`  ${m.constName}Zod: ${zodSchemaString}`);
     }
-    out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
+    parts.push(`export const zodSchemas = {\n${zodSchemaEntries.join(',\n')}\n}\n\n`);
   }
 
   for (const m of metas) {
     if (m.isEnum) {
-      out += generateEnumBuilder(m, { mockStrategy });
+      parts.push(generateEnumBuilder(m, { mockStrategy }));
     } else {
-      out += generateObjectBuilder(m, { mockStrategy });
+      parts.push(generateObjectBuilder(m, { mockStrategy }));
     }
   }
 
-  file.add(out);
+  file.add(parts.join(''));
 };

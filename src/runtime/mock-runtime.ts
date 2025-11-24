@@ -204,7 +204,10 @@ export class MockGenerator {
       return schema.items.map((itemSchema) => this.generateValue(itemSchema));
     }
 
-    return Array.from({ length }, () => this.generateValue(schema.items as Schema));
+    // schema.items is not an array here, so it's a single Schema object.
+    // casting is safe because we checked Array.isArray above.
+    const singleItemSchema = schema.items as Schema;
+    return Array.from({ length }, () => this.generateValue(singleItemSchema));
   }
 
   private generateObject(schema: Schema): Record<string, unknown> {
@@ -275,9 +278,9 @@ export class MockGenerator {
  * @param options - Generation options
  * @returns Generated mock data
  */
-export function generateMock<T = unknown>(schema: unknown, options?: MockOptions): T {
+export function generateMock<T = unknown>(schema: Schema, options?: MockOptions): T {
   const generator = new MockGenerator(options);
-  return generator.generate(schema as Schema) as T;
+  return generator.generate(schema) as T;
 }
 
 export type { BuilderOptions } from '../types';

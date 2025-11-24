@@ -1,12 +1,13 @@
 import type { IR } from '@hey-api/openapi-ts';
-import type { Schema } from '../types';
 import type {
+  Schema,
   EnumSchemaObject,
   EnumItem,
   JsonValue,
   ExtendedSchema,
   NormalizedSchemaNode,
   GeneratedSchemaMeta,
+  IRSchemaObject,
 } from '../types';
 import { isEnum, isObjectType } from './schema-validators';
 import { normalizeTypeName, safeTypeName } from './string-utils';
@@ -126,25 +127,22 @@ export function irToSchema(
     }
   }
 
-  const extendedIrWithComposition = ir as IR.SchemaObject & {
-    allOf?: IR.SchemaObject[];
-    anyOf?: IR.SchemaObject[];
-    oneOf?: IR.SchemaObject[];
-  };
+  // Helper to cast to our stricter type for accessing properties
+  const extendedIrWithComposition = ir as IRSchemaObject;
 
   if (extendedIrWithComposition.allOf) {
-    out.allOf = extendedIrWithComposition.allOf.map((s: IR.SchemaObject) =>
-      irToSchema(s, all, seenSet)
+    out.allOf = extendedIrWithComposition.allOf.map((s) =>
+      irToSchema(s as IR.SchemaObject, all, seenSet)
     );
   }
   if (extendedIrWithComposition.anyOf) {
-    out.anyOf = extendedIrWithComposition.anyOf.map((s: IR.SchemaObject) =>
-      irToSchema(s, all, seenSet)
+    out.anyOf = extendedIrWithComposition.anyOf.map((s) =>
+      irToSchema(s as IR.SchemaObject, all, seenSet)
     );
   }
   if (extendedIrWithComposition.oneOf) {
-    out.oneOf = extendedIrWithComposition.oneOf.map((s: IR.SchemaObject) =>
-      irToSchema(s, all, seenSet)
+    out.oneOf = extendedIrWithComposition.oneOf.map((s) =>
+      irToSchema(s as IR.SchemaObject, all, seenSet)
     );
   }
 
@@ -181,7 +179,7 @@ export function irToSchema(
     }
   }
 
-  return out as Schema;
+  return out;
 }
 
 /**
@@ -196,7 +194,9 @@ export function normalizeSchema(
     return node as NormalizedSchemaNode;
   }
 
-  const workingNode = { ...node } as NormalizedSchemaNode;
+  // We cast this to NormalizedSchemaNode to allow us to manipulate it
+  // strictly within the bounds of that interface, but avoiding 'any'.
+  const workingNode: NormalizedSchemaNode = { ...(node as NormalizedSchemaNode) };
 
   if (workingNode.type === 'enum') {
     const enumValues: JsonValue[] = [];
@@ -307,7 +307,8 @@ export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
     return node as Schema;
   }
 
-  const workingNode = { ...node } as Record<string, unknown>;
+  // Use a strictly typed object or a more specific type instead of casting to Record<string, unknown>
+  const workingNode: Record<string, unknown> = { ...node };
 
   if (workingNode.type === 'enum') {
     delete workingNode.type;
@@ -346,7 +347,7 @@ export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
       workingNode.items = sanitizeSchema(workingNode.items as NormalizedSchemaNode);
     }
   }
-  ['allOf', 'anyOf', 'oneOf'].forEach((k) => {
+  (['allOf', 'anyOf', 'oneOf'] as const).forEach((k) => {
     const schemaArray = workingNode[k];
     if (Array.isArray(schemaArray)) {
       workingNode[k] = (schemaArray as NormalizedSchemaNode[]).map(sanitizeSchema);

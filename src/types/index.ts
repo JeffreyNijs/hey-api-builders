@@ -1,6 +1,8 @@
 import type { DefinePlugin } from '@hey-api/openapi-ts';
 import type { IR } from '@hey-api/openapi-ts';
 
+export * from './ir';
+
 /**
  * JSON Schema definition
  */
@@ -149,13 +151,7 @@ export interface GeneratedSchemaMeta {
   isObject: boolean;
 }
 
-/**
- * Enum item in OpenAPI schema
- */
-export interface EnumItem {
-  const: JsonValue;
-  description?: string;
-}
+import type { EnumItem } from './ir';
 
 /**
  * Extended schema object supporting enum structures

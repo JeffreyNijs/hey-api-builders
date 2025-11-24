@@ -113,8 +113,7 @@ describe('Builder Generator', () => {
       });
 
       expect(result).toContain('const mock = generateMock');
-      expect(result).toContain('for (const k in this.overrides)');
-      expect(result).toContain('Object.prototype.hasOwnProperty.call');
+      expect(result).toContain('Object.assign(mock as object, this.overrides)');
       expect(result).toContain('return mock');
     });
 
@@ -188,9 +187,8 @@ describe('Builder Generator', () => {
         mockStrategy: 'runtime',
       });
 
-      expect(result).toContain('const typedMock = mock as Record<string, unknown>');
-      expect(result).toContain('const typedOverrides = this.overrides as Record<string, unknown>');
-      expect(result).toContain('typedMock[k] = typedOverrides[k]');
+      // Simplified implementation checks
+      expect(result).toContain('Object.assign(mock as object, this.overrides)');
     });
   });
 

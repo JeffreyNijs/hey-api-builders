@@ -1,5 +1,4 @@
 import type { Schema, MockStrategy } from '../types';
-import type { ExtendedSchema } from '../types';
 import { toPascal } from './string-utils';
 
 /**
@@ -13,11 +12,11 @@ import { toPascal } from './string-utils';
  * @returns Generated method code
  */
 export function generateWithMethods(schema: Schema, typeName: string): string {
-  const schemaWithProps = schema as ExtendedSchema;
-  if (schemaWithProps.type !== 'object' || !schemaWithProps.properties) {
+  // No need for type assertion if we check properties existentially
+  if (schema.type !== 'object' || !schema.properties) {
     return '';
   }
-  return Object.keys(schemaWithProps.properties)
+  return Object.keys(schema.properties)
     .map(
       (p) =>
         `  with${toPascal(p)}(value: types.${typeName}["${p}"]): this { this.overrides["${p}"] = value; return this; }`

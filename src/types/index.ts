@@ -45,7 +45,9 @@ export interface Schema {
   $ref?: string;
   $id?: string;
   $schema?: string;
-  [key: string]: unknown;
+  deprecated?: boolean;
+  readOnly?: boolean;
+  writeOnly?: boolean;
 }
 
 /**
@@ -178,37 +180,8 @@ export interface EnumSchemaObject {
 /**
  * Extended JSON schema with additional properties
  */
-export interface ExtendedSchema {
-  type?:
-    | 'null'
-    | 'boolean'
-    | 'object'
-    | 'array'
-    | 'number'
-    | 'string'
-    | 'integer'
-    | Array<'null' | 'boolean' | 'object' | 'array' | 'number' | 'string' | 'integer'>;
-  properties?: Record<string, Schema>;
-  required?: string[];
-  additionalProperties?: boolean | Schema;
-  items?: Schema | Schema[];
-  allOf?: Schema[];
-  anyOf?: Schema[];
-  oneOf?: Schema[];
-  enum?: JsonValue[];
-  nullable?: boolean;
-  format?: string;
-  pattern?: string;
-  minimum?: number;
-  maximum?: number;
-  exclusiveMinimum?: number;
-  exclusiveMaximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  minItems?: number;
-  maxItems?: number;
-  default?: unknown;
-  examples?: unknown[];
+export interface ExtendedSchema extends Schema {
+  // Extending Schema to avoid duplication and inconsistencies
   [key: string]: unknown;
 }
 

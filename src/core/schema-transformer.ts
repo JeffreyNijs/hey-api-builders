@@ -85,7 +85,7 @@ export function irToSchema(
   const extendedIr = ir as EnumSchemaObject;
   if (extendedIr.nullable) {
     if (typeof out.type === 'string') {
-      out.type = [out.type, 'null'];
+      out.type = [out.type as 'string' | 'null', 'null'];
     } else if (Array.isArray(out.type) && !out.type.includes('null')) {
       out.type.push('null');
     }

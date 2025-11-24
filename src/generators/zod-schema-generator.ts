@@ -1,5 +1,5 @@
 import type { Schema } from '../types';
-import type { ExtendedSchema, JsonValue, ZodGeneratorOptions } from '../types';
+import type { JsonValue, ZodGeneratorOptions } from '../types';
 
 /**
  * Generates a Zod schema string from a JSON schema
@@ -8,18 +8,16 @@ import type { ExtendedSchema, JsonValue, ZodGeneratorOptions } from '../types';
  * @returns Zod schema code
  */
 export function generateZodSchema(schema: Schema, options: ZodGeneratorOptions = {}): string {
-  return generateZodSchemaInternal(schema as ExtendedSchema, options);
+  return generateZodSchemaInternal(schema, options);
 }
 
-function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGeneratorOptions): string {
+function generateZodSchemaInternal(schema: Schema, options: ZodGeneratorOptions): string {
   if (!schema || typeof schema !== 'object') {
     return 'z.unknown()';
   }
 
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
-    const enumValues = schema.anyOf
-      .filter((item) => item && typeof item === 'object' && 'const' in item)
-      .map((item) => (item as { const: JsonValue }).const);
+    const enumValues = schema.anyOf.filter(isConstItem).map((item) => item.const);
 
     if (enumValues.length > 0) {
       const zodEnumValues = enumValues.map((val) => JSON.stringify(val)).join(', ');
@@ -67,9 +65,13 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
   return 'z.unknown()';
 }
 
+function isConstItem(item: unknown): item is { const: JsonValue } {
+  return typeof item === 'object' && item !== null && 'const' in item;
+}
+
 function generateZodForSingleType(
   type: string,
-  schema: ExtendedSchema,
+  schema: Schema,
   options: ZodGeneratorOptions
 ): string {
   switch (type) {
@@ -92,7 +94,7 @@ function generateZodForSingleType(
   }
 }
 
-function generateZodString(schema: ExtendedSchema): string {
+function generateZodString(schema: Schema): string {
   let zodType = 'z.string()';
 
   if (schema.format) {
@@ -133,7 +135,7 @@ function generateZodString(schema: ExtendedSchema): string {
   return zodType;
 }
 
-function generateZodNumber(schema: ExtendedSchema): string {
+function generateZodNumber(schema: Schema): string {
   let zodType = 'z.number()';
 
   if (typeof schema.minimum === 'number') {
@@ -152,7 +154,7 @@ function generateZodNumber(schema: ExtendedSchema): string {
   return zodType;
 }
 
-function generateZodInteger(schema: ExtendedSchema): string {
+function generateZodInteger(schema: Schema): string {
   let zodType = 'z.number().int()';
 
   if (typeof schema.minimum === 'number') {
@@ -171,17 +173,15 @@ function generateZodInteger(schema: ExtendedSchema): string {
   return zodType;
 }
 
-function generateZodArray(schema: ExtendedSchema, options: ZodGeneratorOptions): string {
+function generateZodArray(schema: Schema, options: ZodGeneratorOptions): string {
   let itemType = 'z.unknown()';
 
   if (schema.items) {
     if (Array.isArray(schema.items)) {
-      const tupleTypes = schema.items.map((item) =>
-        generateZodSchemaInternal(item as ExtendedSchema, options)
-      );
+      const tupleTypes = schema.items.map((item) => generateZodSchemaInternal(item, options));
       return `z.tuple([${tupleTypes.join(', ')}])`;
     } else {
-      itemType = generateZodSchemaInternal(schema.items as ExtendedSchema, options);
+      itemType = generateZodSchemaInternal(schema.items, options);
     }
   }
 
@@ -197,7 +197,7 @@ function generateZodArray(schema: ExtendedSchema, options: ZodGeneratorOptions):
   return zodType;
 }
 
-function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions): string {
+function generateZodObject(schema: Schema, options: ZodGeneratorOptions): string {
   if (!schema.properties) {
     return 'z.object({})';
   }
@@ -207,7 +207,7 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
 
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`;
-    let propType = generateZodSchemaInternal(propSchema as ExtendedSchema, options);
+    let propType = generateZodSchemaInternal(propSchema, options);
 
     if (!required.has(key)) {
       propType += '.optional()';
@@ -221,10 +221,7 @@ function generateZodObject(schema: ExtendedSchema, options: ZodGeneratorOptions)
   if (schema.additionalProperties === false) {
     zodType += '.strict()';
   } else if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-    const additionalType = generateZodSchemaInternal(
-      schema.additionalProperties as ExtendedSchema,
-      options
-    );
+    const additionalType = generateZodSchemaInternal(schema.additionalProperties, options);
     zodType += `.catchall(${additionalType})`;
   }
 

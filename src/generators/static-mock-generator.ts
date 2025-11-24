@@ -1,5 +1,5 @@
 import type { Schema } from '../types';
-import type { ExtendedSchema, JsonValue } from '../types';
+import type { JsonValue } from '../types';
 
 /**
  * Static mock value generators
@@ -12,22 +12,16 @@ import type { ExtendedSchema, JsonValue } from '../types';
  * @returns Static mock code
  */
 export function generateStaticMockCode(schema: Schema, typeName: string): string {
-  return generateStaticMockInternal(schema as ExtendedSchema, typeName, 0);
+  return generateStaticMockInternal(schema, typeName, 0);
 }
 
-function generateStaticMockInternal(
-  schema: ExtendedSchema,
-  typeName: string,
-  depth: number
-): string {
+function generateStaticMockInternal(schema: Schema, typeName: string, depth: number): string {
   if (!schema || typeof schema !== 'object') {
     return 'null';
   }
 
   if (schema.anyOf && Array.isArray(schema.anyOf)) {
-    const enumValues = schema.anyOf
-      .filter((item) => item && typeof item === 'object' && 'const' in item)
-      .map((item) => (item as { const: JsonValue }).const);
+    const enumValues = schema.anyOf.filter(isConstItem).map((item) => item.const);
 
     if (enumValues.length > 0) {
       return JSON.stringify(enumValues[0]);
@@ -60,9 +54,13 @@ function generateStaticMockInternal(
   return 'null';
 }
 
+function isConstItem(item: unknown): item is { const: JsonValue } {
+  return typeof item === 'object' && item !== null && 'const' in item;
+}
+
 function generateStaticForSingleType(
   type: string,
-  schema: ExtendedSchema,
+  schema: Schema,
   typeName: string,
   depth: number
 ): string {
@@ -89,7 +87,7 @@ function generateStaticForSingleType(
 /**
  * Generates static string mock value
  */
-function generateStaticString(schema: ExtendedSchema): string {
+function generateStaticString(schema: Schema): string {
   if (schema.format) {
     const formatValue = getFormatDefaultValue(schema.format);
     if (formatValue) {
@@ -134,7 +132,7 @@ function getFormatDefaultValue(format: string): string | null {
 /**
  * Generates static number mock value
  */
-function generateStaticNumber(schema: ExtendedSchema): string {
+function generateStaticNumber(schema: Schema): string {
   if (typeof schema.default === 'number') {
     return String(schema.default);
   }
@@ -156,7 +154,7 @@ function generateStaticNumber(schema: ExtendedSchema): string {
 /**
  * Generates static integer mock value
  */
-function generateStaticInteger(schema: ExtendedSchema): string {
+function generateStaticInteger(schema: Schema): string {
   if (typeof schema.default === 'number') {
     return String(Math.floor(schema.default));
   }
@@ -178,7 +176,7 @@ function generateStaticInteger(schema: ExtendedSchema): string {
 /**
  * Generates static array mock value
  */
-function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: number): string {
+function generateStaticArray(schema: Schema, typeName: string, depth: number): string {
   if (!schema.items) {
     return '[]';
   }
@@ -190,16 +188,10 @@ function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: nu
   const itemCount = Math.max(minItems, 1);
 
   if (Array.isArray(schema.items)) {
-    const items = schema.items.map((item) =>
-      generateStaticMockInternal(item as ExtendedSchema, typeName, depth + 1)
-    );
+    const items = schema.items.map((item) => generateStaticMockInternal(item, typeName, depth + 1));
     return `[\n${nextIndent}${items.join(`,\n${nextIndent}`)}\n${indent}]`;
   } else {
-    const itemMock = generateStaticMockInternal(
-      schema.items as ExtendedSchema,
-      typeName,
-      depth + 1
-    );
+    const itemMock = generateStaticMockInternal(schema.items as Schema, typeName, depth + 1);
 
     if (itemCount === 1) {
       return `[${itemMock}]`;
@@ -213,7 +205,7 @@ function generateStaticArray(schema: ExtendedSchema, typeName: string, depth: nu
 /**
  * Generates static object mock value
  */
-function generateStaticObject(schema: ExtendedSchema, typeName: string, depth: number): string {
+function generateStaticObject(schema: Schema, typeName: string, depth: number): string {
   if (!schema.properties) {
     return '{}';
   }
@@ -228,7 +220,7 @@ function generateStaticObject(schema: ExtendedSchema, typeName: string, depth: n
       continue;
     }
 
-    const propValue = generateStaticMockInternal(propSchema as ExtendedSchema, typeName, depth + 1);
+    const propValue = generateStaticMockInternal(propSchema, typeName, depth + 1);
     const safePropName = /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) ? key : `"${key}"`;
     properties.push(`${safePropName}: ${propValue}`);
   }

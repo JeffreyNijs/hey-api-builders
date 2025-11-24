@@ -68,10 +68,12 @@ export class MockGenerator {
       return this.generateAllOf(schema.allOf);
     }
 
-    if (schema.anyOf && schema.anyOf.length > 0) {
+    if (schema.anyOf && schema.anyOf.length > 0 && schema.anyOf[0]) {
+      // Pick random anyOf
       return this.generateValue(schema.anyOf[0]);
     }
-    if (schema.oneOf && schema.oneOf.length > 0) {
+    if (schema.oneOf && schema.oneOf.length > 0 && schema.oneOf[0]) {
+      // Pick random oneOf
       return this.generateValue(schema.oneOf[0]);
     }
 
@@ -149,6 +151,8 @@ export class MockGenerator {
     }
 
     if (schema.pattern) {
+      // TODO: Improve pattern generation with a regex-to-string library if needed
+      // but for now return a simple string matching length constraint
       return this.generateStringForPattern(schema.pattern, minLength, maxLength);
     }
 
@@ -186,7 +190,7 @@ export class MockGenerator {
     }
   }
 
-  private generateStringForPattern(pattern: string, minLength: number, maxLength: number): string {
+  private generateStringForPattern(_pattern: string, minLength: number, maxLength: number): string {
     const length = Math.max(minLength, Math.min(maxLength, 10));
     return 'x'.repeat(length);
   }
@@ -204,7 +208,9 @@ export class MockGenerator {
       return schema.items.map((itemSchema) => this.generateValue(itemSchema));
     }
 
-    return Array.from({ length }, () => this.generateValue(schema.items as Schema));
+    // schema.items is Schema (not array) here due to check above
+    const itemSchema = schema.items as Schema;
+    return Array.from({ length }, () => this.generateValue(itemSchema));
   }
 
   private generateObject(schema: Schema): Record<string, unknown> {
@@ -277,7 +283,14 @@ export class MockGenerator {
  */
 export function generateMock<T = unknown>(schema: unknown, options?: MockOptions): T {
   const generator = new MockGenerator(options);
-  return generator.generate(schema as Schema) as T;
+  if (isSchema(schema)) {
+    return generator.generate(schema) as T;
+  }
+  return null as T;
+}
+
+function isSchema(value: unknown): value is Schema {
+  return typeof value === 'object' && value !== null;
 }
 
 export type { BuilderOptions } from '../types';

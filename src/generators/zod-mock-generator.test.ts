@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { generateZodSchema, generateMockFromZodSchema } from './zod-mock-generator';
+import { generateMockFromZodSchema } from './zod-mock-generator';
+import { generateZodSchema } from './zod-schema-generator';
 import type { Schema } from '../types';
 
 describe('Zod Mock Generator', () => {

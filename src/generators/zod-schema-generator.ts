@@ -36,15 +36,15 @@ function generateZodSchemaInternal(schema: ExtendedSchema, options: ZodGenerator
     const types = schema.type.filter((t) => t !== 'null');
     const isNullable = schema.type.includes('null');
 
-    if (types.length > 0 && types[0]) {
-      let zodType = generateZodForSingleType(types[0], schema, options);
+    if (types.length > 1) {
+      const unionTypes = types.map((t) => generateZodForSingleType(t, schema, options));
+      let zodType = `z.union([${unionTypes.join(', ')}])`;
       if (isNullable) {
         zodType += '.nullable()';
       }
       return zodType;
-    } else if (types.length > 1) {
-      const unionTypes = types.map((t) => generateZodForSingleType(t, schema, options));
-      let zodType = `z.union([${unionTypes.join(', ')}])`;
+    } else if (types.length > 0 && types[0]) {
+      let zodType = generateZodForSingleType(types[0], schema, options);
       if (isNullable) {
         zodType += '.nullable()';
       }

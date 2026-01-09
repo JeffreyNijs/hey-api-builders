@@ -539,12 +539,14 @@ describe('Schema Transformer', () => {
       const schemas: Record<string, IR.SchemaObject> = {
         UITheme: { type: 'object' },
         APIKey: { type: 'object' },
+        turnaround_data_source: { type: 'string' },
       };
 
       const result = collectSchemas(schemas);
 
       expect(result[0].typeName).toBe('UiTheme');
       expect(result[1].typeName).toBe('ApiKey');
+      expect(result[2].typeName).toBe('TurnaroundDataSource');
     });
 
     it('identifies object types correctly', () => {

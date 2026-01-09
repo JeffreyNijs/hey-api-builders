@@ -9,7 +9,7 @@ import type {
   GeneratedSchemaMeta,
 } from '../types';
 import { isEnum, isObjectType } from './schema-validators';
-import { normalizeTypeName, safeTypeName } from './string-utils';
+import { normalizeTypeName, safeTypeName, toPascal } from './string-utils';
 
 /**
  * Converts IR schema to JSON Schema format
@@ -367,7 +367,7 @@ export function collectSchemas(
   const metas: GeneratedSchemaMeta[] = [];
   for (const [name, irSchema] of Object.entries(all)) {
     let typeName = name.replace(/Schema$/, '');
-    typeName = normalize ? normalize(typeName) : normalizeTypeName(typeName);
+    typeName = normalize ? normalize(typeName) : toPascal(normalizeTypeName(typeName));
 
     const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema as IR.SchemaObject, all)));
     const schemaWithType = jsf as ExtendedSchema;

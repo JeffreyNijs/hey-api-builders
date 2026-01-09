@@ -360,11 +360,14 @@ export function sanitizeSchema(node: NormalizedSchemaNode): Schema {
  * @param all - All IR schemas
  * @returns Array of schema metadata
  */
-export function collectSchemas(all: Record<string, IR.SchemaObject>): GeneratedSchemaMeta[] {
+export function collectSchemas(
+  all: Record<string, IR.SchemaObject>,
+  normalize?: (name: string) => string
+): GeneratedSchemaMeta[] {
   const metas: GeneratedSchemaMeta[] = [];
   for (const [name, irSchema] of Object.entries(all)) {
     let typeName = name.replace(/Schema$/, '');
-    typeName = normalizeTypeName(typeName);
+    typeName = normalize ? normalize(typeName) : normalizeTypeName(typeName);
 
     const jsf = sanitizeSchema(normalizeSchema(irToSchema(irSchema as IR.SchemaObject, all)));
     const schemaWithType = jsf as ExtendedSchema;

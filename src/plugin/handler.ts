@@ -37,12 +37,16 @@ function resolveMockStrategy(config: {
 /**
  * Main plugin handler for generating builder classes
  */
-export const handler: BuildersHandler = ({ plugin }) => {
+export const handler: BuildersHandler = ({ plugin, context }) => {
   const rawSchemas: Record<string, IR.SchemaObject> = {};
   plugin.forEach('schema', (event) => {
     rawSchemas[event.name] = event.schema;
   });
-  const metas = collectSchemas(rawSchemas);
+
+  const modelNameProvider = context?.casing?.modelName;
+  const normalize = modelNameProvider ? (name: string) => modelNameProvider(name) : undefined;
+
+  const metas = collectSchemas(rawSchemas, normalize);
 
   const file = plugin.createFile({ id: plugin.name, path: plugin.output });
 

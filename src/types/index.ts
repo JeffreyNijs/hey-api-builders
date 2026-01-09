@@ -112,9 +112,21 @@ export interface Config {
 export type BuildersPlugin = DefinePlugin<Config>;
 
 /**
+ * Arguments for the plugin handler
+ */
+export interface HandlerArgs {
+  plugin: Parameters<BuildersPlugin['Handler']>[0]['plugin'];
+  context: IR.Context & {
+    casing?: {
+      modelName?: (name: string) => string;
+    };
+  };
+}
+
+/**
  * Builder handler type
  */
-export type BuildersHandler = BuildersPlugin['Handler'];
+export type BuildersHandler = (args: HandlerArgs) => void;
 
 /**
  * Options for builder instances

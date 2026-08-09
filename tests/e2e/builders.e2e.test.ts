@@ -99,6 +99,8 @@ describe('real Hey API generation', () => {
       expect(project.generatedFiles).toContain('zod.gen.ts');
       expect(project.buildersSource).toMatch(/faker\.gen/);
       expect(Object.keys(project.builders).some((name) => name.endsWith('Builder'))).toBe(true);
+      expect(Object.keys(project.faker).length).toBeGreaterThan(0);
+      expect(Object.keys(project.zod).length).toBeGreaterThan(0);
     }
   });
 

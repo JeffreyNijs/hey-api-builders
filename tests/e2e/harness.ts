@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
-import { dirname, extname, join, relative, resolve } from 'node:path';
+import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { createClient } from '@hey-api/openapi-ts';
@@ -230,10 +230,15 @@ async function loadGeneratedModule(
   generatedDirectory: string,
   compiledDirectory: string,
   load: (entryFile: string) => Record<string, unknown>,
-  pattern: RegExp
+  fileName: string
 ): Promise<Record<string, unknown>> {
-  const sourceFile = sourceFiles.find((file) => pattern.test(file));
-  return sourceFile ? load(emittedFile(sourceFile, generatedDirectory, compiledDirectory)) : {};
+  const sourceFile = sourceFiles.find((file) => basename(file) === fileName);
+  if (!sourceFile) {
+    throw new Error(
+      `Could not identify generated module ${JSON.stringify(fileName)}. Generated: ${sourceFiles.join(', ')}`
+    );
+  }
+  return load(emittedFile(sourceFile, generatedDirectory, compiledDirectory));
 }
 
 /**
@@ -284,14 +289,14 @@ export async function generateProject(
       generatedDirectory,
       compiledDirectory,
       load,
-      /(?:^|\/)faker\.gen\.ts$/
+      'faker.gen.ts'
     );
     const zod = await loadGeneratedModule(
       sourceFiles,
       generatedDirectory,
       compiledDirectory,
       load,
-      /(?:^|\/)zod\.gen\.ts$/
+      'zod.gen.ts'
     );
 
     return {

@@ -31,17 +31,17 @@ jobs:
         run: |
           VERSION="$(node -p "require('./package.json').version")"
           test "$RELEASE_TAG" = "v${VERSION}"
-          mkdir .release
-          npm pack --ignore-scripts --pack-destination .release
+          mkdir release
+          npm pack --ignore-scripts --pack-destination release
           FILENAME="hey-api-builders-${VERSION}.tgz"
-          test -f ".release/${FILENAME}"
+          test -f "release/${FILENAME}"
           echo "filename=${FILENAME}" >> "$GITHUB_OUTPUT"
       - name: Upload immutable package artifact
         id: upload
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: npm-package
-          path: .release/*.tgz
+          path: release/*.tgz
           if-no-files-found: error
           compression-level: 0
           retention-days: 1
@@ -63,12 +63,12 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           artifact-ids: ${{ needs.prepare.outputs.artifact-id }}
-          path: .release
+          path: release
           digest-mismatch: error
       - name: Verify package metadata
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-          TARBALL: .release/${{ needs.prepare.outputs.filename }}
+          TARBALL: release/${{ needs.prepare.outputs.filename }}
         run: |
           test -f "$TARBALL"
           SPEC="$(
@@ -89,5 +89,5 @@ jobs:
       - name: Publish
         if: steps.registry.outputs.exists != 'true'
         env:
-          TARBALL: .release/${{ needs.prepare.outputs.filename }}
+          TARBALL: release/${{ needs.prepare.outputs.filename }}
         run: npm publish "$TARBALL" --access public --ignore-scripts

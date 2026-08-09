@@ -1,85 +1,59 @@
-import type { IR } from '@hey-api/openapi-ts';
-import type { BuildersHandler, MockStrategy } from '../types';
-import { collectSchemas } from '../core/schema-transformer';
-import { generateZodSchema } from '../generators/zod-schema-generator';
-import { generateEnumBuilder, generateObjectBuilder } from '../generators/builder-generator';
-import {
-  generateImports,
-  generateBuilderOptionsType,
-  generateSchemaConstants,
-} from '../core/code-generator';
+import { emitDefinitionBuilder, emitOperationBuilders, emitRuntime } from './generator';
+import type { BuilderNamingConfig, BuildersPlugin, Casing, Config, NameTransformer } from './types';
 
-/**
- * Resolves the mock strategy from config, handling backward compatibility
- */
-function resolveMockStrategy(config: {
-  mockStrategy?: MockStrategy;
-  useZodForMocks?: boolean;
-  useStaticMocks?: boolean;
-}): MockStrategy {
-  // New config takes precedence
-  if (config.mockStrategy) {
-    return config.mockStrategy;
+const defaultName = '{{name}}Builder';
+
+function resolveFeature(
+  feature: boolean | NameTransformer | BuilderNamingConfig,
+  inheritedCase: Casing
+): Config['definitions'] {
+  if (typeof feature === 'boolean') {
+    return {
+      case: inheritedCase,
+      enabled: feature,
+      name: defaultName,
+    };
   }
 
-  // Backward compatibility with old boolean flags
-  if (config.useStaticMocks) {
-    return 'static';
-  }
-  if (config.useZodForMocks) {
-    return 'zod';
+  if (typeof feature === 'function' || typeof feature === 'string') {
+    return {
+      case: inheritedCase,
+      enabled: true,
+      name: feature,
+    };
   }
 
-  // Default strategy
-  return 'runtime';
+  return {
+    case: feature.case ?? inheritedCase,
+    enabled: feature.enabled ?? true,
+    name: feature.name ?? defaultName,
+  };
 }
 
-/**
- * Main plugin handler for generating builder classes
- */
-export const handler: BuildersHandler = ({ plugin, context }) => {
-  const rawSchemas: Record<string, IR.SchemaObject> = {};
-  plugin.forEach('schema', (event) => {
-    rawSchemas[event.name] = event.schema;
+export const handler: BuildersPlugin['Handler'] = ({ plugin }) => {
+  // External plugins are currently handed unresolved shorthand values by
+  // openapi-ts 0.99. Normalize them here while continuing to accept the fully
+  // resolved object shape used by future plugin resolvers.
+  const inheritedCase = plugin.config.case ?? 'PascalCase';
+  const definitions = resolveFeature(plugin.config.definitions, inheritedCase);
+  const requests = resolveFeature(plugin.config.requests, inheritedCase);
+  const responses = resolveFeature(plugin.config.responses, inheritedCase);
+  const runtime = emitRuntime(plugin);
+
+  plugin.forEach('schema', 'operation', (event) => {
+    if (event.type === 'schema') {
+      if (definitions.enabled) {
+        emitDefinitionBuilder({ event, naming: definitions, plugin, runtime });
+      }
+      return;
+    }
+
+    emitOperationBuilders({
+      operation: event.operation,
+      plugin,
+      requests,
+      responses,
+      runtime,
+    });
   });
-
-  const modelNameProvider = context?.casing?.modelName;
-  const normalize = modelNameProvider ? (name: string) => modelNameProvider(name) : undefined;
-
-  const metas = collectSchemas(rawSchemas, normalize);
-
-  const file = plugin.createFile({ id: plugin.name, path: plugin.output });
-
-  const config = plugin.config;
-  const generateZod = config.generateZod || false;
-  const mockStrategy = resolveMockStrategy(config);
-
-  let out = '';
-
-  out += generateImports({ mockStrategy, generateZod });
-
-  out += generateBuilderOptionsType();
-
-  if (mockStrategy === 'runtime') {
-    out += generateSchemaConstants(metas);
-  }
-
-  if (generateZod || mockStrategy === 'zod') {
-    const zodSchemaEntries: string[] = [];
-    for (const m of metas) {
-      const zodSchemaString = generateZodSchema(m.schema);
-      zodSchemaEntries.push(`  ${m.constName}Zod: ${zodSchemaString}`);
-    }
-    out += 'export const zodSchemas = {\n' + zodSchemaEntries.join(',\n') + '\n}\n\n';
-  }
-
-  for (const m of metas) {
-    if (m.isEnum) {
-      out += generateEnumBuilder(m, { mockStrategy });
-    } else {
-      out += generateObjectBuilder(m, { mockStrategy });
-    }
-  }
-
-  file.add(out);
 };

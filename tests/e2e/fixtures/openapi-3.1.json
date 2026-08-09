@@ -1,0 +1,272 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Builders end-to-end fixture",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets/{id}": {
+      "get": {
+        "operationId": "getPet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "include-history",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The pet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No pet was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "responses": {
+          "200": {
+            "description": "All pets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Service health",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["ok", "degraded"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^ERR-[0-9]{3}$"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 3
+          }
+        }
+      },
+      "_Error": {
+        "type": "object",
+        "required": ["reason"],
+        "properties": {
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "Status": {
+        "type": "string",
+        "enum": ["available", "pending", "adopted"]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "required": ["id", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "StringMap": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "Pet": {
+        "type": "object",
+        "required": [
+          "id",
+          "display-name",
+          "display_name",
+          "status",
+          "tags",
+          "attributes",
+          "kind",
+          "2fa_enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display-name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 40
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/StringMap"
+          },
+          "nickname": {
+            "type": ["string", "null"]
+          },
+          "kind": {
+            "type": "string",
+            "default": "unknown"
+          },
+          "2fa_enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DetailedPet": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "$ref": "#/components/schemas/Pet"
+          },
+          {
+            "type": "object",
+            "required": ["notes"],
+            "properties": {
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Cat": {
+        "type": "object",
+        "required": ["species", "lives"],
+        "properties": {
+          "species": {
+            "const": "cat"
+          },
+          "lives": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9
+          }
+        }
+      },
+      "Dog": {
+        "type": "object",
+        "required": ["species", "goodDog"],
+        "properties": {
+          "species": {
+            "const": "dog"
+          },
+          "goodDog": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Animal": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "$ref": "#/components/schemas/Dog"
+          }
+        ]
+      },
+      "TreeNode": {
+        "type": "object",
+        "required": ["value"],
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TreeNode"
+            }
+          }
+        }
+      }
+    }
+  }
+}

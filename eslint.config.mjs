@@ -11,9 +11,10 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 2022,
         sourceType: 'module',
-        project: './tsconfig.json',
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         console: 'readonly',
@@ -53,7 +54,7 @@ export default [
   {
     files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
         console: 'readonly',
@@ -68,6 +69,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', '*.log', 'test-results/**'],
+    ignores: ['coverage/**', 'dist/**', 'node_modules/**', '*.log', 'test-results/**'],
   },
 ];

@@ -68,7 +68,7 @@ jobs:
       - name: Verify package metadata
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-          TARBALL: release/${{ needs.prepare.outputs.filename }}
+          TARBALL: ./release/${{ needs.prepare.outputs.filename }}
         run: |
           test -f "$TARBALL"
           SPEC="$(
@@ -89,5 +89,5 @@ jobs:
       - name: Publish
         if: steps.registry.outputs.exists != 'true'
         env:
-          TARBALL: release/${{ needs.prepare.outputs.filename }}
+          TARBALL: ./release/${{ needs.prepare.outputs.filename }}
         run: npm publish "$TARBALL" --access public --ignore-scripts

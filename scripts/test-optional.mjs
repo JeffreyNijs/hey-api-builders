@@ -1,6 +1,6 @@
 /** Build optional packages and test their actual tarballs outside the repository. */
 import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -59,18 +59,39 @@ const pack = async (directory) => {
   );
   return join(artifacts, result[0].filename);
 };
-const offlineTarballs = [];
-const install = (files) =>
-  npm([
-    'install',
-    '--no-save',
-    '--package-lock=false',
-    '--ignore-scripts',
-    '--no-audit',
-    '--no-fund',
-    ...offlineTarballs,
-    ...files,
-  ]);
+const install = (files) => {
+  if (!offline) {
+    npm([
+      'install',
+      '--no-save',
+      '--package-lock=false',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      ...files,
+    ]);
+    return;
+  }
+  // Consume the actual npm tarballs locally while preserving the exact installed
+  // transitive dependency tree. Installing every cached version at the root
+  // would collapse legitimately different nested versions (e.g. js-yaml 4/5).
+  for (const file of files) {
+    const metadata = JSON.parse(
+      execFileSync('tar', ['-xOf', file, 'package/package.json'], { encoding: 'utf8' })
+    );
+    if (
+      typeof metadata.name !== 'string' ||
+      !/^(?:@[a-z0-9_.-]+\/)?[a-z0-9_.-]+$/.test(metadata.name) ||
+      metadata.name.split('/').some((part) => part === '.' || part === '..')
+    ) {
+      throw new Error('Invalid local tarball package name');
+    }
+    const destination = join(temporary, 'node_modules', metadata.name);
+    rmSync(destination, { recursive: true, force: true });
+    mkdirSync(destination, { recursive: true });
+    execFileSync('tar', ['-xzf', file, '--strip-components=1', '-C', destination]);
+  }
+};
 try {
   await mkdir(artifacts);
   await cp(join(fixture, 'package.json'), join(temporary, 'package.json'));
@@ -87,8 +108,6 @@ try {
       if (installed.version !== entry.version)
         throw new Error(`Cached dependency version differs: ${path}`);
       await cp(from, join(temporary, path), { recursive: true, dereference: true });
-      // Pack the copy: pnpm caches use hardlinks that npm does not reliably reinstall.
-      offlineTarballs.push(await pack(join(temporary, path)));
     }
   } else {
     npm(['ci', '--ignore-scripts', '--no-audit', '--no-fund']);

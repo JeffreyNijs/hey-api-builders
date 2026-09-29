@@ -7,26 +7,9 @@
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md"],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
-    "directory": "packages/test-builders"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && tsc -p test/tsconfig.json && node --test test/runtime.test.mjs",
-    "prepack": "npm run build"
-  }
+  "repository": { "type": "git", "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git", "directory": "packages/test-builders" },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "tsc -p tsconfig.json && tsc -p test/tsconfig.json && node --test test/*.test.mjs", "prepack": "npm run build" }
 }

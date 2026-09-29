@@ -117,3 +117,7 @@ const dictionary = createBuilder((): Record<string, number> => ({ x: 1 }));
 dictionary.with({ y: 2 });
 // @ts-expect-error Dictionary values may not be silently widened to undefined by Partial.
 dictionary.with({ y: undefined });
+
+const unknownFactory = createBuilder((): unknown => 1);
+// @ts-expect-error An unknown result might be asynchronous.
+unknownFactory.build();

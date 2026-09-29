@@ -123,6 +123,10 @@ describe('portable fixture capture and cloning', () => {
     date.extra = 1;
     const regexp = /a/;
     regexp.lastIndex = -1;
+    const dataView = new DataView(new ArrayBuffer(1));
+    dataView[0] = 'custom';
+    const view = new Uint8Array(1);
+    view['9007199254740993'] = 'noncanonical-index';
     class Model {
       x = 1;
     }
@@ -133,6 +137,8 @@ describe('portable fixture capture and cloning', () => {
       hidden,
       date,
       regexp,
+      dataView,
+      view,
       new Model(),
       new SpecialArray(),
       new SpecialView(2),

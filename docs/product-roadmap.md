@@ -16,6 +16,12 @@ Implemented in the draft: a shared immutable runtime; sync/async factory capabil
 
 The TypeBox adapters create native default/minimal fixtures and retain codec input/output semantics. Their compatibility fixture pins actual native packages and tests built tarballs outside the repository. This is not random generation, full vocabulary coverage, an untrusted-schema sandbox, or a complete native-version matrix.
 
+Additional committed slices add bounded scoped sessions and replay, data-only fixture
+capture and opt-in cloning, dependency-ordered scenarios and conflict-checked traits,
+and an optional real fast-check mapping/check/replay integration. These provide
+reproducible execution and shrinking of explicit parameters, not automatic arbitrary
+derivation for every schema. See the focused guides and package compatibility tests.
+
 Still unchanged: the old Hey API emitter and published package API. No neutral package is published. No repository rename or consumer migration has occurred.
 
 ## Stage 1: strengthen the behavioral model

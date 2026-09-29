@@ -184,7 +184,14 @@ export function captureFixture(value: unknown, options: CaptureOptions = {}): st
       if (!match) {
         return unsupported('Unsupported ArrayBuffer view');
       }
-      nativeProperties((name) => typeof name === 'string' && /^(0|[1-9][0-9]*)$/.test(name));
+      nativeProperties(
+        (name) =>
+          match[0] !== 'DataView' &&
+          typeof name === 'string' &&
+          /^(0|[1-9][0-9]*)$/.test(name) &&
+          Number.isSafeInteger(Number(name)) &&
+          Number(name) < (value as Exclude<ArrayBufferView, DataView> & { length: number }).length
+      );
       node.kind = 'view';
       node.data = [match[0], encode(value.buffer, depth + 1), value.byteOffset, value.byteLength];
     } else {

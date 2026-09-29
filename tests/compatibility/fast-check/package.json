@@ -1,0 +1,12 @@
+{
+  "name": "test-builders-fast-check-compatibility",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "fast-check": "4.10.2"
+  },
+  "toolkitPackages": [
+    "test-builders-fast-check"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@jeffreynijs/test-builders-fast-check",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shrink-aware fixture mapping, correlated scenarios, and replay with fast-check.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@jeffreynijs/test-builders": "0.0.0",
+    "fast-check": "4.10.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "directory": "packages/test-builders-fast-check"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  }
+}

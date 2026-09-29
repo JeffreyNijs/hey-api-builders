@@ -7,11 +7,12 @@ export type SchemaOutput<S extends StandardSchemaV1> = StandardSchemaV1.InferOut
 export type BuilderFactory<T, Args extends unknown[] = []> = (...args: Args) => T | PromiseLike<T>;
 export type BuilderTransform<T, Args extends unknown[] = []> = (value: T, ...args: Args) => T;
 export type AnyFactory = (...args: never[]) => unknown;
-export type IsAsync<F extends AnyFactory> = [Extract<ReturnType<F>, PromiseLike<unknown>>] extends [
-  never,
-]
-  ? false
-  : true;
+export type IsAsync<F extends AnyFactory> =
+  unknown extends ReturnType<F>
+    ? true
+    : [Extract<ReturnType<F>, PromiseLike<unknown>>] extends [never]
+      ? false
+      : true;
 
 type IsUnion<T, Whole = T> = T extends Whole ? ([Whole] extends [T] ? false : true) : never;
 type Atomic =

@@ -30,18 +30,19 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
-    "test": "pnpm test:core && vitest run && pnpm test:typebox",
+    "test": "pnpm test:core && vitest run && pnpm test:typebox && pnpm test:optional",
     "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node scripts/test-core.mjs",
     "test:typebox": "node scripts/test-typebox.mjs",
     "test:package": "node scripts/validate-package.mjs",
     "test:watch": "vitest",
-    "test:coverage": "pnpm test:core && vitest run --coverage && pnpm test:typebox",
+    "test:coverage": "pnpm test:core && vitest run --coverage && pnpm test:typebox && pnpm test:optional",
     "typecheck": "tsc --noEmit",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage",
     "validate": "pnpm check && pnpm build && pnpm test:package",
     "pack:check": "npm pack --dry-run",
     "prepack": "pnpm build",
-    "prepublishOnly": "pnpm check"
+    "prepublishOnly": "pnpm check",
+    "test:optional": "node scripts/test-optional.mjs fast-check"
   },
   "keywords": [
     "hey-api",

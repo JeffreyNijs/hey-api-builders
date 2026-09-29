@@ -1,0 +1,37 @@
+{
+  "name": "@jeffreynijs/test-builders-protobuf",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lossless native Protobuf fixture generation, verification and binary codecs with offline schema resolution.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@jeffreynijs/test-builders": "0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "directory": "packages/test-builders-protobuf"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "protobufjs": "8.8.0"
+  }
+}

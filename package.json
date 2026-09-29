@@ -29,7 +29,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write . --ignore-unknown",
-    "format:check": "prettier --check . --ignore-unknown",
+    "format:check": "prettier --write . --ignore-unknown && git --no-pager diff --exit-code",
     "test": "pnpm test:core && vitest run",
     "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node --test packages/test-builders/test/runtime.test.mjs",
     "test:package": "node scripts/validate-package.mjs",

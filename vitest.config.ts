@@ -10,7 +10,16 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'json-summary', 'html'],
-      exclude: ['node_modules/', 'dist/', '**/*.d.ts', '**/*.config.*', '**/index.ts'],
+      // Core coverage is measured by test:core with its complete Node suite and
+      // higher thresholds. Do not re-count only its four Zod integration tests.
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/index.ts',
+        'packages/test-builders/**',
+      ],
       include: ['src/**/*.ts'],
       thresholds: {
         lines: 80,

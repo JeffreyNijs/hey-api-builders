@@ -71,3 +71,24 @@ expectType<Promise<{ id: string; timestamp: Date }>>(oldAsync.buildValidatedAsyn
 // @ts-expect-error Async capability is preserved through the legacy adapter.
 oldAsync.buildValidated('1');
 expectType<number>(legacyAdapter(OldTimestamp).encode(new Date()));
+
+// Property access rejects never; negative member checks reject accidental any.
+events.build().timestamp.toFixed(0);
+events.buildValidated().timestamp.getTime();
+// @ts-expect-error Encoded timestamps are numbers, not dates.
+events.build().timestamp.getTime();
+// @ts-expect-error Decoded timestamps are dates, not numbers.
+events.buildValidated().timestamp.toFixed(0);
+oldEvents.build().timestamp.toFixed(0);
+oldEvents.buildValidated().timestamp.getTime();
+// @ts-expect-error Legacy encoded timestamps are numbers.
+oldEvents.build().timestamp.getTime();
+// @ts-expect-error Legacy decoded timestamps are dates.
+oldEvents.buildValidated().timestamp.toFixed(0);
+fromTypeBox(Ref, { context }).build().id.toUpperCase();
+// @ts-expect-error A named reference resolves its property's actual type.
+fromTypeBox(Ref, { context }).build().id.toFixed(0);
+const referenced = fromTypeBoxFactory(Ref, (id: string) => ({ id }), { context });
+referenced.buildValidated('user-1').id.toUpperCase();
+// @ts-expect-error Reference-aware factory input is not an unchecked assertion.
+fromTypeBoxFactory(Ref, () => ({ id: 42 }), { context });

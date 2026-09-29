@@ -79,7 +79,12 @@ export function limits(options: SchemaLimits): Required<SchemaLimits> {
   }
   return Object.freeze(result);
 }
-export function copyJson(value: unknown, maximum: Required<SchemaLimits>, schema = true): unknown {
+export function copyJson(
+  value: unknown,
+  maximum: Required<SchemaLimits>,
+  schema = true,
+  standardMetadata = false
+): unknown {
   let nodes = 0;
   let characters = 0;
   const stack = new WeakSet<object>();
@@ -123,7 +128,20 @@ export function copyJson(value: unknown, maximum: Required<SchemaLimits>, schema
     }
     stack.add(value);
     const result: Record<string, unknown> | unknown[] = array ? [] : {};
-    const keys = Reflect.ownKeys(value).filter((key) => !(array && key === 'length'));
+    const keys = Reflect.ownKeys(value).filter((key) => {
+      if (array && key === 'length') {
+        return false;
+      }
+      // Standard conversion may attach its original protocol non-enumerably (e.g. Zod).
+      // Strip only this known root metadata, not arbitrary hidden fields or accessors.
+      if (standardMetadata && depth === 0 && key === '~standard') {
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (descriptor && !descriptor.enumerable && 'value' in descriptor) {
+          return false;
+        }
+      }
+      return true;
+    });
     if (array && keys.length !== value.length) {
       throw new SchemaPreparationError('Sparse arrays are not JSON', path);
     }

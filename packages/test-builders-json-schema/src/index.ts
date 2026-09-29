@@ -360,7 +360,10 @@ export function fromStandardJsonSchema<S extends StandardJSONSchemaV1 & Standard
     throw new TypeError('Expected Standard Schema and Standard JSON Schema v1 capabilities');
   }
   const input = properties.jsonSchema.input({ target: options.dialect ?? 'draft-2020-12' });
-  const adapter = jsonSchemaAdapter(input, options);
+  const adapter = jsonSchemaAdapter(
+    copyJson(input, limits(options), true, true) as JsonSchema,
+    options
+  );
   // This cast binds a conversion advertised by the schema itself, not an unrelated user generic.
   return createSchemaBuilder(
     schema,

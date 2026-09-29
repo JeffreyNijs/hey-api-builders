@@ -1,7 +1,7 @@
 /** Build optional packages and test their actual tarballs outside the repository. */
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -14,6 +14,22 @@ const lock = JSON.parse(await readFile(join(fixture, 'package-lock.json'), 'utf8
 const packages = manifest.toolkitPackages;
 if (!Array.isArray(packages) || packages.some((name) => !/^test-builders-[a-z0-9-]+$/.test(name))) {
   throw new Error('The fixture must declare its tested toolkit packages');
+}
+const compilerLibs = manifest.compilerLibs ?? ['ES2022'];
+if (!Array.isArray(compilerLibs) || compilerLibs.some((lib) => !['ES2022', 'DOM'].includes(lib))) {
+  throw new Error('Unsupported fixture compiler library');
+}
+const compilerTypes = manifest.compilerTypes ?? [];
+if (!Array.isArray(compilerTypes) || compilerTypes.some((name) => name !== 'node')) {
+  throw new Error('Unsupported fixture compiler types');
+}
+const coveragePackages = manifest.coveragePackages ?? packages;
+if (
+  !Array.isArray(coveragePackages) ||
+  coveragePackages.length === 0 ||
+  coveragePackages.some((name) => !packages.includes(name))
+) {
+  throw new Error('Coverage packages must be explicitly tested toolkit packages');
 }
 const compiler = join(root, 'node_modules/typescript/bin/tsc');
 const npmCli = [
@@ -71,7 +87,8 @@ try {
       if (installed.version !== entry.version)
         throw new Error(`Cached dependency version differs: ${path}`);
       await cp(from, join(temporary, path), { recursive: true, dereference: true });
-      offlineTarballs.push(await pack(from));
+      // Pack the copy: pnpm caches use hardlinks that npm does not reliably reinstall.
+      offlineTarballs.push(await pack(join(temporary, path)));
     }
   } else {
     npm(['ci', '--ignore-scripts', '--no-audit', '--no-fund']);
@@ -92,7 +109,11 @@ try {
     install([core, ...tarballs]);
   }
   await cp(join(fixture, 'types.mts'), join(temporary, 'types.mts'));
-  await cp(join(fixture, 'runtime.test.mjs'), join(temporary, 'runtime.test.mjs'));
+  const testFiles = (await readdir(fixture))
+    .filter((name) => /^[a-zA-Z0-9_.-]+\.test\.mjs$/.test(name))
+    .sort();
+  if (testFiles.length === 0) throw new Error('The fixture must include runtime tests');
+  for (const file of testFiles) await cp(join(fixture, file), join(temporary, file));
   await writeFile(
     join(temporary, 'tsconfig.json'),
     JSON.stringify({
@@ -100,8 +121,8 @@ try {
         target: 'ES2022',
         module: 'NodeNext',
         moduleResolution: 'NodeNext',
-        lib: ['ES2022'],
-        types: [],
+        lib: compilerLibs,
+        types: compilerTypes,
         strict: true,
         exactOptionalPropertyTypes: true,
         noUncheckedIndexedAccess: true,
@@ -116,14 +137,14 @@ try {
     process.execPath,
     [
       '--experimental-test-coverage',
-      ...packages.map(
+      ...coveragePackages.map(
         (name) => `--test-coverage-include=**/node_modules/@jeffreynijs/${name}/dist/*.js`
       ),
       '--test-coverage-lines=90',
       '--test-coverage-branches=85',
       '--test-coverage-functions=90',
       '--test',
-      'runtime.test.mjs',
+      ...testFiles,
     ],
     { cwd: temporary, stdio: 'inherit', timeout: 120_000 }
   );

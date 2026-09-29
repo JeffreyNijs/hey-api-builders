@@ -11,7 +11,7 @@ export interface JsonSchemaObject {
   readonly maxLength?: number;
   readonly [keyword: string]: unknown;
 }
-export type SchemaDialect = 'draft-07' | 'draft-2020-12';
+export type SchemaDialect = 'draft-07' | 'draft-2019-09' | 'draft-2020-12';
 export interface SchemaLimits {
   readonly maxSchemaNodes?: number;
   readonly maxSchemaDepth?: number;
@@ -244,7 +244,10 @@ export function dialect(source: JsonSchema, requested?: SchemaDialect): SchemaDi
   ) {
     throw new SchemaPreparationError('A schema must be a boolean or record', '');
   }
-  if (requested !== undefined && requested !== 'draft-07' && requested !== 'draft-2020-12') {
+  if (
+    requested !== undefined &&
+    !['draft-07', 'draft-2019-09', 'draft-2020-12'].includes(requested)
+  ) {
     throw new SchemaPreparationError('Unsupported requested dialect', '/$schema');
   }
   const declared = typeof source === 'object' ? source.$schema : undefined;
@@ -258,7 +261,9 @@ export function dialect(source: JsonSchema, requested?: SchemaDialect): SchemaDi
         ? 'draft-07'
         : /^https?:\/\/json-schema.org\/draft\/2020-12\/schema#?$/.test(declared)
           ? 'draft-2020-12'
-          : undefined;
+          : /^https?:\/\/json-schema.org\/draft\/2019-09\/schema#?$/.test(declared)
+            ? 'draft-2019-09'
+            : undefined;
   if (
     (declared !== undefined && found === undefined) ||
     (requested && found && requested !== found)
@@ -272,7 +277,8 @@ export function prepare(
   source: unknown,
   selected: SchemaDialect,
   maximum: Required<SchemaLimits>,
-  knownFormats?: ReadonlySet<string>
+  knownFormats?: ReadonlySet<string>,
+  extensions: ReadonlySet<string> = new Set()
 ): JsonSchema {
   if (typeof source === 'boolean') {
     return source;
@@ -293,7 +299,9 @@ export function prepare(
         ? ['definitions', 'dependencies', 'additionalItems']
         : [
             '$defs',
-            'prefixItems',
+            ...(selected === 'draft-2020-12'
+              ? ['prefixItems']
+              : ['definitions', 'dependencies', 'additionalItems']),
             'minContains',
             'maxContains',
             'dependentSchemas',
@@ -307,7 +315,7 @@ export function prepare(
       throw new SchemaPreparationError('Unknown format', `${path}/format`);
     }
     for (const key of Object.keys(schema)) {
-      if (!allowed.has(key)) {
+      if (!allowed.has(key) && !extensions.has(key)) {
         throw new SchemaPreparationError(
           `Unsupported schema keyword ${key}`,
           `${path}/${pointer(key)}`
@@ -328,6 +336,9 @@ export function prepare(
     }
     const result: Record<string, unknown> = {};
     for (const [name, value] of Object.entries(schema)) {
+      if (extensions.has(name)) {
+        continue;
+      }
       if (
         selected === 'draft-07' &&
         schema.$ref !== undefined &&
@@ -344,7 +355,7 @@ export function prepare(
           throw new SchemaPreparationError('A reference must be a string', path);
         }
         result[name] =
-          selected === 'draft-07' ? value.replace(/#\/definitions\//g, '#/$defs/') : value;
+          selected !== 'draft-2020-12' ? value.replace(/#\/definitions\//g, '#/$defs/') : value;
       } else if (maps.has(name)) {
         if (!value || typeof value !== 'object' || Array.isArray(value)) {
           throw new SchemaPreparationError('Invalid subschema map', path);
@@ -367,8 +378,8 @@ export function prepare(
         if (!Array.isArray(value)) {
           throw new SchemaPreparationError('Invalid schema array', path);
         }
-        if (name === 'items' && selected !== 'draft-07') {
-          throw new SchemaPreparationError('Tuple items require draft-07', path);
+        if (name === 'items' && selected === 'draft-2020-12') {
+          throw new SchemaPreparationError('Tuple items require draft-07 or draft-2019-09', path);
         }
         result[name === 'items' ? 'prefixItems' : name] = value.map((s, i) =>
           visit(s, `${path}/${name}/${i}`)

@@ -31,7 +31,7 @@ Opaque refinements can reject a fixture; they are not silently retried or repair
 ## Supported generation path
 
 The pinned provider is `json-schema-faker@0.6.3`, independently checked by
-`ajv@8.20.0` plus `ajv-formats@3.0.1`. Draft-07 and 2020-12 use separate Ajv
+`ajv@8.20.0` plus `ajv-formats@3.0.1`. Draft-07, 2019-09, and 2020-12 use separate Ajv
 instances. Draft-07 tuples, dependencies, definitions, and reference-sibling
 semantics are normalized only in the provider copy; validation retains draft-07 semantics, including ignored reference siblings.
 
@@ -45,7 +45,7 @@ fail preparation explicitly rather than being silently dropped. The provider-uns
 not have that provider restriction. Content metadata
 is treated as annotations, not an encoding or content-validation guarantee.
 
-Profiles are `minimal` (required shape, not a proof of globally minimal values),
+Profiles include `boundary` (valid candidates biased toward declared endpoints), `minimal` (required shape, not a proof of globally minimal values),
 `random` (optional-field variation), `defaults`, and `examples`. Defaults/examples
 are candidate preferences, never validation guarantees; an invalid candidate can
 fall back to ordinary sampling. Overrides are applied only after base generation
@@ -80,3 +80,22 @@ No schema rules are widened to make a candidate pass. Public declarations do not
 require DOM types even though the private provider's declarations reference them.
 
 All packages remain private until the coordinated release process is ready.
+
+## Custom providers and negative cases
+
+`provider: { id, generate(request) }` accepts a versioned synchronous generation
+backend. It receives copied schema/reference data, the selected dialect/profile,
+a scoped session, and the attempt index. Every candidate still passes the
+original validator. Paired custom assertions use `keywords` and a versioned
+`extensionIdentity`; explicit `annotations` cannot replace built-in assertions.
+
+`adapter.negative(session, mutation, target)` creates a valid base, invokes the
+mutation once, and reports the observed validation issues. Optional `keyword`,
+`instancePath`, and `requireSingleIssue` targets are checked rather than assumed.
+An accepted mutation is an error, not a negative fixture. Both positive and
+negative paths retain JSON/output budgets and reject asynchronous callbacks.
+
+The reconciliation retains the existing input-conversion metadata rules and
+original-schema validation tests. Boundary hints narrow only a candidate copy;
+failed candidates may fall back to ordinary bounded sampling, so the boundary
+profile is not an exhaustive boundary-coverage certificate.

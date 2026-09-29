@@ -28,13 +28,11 @@ interface User {
   role: 'reader' | 'admin';
 }
 
-const users = createBuilder(
-  (options: { id: string }): User => ({
-    id: options.id,
-    email: 'reader@example.com',
-    role: 'reader',
-  })
-);
+const users = createBuilder((options: { id: string }): User => ({
+  id: options.id,
+  email: 'reader@example.com',
+  role: 'reader',
+}));
 
 const admins = users.with({ role: 'admin' });
 const ada = admins.with({ email: 'ada@example.com' }).build({ id: 'user-1' });
@@ -87,19 +85,19 @@ unchanged. An empty `issues` array is still a failure, not a successful result.
 
 ## Builder methods
 
-| Method                                         | Behavior                                                                 |
-| ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `with(patch)`                                  | Return a new builder with an additional shallow patch.                    |
-| `replace(value)`                               | Return a new builder replacing the entire value.                          |
-| `transform(fn)`                                | Append a synchronous input-to-input transform.                            |
-| `build(...args)`                               | Build input synchronously, without validation.                            |
-| `buildAsync(...args)`                          | Build input, accepting an asynchronous factory.                           |
-| `buildList(count, ...args)`                    | Build input values synchronously.                                        |
-| `buildListAsync(count, ...args)`               | Build input values sequentially and asynchronously.                       |
-| `buildValidated(...args)`                      | Build and synchronously validate, returning schema output.                |
-| `buildValidatedAsync(...args)`                 | Await the factory and validation, returning schema output.                |
-| `buildValidatedList(count, ...args)`           | Build and validate a list synchronously.                                  |
-| `buildValidatedListAsync(count, ...args)`      | Build and validate a list sequentially and asynchronously.                |
+| Method                                    | Behavior                                                   |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| `with(patch)`                             | Return a new builder with an additional shallow patch.     |
+| `replace(value)`                          | Return a new builder replacing the entire value.           |
+| `transform(fn)`                           | Append a synchronous input-to-input transform.             |
+| `build(...args)`                          | Build input synchronously, without validation.             |
+| `buildAsync(...args)`                     | Build input, accepting an asynchronous factory.            |
+| `buildList(count, ...args)`               | Build input values synchronously.                          |
+| `buildListAsync(count, ...args)`          | Build input values sequentially and asynchronously.        |
+| `buildValidated(...args)`                 | Build and synchronously validate, returning schema output. |
+| `buildValidatedAsync(...args)`            | Await the factory and validation, returning schema output. |
+| `buildValidatedList(count, ...args)`      | Build and validate a list synchronously.                   |
+| `buildValidatedListAsync(count, ...args)` | Build and validate a list sequentially and asynchronously. |
 
 The four validated methods exist only on schema builders. Synchronous methods
 reject promise-like results; use the corresponding asynchronous method when a

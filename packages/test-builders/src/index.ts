@@ -56,10 +56,14 @@ export type ValidationResult<T> =
   | { readonly issues: ReadonlyArray<ValidationIssue> };
 
 export type SchemaInput<S extends StandardSchemaV1> = NonNullable<S['~standard']['types']>['input'];
-export type SchemaOutput<S extends StandardSchemaV1> = NonNullable<S['~standard']['types']>['output'];
+export type SchemaOutput<S extends StandardSchemaV1> = NonNullable<
+  S['~standard']['types']
+>['output'];
 
-export interface SchemaBuilder<Input, Output, Args extends unknown[] = []>
-  extends Builder<Input, Args> {
+export interface SchemaBuilder<Input, Output, Args extends unknown[] = []> extends Builder<
+  Input,
+  Args
+> {
   with(patch: BuilderPatch<Input>): SchemaBuilder<Input, Output, Args>;
   replace(value: Input): SchemaBuilder<Input, Output, Args>;
   transform(transformer: BuilderTransform<Input>): SchemaBuilder<Input, Output, Args>;
@@ -206,8 +210,11 @@ export function createSchemaBuilder<S extends StandardSchemaV1, Args extends unk
 
   type Input = SchemaInput<S>;
   type Output = SchemaOutput<S>;
-  function validate(value: Input): ValidationResult<Output> | PromiseLike<ValidationResult<Output>> {
-    return standard.validate(value) as ValidationResult<Output> | PromiseLike<ValidationResult<Output>>;
+  function validate(
+    value: Input
+  ): ValidationResult<Output> | PromiseLike<ValidationResult<Output>> {
+    return standard.validate(value) as
+      ValidationResult<Output> | PromiseLike<ValidationResult<Output>>;
   }
 
   const wrap = (base: Builder<Input, Args>): SchemaBuilder<Input, Output, Args> => {

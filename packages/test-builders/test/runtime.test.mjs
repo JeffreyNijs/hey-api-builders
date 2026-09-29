@@ -54,18 +54,53 @@ describe('factory builders', () => {
   });
 
   it('handles arrays, primitives, null and explicit undefined replacements', () => {
-    assert.deepEqual(createBuilder(() => [1, 2]).with([3]).build(), [3]);
-    assert.equal(createBuilder(() => 'old').with('new').build(), 'new');
-    assert.equal(createBuilder(() => 1).with(0).build(), 0);
-    assert.equal(createBuilder(() => true).with(false).build(), false);
-    assert.equal(createBuilder(() => 'old').with(null).build(), null);
-    assert.equal(createBuilder(() => 'old').with(undefined).build(), undefined);
+    assert.deepEqual(
+      createBuilder(() => [1, 2])
+        .with([3])
+        .build(),
+      [3]
+    );
+    assert.equal(
+      createBuilder(() => 'old')
+        .with('new')
+        .build(),
+      'new'
+    );
+    assert.equal(
+      createBuilder(() => 1)
+        .with(0)
+        .build(),
+      0
+    );
+    assert.equal(
+      createBuilder(() => true)
+        .with(false)
+        .build(),
+      false
+    );
+    assert.equal(
+      createBuilder(() => 'old')
+        .with(null)
+        .build(),
+      null
+    );
+    assert.equal(
+      createBuilder(() => 'old')
+        .with(undefined)
+        .build(),
+      undefined
+    );
   });
 
   it('preserves Date, Map, Set, RegExp and typed-array replacements', () => {
     const values = [new Date(1), new Map([['x', 1]]), new Set([1]), /test/u, new Uint8Array([1])];
     for (const value of values) {
-      assert.equal(createBuilder(() => value).with(value).build(), value);
+      assert.equal(
+        createBuilder(() => value)
+          .with(value)
+          .build(),
+        value
+      );
     }
   });
 
@@ -155,12 +190,18 @@ describe('factory builders', () => {
     const base = createBuilder(() => {
       throw failure;
     });
-    assert.throws(() => base.build(), (error) => error === failure);
+    assert.throws(
+      () => base.build(),
+      (error) => error === failure
+    );
     await assert.rejects(base.buildAsync(), (error) => error === failure);
     const transformed = createBuilder(() => 1).transform(() => {
       throw failure;
     });
-    assert.throws(() => transformed.build(), (error) => error === failure);
+    assert.throws(
+      () => transformed.build(),
+      (error) => error === failure
+    );
   });
 
   it('rejects asynchronous transforms rather than silently returning promises', async () => {
@@ -208,24 +249,33 @@ describe('Standard Schema validation', () => {
       return { issues };
     });
     const base = createSchemaBuilder(validator, () => ({ age: '42' })).with({ age: 'broken' });
-    assert.throws(() => base.buildValidated(), (error) => {
-      assert.equal(error.name, 'BuilderValidationError');
-      assert.equal(error.message, 'invalid age');
-      assert.equal(error.issues, issues);
-      return true;
-    });
+    assert.throws(
+      () => base.buildValidated(),
+      (error) => {
+        assert.equal(error.name, 'BuilderValidationError');
+        assert.equal(error.message, 'invalid age');
+        assert.equal(error.issues, issues);
+        return true;
+      }
+    );
     assert.equal(calls, 1);
   });
 
   it('treats even an empty issues array as a validation failure', () => {
-    const base = createSchemaBuilder(schema(() => ({ issues: [] })), () => 1);
+    const base = createSchemaBuilder(
+      schema(() => ({ issues: [] })),
+      () => 1
+    );
     assert.throws(() => base.buildValidated(), /Schema validation failed/);
   });
 
   it('preserves validation after with(), replace() and transform()', () => {
     const validator = schema((value) => ({ value: value * 10 }));
     const base = createSchemaBuilder(validator, () => 1);
-    const changed = base.with(2).replace(3).transform((value) => value + 1);
+    const changed = base
+      .with(2)
+      .replace(3)
+      .transform((value) => value + 1);
     assert.equal(changed.buildValidated(), 40);
     assert.equal(base.buildValidated(), 10);
   });
@@ -277,7 +327,10 @@ describe('Standard Schema validation', () => {
   });
 
   it('checks list counts before validation or generation', async () => {
-    const base = createSchemaBuilder(schema(() => assert.fail()), () => assert.fail());
+    const base = createSchemaBuilder(
+      schema(() => assert.fail()),
+      () => assert.fail()
+    );
     assert.deepEqual(base.buildValidatedList(0), []);
     assert.deepEqual(await base.buildValidatedListAsync(0), []);
     for (const count of invalidCounts) {
@@ -294,7 +347,10 @@ describe('Standard Schema validation', () => {
       }),
       () => 1
     );
-    assert.throws(() => base.buildValidated(), (error) => error === failure);
+    assert.throws(
+      () => base.buildValidated(),
+      (error) => error === failure
+    );
     await assert.rejects(base.buildValidatedAsync(), (error) => error === failure);
   });
 

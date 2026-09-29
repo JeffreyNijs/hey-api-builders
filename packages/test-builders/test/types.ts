@@ -33,11 +33,15 @@ expectType<Promise<Array<{ value: number }>>>(asynchronous.buildListAsync(2, 1))
 asynchronous.build(1);
 // @ts-expect-error Nor do async-derived builders regain synchronous methods.
 asynchronous.with({ value: 2 }).replace({ value: 3 }).buildList(2, 1);
-const maybeAsync = createBuilder((value: boolean): number | Promise<number> => value ? 1 : Promise.resolve(2));
+const maybeAsync = createBuilder((value: boolean): number | Promise<number> =>
+  value ? 1 : Promise.resolve(2)
+);
 // @ts-expect-error Potentially asynchronous return types require async methods.
 maybeAsync.build(true);
 const asyncSchema = createSchemaBuilder(schema, async (age: string) => ({ age }));
-expectType<Promise<{ age: number }>>(asyncSchema.usingValidation({}).with({ age: '2' }).buildValidatedAsync('1'));
+expectType<Promise<{ age: number }>>(
+  asyncSchema.usingValidation({}).with({ age: '2' }).buildValidatedAsync('1')
+);
 // @ts-expect-error Known-async schema factories cannot validate synchronously.
 asyncSchema.buildValidated('1');
 // @ts-expect-error Async schema chains retain async-only capabilities.
@@ -68,10 +72,17 @@ primitive.with({ value: 2 });
 // @ts-expect-error Async transforms need the explicit transformAsync method.
 primitive.transform(async (value) => value + 1);
 expectType<Promise<number>>(primitive.transformAsync(async (value) => value + 1).buildAsync());
-interface User { id: string; email: string; note?: string; }
+interface User {
+  id: string;
+  email: string;
+  note?: string;
+}
 const users = createBuilder((): User => ({ id: '1', email: 'test@example.com' }));
 users.with({ email: 'ada@example.com' });
-users.omit('note').withFactory(() => ({ note: 'fresh' })).replaceFactory(() => ({ id: 'x', email: 'x' }));
+users
+  .omit('note')
+  .withFactory(() => ({ note: 'fresh' }))
+  .replaceFactory(() => ({ id: 'x', email: 'x' }));
 // @ts-expect-error Whole-record replacement requires all required fields.
 users.replace({ email: 'ada@example.com' });
 // @ts-expect-error Unknown properties are rejected.

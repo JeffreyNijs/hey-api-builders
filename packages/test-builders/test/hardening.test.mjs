@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { setImmediate as nextTurn } from 'node:timers/promises';
 import { runInNewContext } from 'node:vm';
-import { createBuilder, createSchemaBuilder, BuilderValidationError, BuilderGenerationError } from '../dist/index.js';
+import {
+  createBuilder,
+  createSchemaBuilder,
+  BuilderValidationError,
+  BuilderGenerationError,
+} from '../dist/index.js';
 const schema = (validate) => ({ '~standard': { vendor: 'test', version: 1, validate } });
 
 describe('core hardening', () => {
@@ -15,11 +20,15 @@ describe('core hardening', () => {
   });
   it('replaces union variants without retaining properties from the old variant', () => {
     const cats = createBuilder(() => ({ kind: 'cat', lives: 9 }));
-    assert.deepEqual(cats.replace({ kind: 'dog', bark: true }).build(), { kind: 'dog', bark: true });
+    assert.deepEqual(cats.replace({ kind: 'dog', bark: true }).build(), {
+      kind: 'dog',
+      bark: true,
+    });
   });
   it('creates independent nested overrides for every build', () => {
-    const items = createBuilder(() => ({ id: 1, nested: { tags: [] } }))
-      .withFactory(() => ({ nested: { tags: ['new'] } }));
+    const items = createBuilder(() => ({ id: 1, nested: { tags: [] } })).withFactory(() => ({
+      nested: { tags: ['new'] },
+    }));
     const [first, second] = items.buildList(2);
     first.nested.tags.push('mutated');
     assert.deepEqual(second.nested.tags, ['new']);
@@ -27,7 +36,10 @@ describe('core hardening', () => {
   it('forwards the factory argument tuple to per-build overrides and transforms', async () => {
     const builder = createBuilder((offset, text) => ({ value: offset, text }))
       .withFactory((offset, text) => ({ value: offset * 2, text }))
-      .transform((value, offset, text) => ({ value: value.value + offset, text: text + value.text }));
+      .transform((value, offset, text) => ({
+        value: value.value + offset,
+        text: text + value.text,
+      }));
     assert.deepEqual(builder.build(3, 'x'), { value: 9, text: 'xx' });
     assert.deepEqual(await builder.buildAsync(4, 'y'), { value: 12, text: 'yy' });
   });
@@ -41,7 +53,9 @@ describe('core hardening', () => {
   it('omits fields without mutating the input, including own symbols and prototype-like keys', () => {
     const key = Symbol('optional');
     const original = { id: 1, note: 'old', [key]: true, ...JSON.parse('{"__proto__":1}') };
-    const result = createBuilder(() => original).omit('note', key, '__proto__').build();
+    const result = createBuilder(() => original)
+      .omit('note', key, '__proto__')
+      .build();
     assert.deepEqual(result, { id: 1 });
     assert.equal(original.note, 'old');
     assert.equal(Object.hasOwn(original, '__proto__'), true);
@@ -55,11 +69,23 @@ describe('core hardening', () => {
   });
   it('retains patch-before-transform ordering and operation order within each stage', () => {
     const order = [];
-    const result = createBuilder(() => { order.push('factory'); return { value: 0, note: 'x' }; })
-      .transform((value) => { order.push('transform1'); return { ...value, value: value.value * 2 }; })
-      .withFactory(() => { order.push('patch'); return { value: 3 }; })
+    const result = createBuilder(() => {
+      order.push('factory');
+      return { value: 0, note: 'x' };
+    })
+      .transform((value) => {
+        order.push('transform1');
+        return { ...value, value: value.value * 2 };
+      })
+      .withFactory(() => {
+        order.push('patch');
+        return { value: 3 };
+      })
       .omit('note')
-      .transform((value) => { order.push('transform2'); return { ...value, value: value.value + 1 }; })
+      .transform((value) => {
+        order.push('transform2');
+        return { ...value, value: value.value + 1 };
+      })
       .build();
     assert.deepEqual(result, { value: 7 });
     assert.deepEqual(order, ['factory', 'patch', 'transform1', 'transform2']);
@@ -82,12 +108,17 @@ describe('core hardening', () => {
   });
   it('keeps validation through every new fluent operation, including async transforms', async () => {
     let validations = 0;
-    const base = createSchemaBuilder(schema((input) => {
-      validations++;
-      return { value: { count: Number(input.count) } };
-    }), () => ({ count: '1', note: 'x' }));
-    const next = base.withFactory(() => ({ count: '2' }))
-      .replaceFactory(() => ({ count: '3', note: 'x' })).omit('note')
+    const base = createSchemaBuilder(
+      schema((input) => {
+        validations++;
+        return { value: { count: Number(input.count) } };
+      }),
+      () => ({ count: '1', note: 'x' })
+    );
+    const next = base
+      .withFactory(() => ({ count: '2' }))
+      .replaceFactory(() => ({ count: '3', note: 'x' }))
+      .omit('note')
       .transformAsync(async (value) => ({ count: String(Number(value.count) + 1) }));
     assert.deepEqual(await next.buildValidatedAsync(), { count: 4 });
     assert.equal(validations, 1);
@@ -97,7 +128,7 @@ describe('core hardening', () => {
     const options = { libraryOptions: { custom: 42 } };
     const input = { id: 'x' };
     let received;
-    const validator = schema(function(value, validationOptions) {
+    const validator = schema(function (value, validationOptions) {
       assert.equal(this.vendor, 'test');
       received = validationOptions;
       return { value };
@@ -109,16 +140,32 @@ describe('core hardening', () => {
     base.buildValidated(input);
     assert.equal(received, undefined);
     createSchemaBuilder(validator, () => input, { validationOptions: options }).buildValidated();
-    assert.deepEqual(received, received);
+    assert.deepEqual(received, options);
   });
   it('rejects malformed schema handles with a useful error', () => {
-    for (const invalid of [undefined, null, {}, { '~standard': {} }, { '~standard': { version: 2, validate() {} } }]) {
+    for (const invalid of [
+      undefined,
+      null,
+      {},
+      { '~standard': {} },
+      { '~standard': { version: 2, validate() {} } },
+    ]) {
       assert.throws(() => createSchemaBuilder(invalid, () => 1), /Standard Schema v1/);
     }
   });
   it('enforces configurable allocation budgets before any factory or validation work', async () => {
     let calls = 0;
-    const base = createSchemaBuilder(schema((value) => { calls++; return { value }; }), () => { calls++; return 1; }, { maxListSize: 2 });
+    const base = createSchemaBuilder(
+      schema((value) => {
+        calls++;
+        return { value };
+      }),
+      () => {
+        calls++;
+        return 1;
+      },
+      { maxListSize: 2 }
+    );
     assert.throws(() => base.buildList(3), RangeError);
     assert.throws(() => base.buildValidatedList(3), RangeError);
     await assert.rejects(base.buildListAsync(3), RangeError);
@@ -137,14 +184,23 @@ describe('core hardening', () => {
     assert.throws(() => createBuilder(() => assert.fail()).buildList(10_001), RangeError);
   });
   it('never includes fixture values in the operation description', () => {
-    const base = createBuilder(() => ({ secret: 'do-not-log' })).with({ secret: 'private' }).omit('missing').transform((v) => v);
+    const base = createBuilder(() => ({ secret: 'do-not-log' }))
+      .with({ secret: 'private' })
+      .omit('missing')
+      .transform((v) => v);
     const description = base.describe();
     assert.deepEqual(description.operations, ['factory', 'merge', 'omit', 'transform']);
     assert.equal(JSON.stringify(description).includes('private'), false);
     assert.equal(description.validation, false);
     assert.equal(Object.isFrozen(description), true);
     assert.equal(Object.isFrozen(description.operations), true);
-    assert.equal(createSchemaBuilder(schema((value) => ({ value })), () => 1).describe().validation, true);
+    assert.equal(
+      createSchemaBuilder(
+        schema((value) => ({ value })),
+        () => 1
+      ).describe().validation,
+      true
+    );
   });
   it('checks callbacks when configured, not only when executed', () => {
     const base = createBuilder(() => 1);
@@ -167,11 +223,20 @@ describe('core hardening', () => {
     assert.equal(error.cause, cause);
     assert.equal(error.code, 'GENERATION_FAILED');
     const issues = [{ message: 'no', path: ['x', { key: 1 }] }];
-    const base = createSchemaBuilder(schema(() => ({ issues })), () => 1).transformAsync(async v => v);
-    await assert.rejects(base.buildValidatedAsync(), error => error instanceof BuilderValidationError && error.issues === issues);
+    const base = createSchemaBuilder(
+      schema(() => ({ issues })),
+      () => 1
+    ).transformAsync(async (v) => v);
+    await assert.rejects(
+      base.buildValidatedAsync(),
+      (error) => error instanceof BuilderValidationError && error.issues === issues
+    );
   });
   it('preserves cross-realm asynchronous factories and validation', async () => {
-    const base = createSchemaBuilder(schema(() => runInNewContext('Promise.resolve({value: 3})')), () => runInNewContext('Promise.resolve(1)'));
+    const base = createSchemaBuilder(
+      schema(() => runInNewContext('Promise.resolve({value: 3})')),
+      () => runInNewContext('Promise.resolve(1)')
+    );
     assert.equal(await base.buildValidatedAsync(), 3);
     assert.throws(() => base.build(), /buildAsync/);
   });

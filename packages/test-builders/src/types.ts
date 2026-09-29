@@ -36,18 +36,16 @@ type SinglePatch<T> = T extends Atomic
           : Partial<T>
     : T;
 /** Object unions (including nullable objects) require explicit whole-value replacement. */
-export type BuilderPatch<T> = true extends IsUnion<T>
-  ? [Extract<T, object>] extends [never]
-    ? T
-    : never
-  : SinglePatch<T>;
-export type OptionalKeys<T> = true extends IsUnion<T>
-  ? never
-  : T extends Atomic
+export type BuilderPatch<T> =
+  true extends IsUnion<T> ? ([Extract<T, object>] extends [never] ? T : never) : SinglePatch<T>;
+export type OptionalKeys<T> =
+  true extends IsUnion<T>
     ? never
-    : {
-        [K in keyof T]-?: Record<never, never> extends Pick<T, K> ? K : never;
-      }[keyof T];
+    : T extends Atomic
+      ? never
+      : {
+          [K in keyof T]-?: Record<never, never> extends Pick<T, K> ? K : never;
+        }[keyof T];
 
 export interface BuilderConfig {
   /** Allocation budget checked before invoking any factory. Default: 10,000. */
@@ -70,7 +68,9 @@ export interface AsyncBuilder<T, Args extends unknown[] = []> {
   replaceFactory(factory: (...args: Args) => T): AsyncBuilder<T, Args>;
   omit(...keys: OptionalKeys<T>[]): AsyncBuilder<T, Args>;
   transform(transformer: BuilderTransform<T, Args>): AsyncBuilder<T, Args>;
-  transformAsync(transformer: (value: T, ...args: Args) => T | PromiseLike<T>): AsyncBuilder<T, Args>;
+  transformAsync(
+    transformer: (value: T, ...args: Args) => T | PromiseLike<T>
+  ): AsyncBuilder<T, Args>;
   buildAsync(...args: Args): Promise<T>;
   buildListAsync(count: number, ...args: Args): Promise<Array<T>>;
   describe(): BuilderDescription;
@@ -85,13 +85,16 @@ export interface Builder<T, Args extends unknown[] = []> extends AsyncBuilder<T,
   build(...args: Args): T;
   buildList(count: number, ...args: Args): Array<T>;
 }
-export interface AsyncSchemaBuilder<Input, Output, Args extends unknown[] = []> extends AsyncBuilder<
+export interface AsyncSchemaBuilder<
   Input,
-  Args
-> {
+  Output,
+  Args extends unknown[] = [],
+> extends AsyncBuilder<Input, Args> {
   with(patch: BuilderPatch<Input>): AsyncSchemaBuilder<Input, Output, Args>;
   replace(value: Input): AsyncSchemaBuilder<Input, Output, Args>;
-  withFactory(factory: (...args: Args) => BuilderPatch<Input>): AsyncSchemaBuilder<Input, Output, Args>;
+  withFactory(
+    factory: (...args: Args) => BuilderPatch<Input>
+  ): AsyncSchemaBuilder<Input, Output, Args>;
   replaceFactory(factory: (...args: Args) => Input): AsyncSchemaBuilder<Input, Output, Args>;
   omit(...keys: OptionalKeys<Input>[]): AsyncSchemaBuilder<Input, Output, Args>;
   transform(transformer: BuilderTransform<Input, Args>): AsyncSchemaBuilder<Input, Output, Args>;
@@ -102,11 +105,11 @@ export interface AsyncSchemaBuilder<Input, Output, Args extends unknown[] = []> 
   buildValidatedAsync(...args: Args): Promise<Output>;
   buildValidatedListAsync(count: number, ...args: Args): Promise<Array<Output>>;
 }
-export interface SchemaBuilder<Input, Output, Args extends unknown[] = []> extends AsyncSchemaBuilder<
+export interface SchemaBuilder<
   Input,
   Output,
-  Args
-> {
+  Args extends unknown[] = [],
+> extends AsyncSchemaBuilder<Input, Output, Args> {
   with(patch: BuilderPatch<Input>): SchemaBuilder<Input, Output, Args>;
   replace(value: Input): SchemaBuilder<Input, Output, Args>;
   withFactory(factory: (...args: Args) => BuilderPatch<Input>): SchemaBuilder<Input, Output, Args>;
@@ -119,9 +122,11 @@ export interface SchemaBuilder<Input, Output, Args extends unknown[] = []> exten
   buildValidated(...args: Args): Output;
   buildValidatedList(count: number, ...args: Args): Array<Output>;
 }
-export type BuilderFor<F extends AnyFactory> = IsAsync<F> extends true
-  ? AsyncBuilder<Awaited<ReturnType<F>>, Parameters<F>>
-  : Builder<ReturnType<F>, Parameters<F>>;
-export type SchemaBuilderFor<S extends StandardSchemaV1, F extends AnyFactory> = IsAsync<F> extends true
-  ? AsyncSchemaBuilder<SchemaInput<S>, SchemaOutput<S>, Parameters<F>>
-  : SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, Parameters<F>>;
+export type BuilderFor<F extends AnyFactory> =
+  IsAsync<F> extends true
+    ? AsyncBuilder<Awaited<ReturnType<F>>, Parameters<F>>
+    : Builder<ReturnType<F>, Parameters<F>>;
+export type SchemaBuilderFor<S extends StandardSchemaV1, F extends AnyFactory> =
+  IsAsync<F> extends true
+    ? AsyncSchemaBuilder<SchemaInput<S>, SchemaOutput<S>, Parameters<F>>
+    : SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, Parameters<F>>;

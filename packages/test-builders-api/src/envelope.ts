@@ -25,7 +25,8 @@ export interface FixturePart {
 export function envelope<I extends object>(
   parts: readonly FixturePart[],
   identityName: string,
-  options: ContractOptions
+  options: ContractOptions,
+  copy: (value: unknown) => unknown = (value) => snapshot(value, options)
 ) {
   const identity = Object.freeze({
     fingerprint: JSON.stringify(
@@ -37,9 +38,9 @@ export function envelope<I extends object>(
   const inspect = (value: unknown): StandardSchemaV1.Result<I> => {
     let input: Record<string, unknown>;
     try {
-      input = object(snapshot(value, options));
+      input = object(copy(value));
     } catch {
-      return { issues: [{ message: 'Expected a bounded JSON envelope' }] };
+      return { issues: [{ message: 'Expected a bounded data envelope' }] };
     }
     const issues: ValidationIssue[] = [];
     const groups = new Set(parts.map((p) => p.group));

@@ -25,3 +25,15 @@ expectType<string>(openApi(document).request({}).serialize({}).url);
 // @ts-expect-error Parameter locations are a closed protocol-specific set.
 serializeParameter({ name: 'id', in: 'body' }, 1);
 void user;
+
+import { asyncApi, fromAsyncApiMessage, type MessageFixture } from '@jeffreynijs/test-builders-api';
+const messages = fromAsyncApiMessage(document, { action: 'receive' });
+expectType<MessageFixture>(messages.buildValidated());
+expectType<string>(asyncApi(document).message().serialize({}).address);
+// @ts-expect-error Runtime message definitions cannot infer application data.
+const payload: { id: string } = messages.build().payload;
+// @ts-expect-error Message envelopes are not HTTP request envelopes.
+messages.with({ query: {} });
+// @ts-expect-error Actions use the application perspective.
+asyncApi(document).message({ action: 'publish' });
+void payload;

@@ -31,3 +31,5 @@ export function createSchemaBuilder<
   }
   return initializeRuntime(factory, config, schema) as unknown as SchemaBuilderFor<S, F>;
 }
+
+export * from './session.js';

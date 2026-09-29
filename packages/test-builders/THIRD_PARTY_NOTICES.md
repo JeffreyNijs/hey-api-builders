@@ -26,3 +26,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## SplitMix64
+
+The session PRNG adapts the SplitMix64 mixing function by Sebastiano Vigna (2015).
+Reference: <https://prng.di.unimi.it/splitmix64.c>. The author dedicated this code
+to the public domain and grants permission to use, copy, modify, and distribute
+it for any purpose, with or without fee. The software is provided as-is, without
+warranties or liability. This is not a cryptographic generator.

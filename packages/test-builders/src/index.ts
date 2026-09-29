@@ -37,3 +37,7 @@ export * from './session.js';
 export * from './capture.js';
 
 export * from './scenario.js';
+
+export * from './facade.js';
+
+export * from './path.js';

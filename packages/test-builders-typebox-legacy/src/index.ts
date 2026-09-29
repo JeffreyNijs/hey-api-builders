@@ -1,4 +1,5 @@
 import type { StaticDecode, StaticEncode, TSchema } from '@sinclair/typebox';
+import { Errors } from '@sinclair/typebox/errors';
 import * as Value from '@sinclair/typebox/value';
 import {
   BuilderGenerationError,
@@ -32,7 +33,7 @@ export function typeBoxAdapter<S extends TSchema>(source: S, options: TypeBoxOpt
   const references = [...(options.references ?? [])];
   const check = (value: unknown): value is Input => Value.Check(source, references, value);
   const issues = (value: unknown): ValidationIssue[] =>
-    [...Value.Errors(source, references, value)].map((error) => ({
+    [...Errors(source, references, value)].map((error) => ({
       message: error.message,
       path: path(error.path),
     }));

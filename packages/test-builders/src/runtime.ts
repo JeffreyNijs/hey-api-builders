@@ -34,6 +34,7 @@ type Transform = {
   readonly run: (value: unknown, ...args: unknown[]) => unknown;
 };
 type State = {
+  readonly cloneInput?: <T>(value: T) => T;
   readonly factory: (...args: unknown[]) => unknown;
   readonly operations: ReadonlyArray<Operation>;
   readonly transforms: ReadonlyArray<Transform>;
@@ -133,19 +134,23 @@ export function makeRuntime(state: State) {
     }
     return state.standard.validate(value, state.validationOptions);
   };
+  const prepare = (value: unknown) =>
+    state.cloneInput
+      ? synchronous(invoke(state.cloneInput, [value]), 'a synchronous input clone')
+      : value;
   const build = (...args: unknown[]) => {
     if (state.transforms.some((transform) => transform.asynchronous)) {
       throw new TypeError('An asynchronous transform requires buildAsync()');
     }
     const initial = synchronous(invoke(state.factory, args), 'buildAsync()');
-    let value = applyOperations(state, initial, args);
+    let value = prepare(applyOperations(state, initial, args));
     for (const transform of state.transforms) {
       value = synchronous(invoke(transform.run, [value, ...args]), 'a synchronous transform');
     }
     return value;
   };
   const buildAsync = async (...args: unknown[]) => {
-    let value = applyOperations(state, await invoke(state.factory, args), args);
+    let value = prepare(applyOperations(state, await invoke(state.factory, args), args));
     for (const transform of state.transforms) {
       const result = invoke(transform.run, [value, ...args]);
       value = transform.asynchronous
@@ -216,6 +221,7 @@ export function makeRuntime(state: State) {
     describe(): BuilderDescription {
       return Object.freeze({
         maxListSize: state.maxListSize,
+        cloneInput: state.cloneInput !== undefined,
         validation: state.standard !== undefined,
         operations: Object.freeze([
           'factory',
@@ -250,6 +256,9 @@ export function initializeRuntime(
   schema?: StandardSchemaV1
 ) {
   callable(factory, 'A builder');
+  if (config.cloneInput !== undefined) {
+    callable(config.cloneInput, 'cloneInput');
+  }
   const maxListSize = config.maxListSize ?? 10_000;
   checkCount(maxListSize, 0xffffffff);
   const standard = schema?.['~standard'];
@@ -265,6 +274,7 @@ export function initializeRuntime(
     operations: [],
     transforms: [],
     maxListSize,
+    ...(config.cloneInput ? { cloneInput: config.cloneInput } : {}),
     ...(standard ? { standard } : {}),
     ...(validationOptions ? { validationOptions: Object.freeze({ ...validationOptions }) } : {}),
   });

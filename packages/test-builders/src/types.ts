@@ -48,6 +48,8 @@ export type OptionalKeys<T> =
         }[keyof T];
 
 export interface BuilderConfig {
+  /** Clone composed input before transforms/validation. The default preserves references. */
+  readonly cloneInput?: <T>(value: T) => T;
   /** Allocation budget checked before invoking any factory. Default: 10,000. */
   readonly maxListSize?: number;
 }
@@ -56,6 +58,7 @@ export interface SchemaBuilderConfig extends BuilderConfig {
   readonly validationOptions?: StandardSchemaV1.Options;
 }
 export interface BuilderDescription {
+  readonly cloneInput: boolean;
   readonly maxListSize: number;
   readonly operations: ReadonlyArray<string>;
   readonly validation: boolean;

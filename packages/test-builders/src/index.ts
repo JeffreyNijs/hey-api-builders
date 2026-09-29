@@ -35,3 +35,5 @@ export function createSchemaBuilder<
 export * from './session.js';
 
 export * from './capture.js';
+
+export * from './scenario.js';

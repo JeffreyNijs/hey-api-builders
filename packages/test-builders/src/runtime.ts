@@ -53,9 +53,9 @@ function merge(value: unknown, patch: unknown): unknown {
   if (plainRecord(value) && plainRecord(patch)) {
     return { ...value, ...patch };
   }
-  // A partial record cannot safely replace an absent value or a class instance.
-  if (plainRecord(patch)) {
-    throw new TypeError('Cannot merge a record into a non-record value; use replace()');
+  // Partial structural types cannot safely cross either plain-record boundary.
+  if (plainRecord(value) || plainRecord(patch)) {
+    throw new TypeError('Cannot merge between record and non-record values; use replace()');
   }
   return patch;
 }
@@ -68,6 +68,9 @@ function synchronous(value: unknown, asyncMethod: string): unknown {
     throw new TypeError(`Received an asynchronous result; use ${asyncMethod} instead`);
   }
   return value;
+}
+function invoke(callback: (...args: unknown[]) => unknown, args: unknown[]): unknown {
+  return Reflect.apply(callback, undefined, args);
 }
 function callable(value: unknown, name: string): asserts value is (...args: unknown[]) => unknown {
   if (typeof value !== 'function') {
@@ -92,11 +95,11 @@ function applyOperations(state: State, initial: unknown, args: unknown[]): unkno
       case 'mergeFactory':
         value = merge(
           value,
-          synchronous(operation.factory(...args), 'a synchronous patch factory')
+          synchronous(invoke(operation.factory, args), 'a synchronous patch factory')
         );
         break;
       case 'replaceFactory':
-        value = synchronous(operation.factory(...args), 'a synchronous replacement factory');
+        value = synchronous(invoke(operation.factory, args), 'a synchronous replacement factory');
         break;
       case 'omit': {
         if (!plainRecord(value)) {
@@ -134,16 +137,17 @@ export function makeRuntime(state: State) {
     if (state.transforms.some((transform) => transform.asynchronous)) {
       throw new TypeError('An asynchronous transform requires buildAsync()');
     }
-    let value = applyOperations(state, synchronous(state.factory(...args), 'buildAsync()'), args);
+    const initial = synchronous(invoke(state.factory, args), 'buildAsync()');
+    let value = applyOperations(state, initial, args);
     for (const transform of state.transforms) {
-      value = synchronous(transform.run(value, ...args), 'a synchronous transform');
+      value = synchronous(invoke(transform.run, [value, ...args]), 'a synchronous transform');
     }
     return value;
   };
   const buildAsync = async (...args: unknown[]) => {
-    let value = applyOperations(state, await state.factory(...args), args);
+    let value = applyOperations(state, await invoke(state.factory, args), args);
     for (const transform of state.transforms) {
-      const result = transform.run(value, ...args);
+      const result = invoke(transform.run, [value, ...args]);
       value = transform.asynchronous
         ? await result
         : synchronous(result, 'a synchronous transform');

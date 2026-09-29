@@ -42,7 +42,7 @@
     "pack:check": "npm pack --dry-run",
     "prepack": "pnpm build",
     "prepublishOnly": "pnpm check",
-    "test:optional": "node scripts/test-optional.mjs fast-check"
+    "test:optional": "node scripts/test-optional.mjs fast-check && node scripts/test-optional.mjs json-schema"
   },
   "keywords": [
     "hey-api",

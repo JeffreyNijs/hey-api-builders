@@ -6,7 +6,6 @@ import {
   createSchemaBuilder,
 } from '@jeffreynijs/test-builders';
 import type {
-  SchemaBuilder,
   SchemaBuilderConfig,
   SchemaBuilderFor,
   StandardSchemaV1,
@@ -99,7 +98,10 @@ export function typeBoxAdapter<S extends TSchema, C extends TProperties = Record
 export function fromTypeBox<S extends TSchema, C extends TProperties = Record<never, never>>(
   schema: S,
   options: TypeBoxOptions<C> = {}
-): SchemaBuilder<StaticEncode<S, C>, StaticDecode<S, C>> {
+): SchemaBuilderFor<
+  StandardSchemaV1<StaticEncode<S, C>, StaticDecode<S, C>>,
+  () => StaticEncode<S, C>
+> {
   const adapter = typeBoxAdapter(schema, options);
   return createSchemaBuilder(adapter.standard, () => adapter.create(), options);
 }

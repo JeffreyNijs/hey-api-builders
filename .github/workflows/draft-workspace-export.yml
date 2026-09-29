@@ -23,17 +23,24 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: npm ci --prefix tests/compatibility/typebox --ignore-scripts --no-audit --no-fund
+      - name: Resolve candidate dependencies into an isolated development fixture
+        run: |
+          mkdir -p /tmp/toolkit-dependencies
+          npm install --prefix /tmp/toolkit-dependencies --save-exact --ignore-scripts --no-audit --no-fund json-schema-faker ajv ajv-formats fast-check valibot @valibot/to-json-schema arktype effect graphql protobufjs avsc json-schema-to-typescript @changesets/cli @arethetypeswrong/cli publint msw pnpm@10.34.5 typescript@6.0.3
+          cat /tmp/toolkit-dependencies/package.json
       - name: Archive only project files and installed dependencies
         run: |
           git ls-files -z > /tmp/project-files
           tar --null -T /tmp/project-files -czf /tmp/project-source.tgz
           tar -czf /tmp/project-dependencies.tgz node_modules tests/compatibility/typebox/node_modules
+          tar -C /tmp/toolkit-dependencies -czf /tmp/toolkit-dependencies.tgz package.json package-lock.json node_modules
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: draft-verification-workspace
           path: |
             /tmp/project-source.tgz
             /tmp/project-dependencies.tgz
+            /tmp/toolkit-dependencies.tgz
           retention-days: 1
           compression-level: 0
           if-no-files-found: error

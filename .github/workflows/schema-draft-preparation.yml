@@ -25,6 +25,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: npm install --prefix tests/compatibility/typebox --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Correct the options-test transcription before formatting
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const path = 'packages/test-builders/test/hardening.test.mjs';
+          const source = readFileSync(path, 'utf8');
+          writeFileSync(path, source.replace('assert.deepEqual(received, received);', 'assert.deepEqual(received, options);'));
+          JS
       - run: pnpm exec eslint . --fix
       - run: pnpm exec prettier --write . --ignore-unknown
       - name: Commit only the draft's generated formatting and fixture lockfile
@@ -33,7 +41,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- packages/test-builders packages/test-builders-typebox packages/test-builders-typebox-legacy scripts/test-core.mjs scripts/test-typebox.mjs tests/compatibility/typebox package.json
+          git add -- packages/test-builders packages/test-builders-typebox packages/test-builders-typebox-legacy scripts/test-core.mjs scripts/test-typebox.mjs tests/compatibility/typebox package.json docs/schema-independent-builders.md docs/product-roadmap.md
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'chore: format schema draft and lock native compatibility fixtures'
           git push "https://x-access-token:${GH_TOKEN}@github.com/JeffreyNijs/hey-api-builders.git" HEAD:refs/heads/chat/standard-schema-core-20260929

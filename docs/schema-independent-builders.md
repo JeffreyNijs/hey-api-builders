@@ -1,59 +1,41 @@
-# Evolve the repository, separate the packages
+# Schema-independent builders: architecture and migration
 
-## Decision
+## Repository decision
 
-Keep this repository and add a neutrally named, independently packable builder
-core under `packages/test-builders`. Keep the root `hey-api-builders` package as
-the existing Hey API integration. Do not rename the repository, publish a new
-package, change the existing default export, or migrate consumers in this PR.
+Keep one repository with independently packable, neutrally named packages. The existing `hey-api-builders` npm package remains the compatibility integration. Do not rename the repository, publish a new package, or migrate existing consumers as a side effect of an implementation PR.
 
-The package name `@jeffreynijs/test-builders` is provisional; `private: true`
-prevents accidental publication. The core can be built and installed from a local
-tarball without Hey API, Faker, Zod or the repository's development dependencies.
+Current packages are private and unreleased:
 
-A new repository would duplicate release infrastructure and make it harder to
-run the existing integration's regression tests alongside core changes. A
-separate package is the useful dependency boundary; it does not require a
-separate Git repository. The repository itself can be renamed after the neutral
-API and package name are settled.
+- `packages/test-builders`: shared immutable execution runtime and Standard Schema support.
+- `packages/test-builders-typebox`: native modern TypeBox creation, strict checking, and codecs.
+- `packages/test-builders-typebox-legacy`: native maintained legacy TypeBox support.
 
-## Implemented here
+A full workspace and package-aware release process are still required before publication. The isolated consumer tests prove these package boundaries without allowing undeclared monorepo dependencies to conceal packaging errors.
 
-- A small dependency-free TypeScript runtime for immutable factory builders.
-- Standard Schema v1 input/output inference and opt-in validation.
-- Synchronous and asynchronous factories/validation, sequential lists, and
-  preserved factory argument types.
-- Record-only shallow merging, atomic non-JSON values, explicit replacement,
-  and regression tests for Date/Map/class-instance handling.
-- Independent runtime/type tests plus real Zod interoperability tests in CI.
+## Implemented behavior
 
-See [the core README](../packages/test-builders/README.md) for the API and precise
-support contract. A validator and a factory are still required for validated
-fixtures; universal schema-only generation is not implemented.
+The core separates public capability types from one execution runtime. It preserves factory argument tuples, distinguishes synchronous and asynchronous factories, supports synchronous and explicitly asynchronous transforms, and carries Standard Schema input/output types through validation. It has record-only merging, conservative full replacement for object unions, per-build overrides, optional omission, list budgets, and operation-only descriptions.
 
-## Deliberate compatibility boundary
+The native adapters retain original schema objects and use native operations. Modern TypeBox's default decode pipeline can normalize data; the adapter instead checks encoded input and then applies only codec callbacks to a clone. Legacy Decode has a different pipeline and is handled separately. No adapter serializes codecs or native types through JSON merely to share a generator.
 
-This is the first implementation slice, not a completed rewrite of the Hey API
-emitter. The old plugin still emits its existing self-contained builder code;
-it does not import this unpublished package. Its source and generated API are
-unchanged by this PR. Consequently, the new non-record guards apply to the new
-core, not retroactively to previously generated Hey API builders.
+Native automatic creation is a limited defaults/minimal-example provider. It is not seeded random generation or a universal solver. Failure retains its cause and offers a custom factory rather than inventing a validity guarantee.
 
-Making the old emitter a thin adapter is the next extraction step. Before doing
-that, decide whether generated clients should import a published core or retain
-an inlined runtime. Importing an unpublished package would break consumers;
-maintaining two subtly different runtimes indefinitely would also be undesirable.
-The old end-to-end suite remains the migration acceptance test.
+## One runtime, rich adapters
 
-## Subsequent scope
+The architectural rule is capability preservation. Typed factories, Standard Schema validators, Standard JSON Schema conversion, and native adapters are complementary inputs. Standard Schema alone supplies no generation algorithm. A native adapter can retain capabilities that are absent from a JSON representation.
 
-1. Adopt the core in the Hey API emitter with a tested packaging strategy and
-   explicitly handle any generated API changes.
-2. Add a separate schema-to-factory provider, preferably through Standard JSON
-   Schema where available. Declare supported dialects/features, validate output,
-   bound retries, and reject unsupported conversions rather than fabricating
-   validity guarantees. See <https://standardschema.dev/json-schema>.
-3. Add standalone field-aware code generation only where static metadata exists.
-   Keep the runtime `with()` API usable without generated classes.
-4. Choose the stable neutral package/repository name and publish through an
-   explicit release, with no automatic replacement of `hey-api-builders`.
+The canonical Standard interfaces are vendored as type-only code with their license. Vendoring avoids a runtime dependency and allows isolated offline core testing; it requires periodic parity checks against the upstream spec. Native adapters remain separate packages with explicitly tested peer versions.
+
+## Existing Hey API compatibility
+
+The old plugin continues to emit its existing self-contained runtime. This PR does not claim its generated classes have acquired the new core's guards or methods. Adopting the new runtime requires a deliberate packaging and versioning step, with the existing generation/compilation/behavior tests as acceptance gates.
+
+Imported runtime output should be the default future codegen mode. An optional self-contained mode must be generated from the same canonical implementation, never maintained as a second handwritten runtime. Arbitrary closures or native schema callbacks cannot simply be serialized; such consumers need imports or a documented limitation.
+
+## Trust and correctness boundaries
+
+Factories, schemas, registries, codecs, and callback implementations remain trusted application code. List budgets do not sandbox native recursion or regex execution. Runtime schema validation is explicit; typed unchecked fixtures are not automatically valid against refinements. Native callback failures are not a reason to repair or retry user overrides.
+
+Compile-time union restrictions prevent common incomplete-variant patches, but erased runtime types cannot be reconstructed. Raw JSON inputs, validation-aware variant selection, sandboxed execution, and per-operation generation budgets require additional work.
+
+See `product-roadmap.md` for the accepted long-term scope and its release gates. Package READMEs describe implemented APIs; roadmap entries are not promises of current support.

@@ -4,7 +4,7 @@
  * The canonical public interfaces are retained rather than a reduced lookalike.
  * See THIRD_PARTY_NOTICES.md. Type-only: no emitted implementation.
  */
-/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-object-type */
+/* eslint-disable no-redeclare, @typescript-eslint/no-namespace, @typescript-eslint/no-empty-object-type */
 export interface StandardTypedV1<Input = unknown, Output = Input> {
   readonly '~standard': StandardTypedV1.Props<Input, Output>;
 }

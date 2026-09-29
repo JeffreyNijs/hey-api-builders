@@ -46,7 +46,7 @@ export type OptionalKeys<T> = true extends IsUnion<T>
   : T extends Atomic
     ? never
     : {
-        [K in keyof T]-?: {} extends Pick<T, K> ? K : never;
+        [K in keyof T]-?: Record<never, never> extends Pick<T, K> ? K : never;
       }[keyof T];
 
 export interface BuilderConfig {

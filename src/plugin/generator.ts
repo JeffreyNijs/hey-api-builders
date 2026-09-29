@@ -10,8 +10,7 @@ export interface RuntimeSymbols {
   builderOptions: SymbolRef;
   builderPatch: SymbolRef;
   builderTransform: SymbolRef;
-  mergeBuilderPatch: SymbolRef;
-  mergeBuilderPatches: SymbolRef;
+  createBuilderClass: SymbolRef;
 }
 
 interface BuilderTarget {
@@ -26,150 +25,49 @@ interface BuilderTarget {
   statusCode?: string;
 }
 
-/** Emit the small shared runtime used by every generated builder class. */
+/** Reference the canonical runtime instead of maintaining an emitted implementation. */
 export function emitRuntime(plugin: PluginInstance): RuntimeSymbols {
-  const builderOptions = plugin.symbol('BuilderOptions', {
-    kind: 'type',
-    meta: {
-      category: 'utility',
-      resource: 'builder',
-    },
+  const module = plugin.config.runtimeModule;
+  if (typeof module !== 'string' || !module.trim() || /[\r\n\0]/.test(module)) {
+    throw new TypeError('runtimeModule must be a nonempty module specifier');
+  }
+  const createBuilderClass = plugin.symbol('createBuilderClass', {
+    external: module,
+    kind: 'function',
   });
-  const callableType = $.type
+  const patch = plugin.symbol('BuilderPatch', { external: module, kind: 'type' });
+  const transform = plugin.symbol('BuilderTransform', { external: module, kind: 'type' });
+  const utility = (name: string) =>
+    plugin.symbol(name, {
+      kind: 'type',
+      meta: { category: 'utility', resource: 'builder' },
+    });
+  const builderOptions = utility('BuilderOptions');
+  const callable = $.type
     .func()
-    .param('_argument', (parameter) => parameter.optional().type('never'))
+    .param('_argument', (p) => p.optional().type('never'))
     .returns('unknown');
-  const parametersType = () => $.type('Parameters').generic('TFactory');
-  const optionsType = $.type
-    .ternary(parametersType())
-    .extends($.type.tuple())
-    .do('undefined')
-    .otherwise(parametersType().idx(0));
+  const parameters = () => $.type('Parameters').generic('TFactory');
   plugin.node(
     $.type
       .alias(builderOptions)
       .export()
-      .generic('TFactory', (parameter) => parameter.extends(callableType))
-      .type(optionsType)
+      .generic('TFactory', (p) => p.extends(callable))
+      .type(
+        $.type
+          .ternary(parameters())
+          .extends($.type.tuple())
+          .do('undefined')
+          .otherwise(parameters().idx(0))
+      )
   );
-
-  const builderPatch = plugin.symbol('BuilderPatch', {
-    kind: 'type',
-    meta: {
-      category: 'utility',
-      resource: 'builder',
-    },
-  });
-  const objectPatch = $.type
-    .ternary('T')
-    .extends('object')
-    .do($.type('Partial').generic('T'))
-    .otherwise('T');
-  const patchType = $.type
-    .ternary('T')
-    .extends($.type('ReadonlyArray').generic('unknown'))
-    .do('T')
-    .otherwise(objectPatch);
-  plugin.node($.type.alias(builderPatch).export().generic('T').type(patchType));
-
-  const builderTransform = plugin.symbol('BuilderTransform', {
-    kind: 'type',
-    meta: {
-      category: 'utility',
-      resource: 'builder',
-    },
-  });
-  const transformType = $.type
-    .func()
-    .param('value', (parameter) => parameter.type('T'))
-    .returns('T');
-  plugin.node($.type.alias(builderTransform).export().generic('T').type(transformType));
-
-  const mergeBuilderPatch = plugin.symbol('mergeBuilderPatch', {
-    kind: 'function',
-    meta: {
-      category: 'utility',
-      resource: 'builder',
-    },
-  });
-  const valueIsObject = $.typeofExpr('value').eq($.literal('object'));
-  const valueIsPresent = $('value').neq($.literal(null));
-  const valueIsNotArray = $.not($('Array').attr('isArray').call('value'));
-  const patchIsObject = $.typeofExpr('patch').eq($.literal('object'));
-  const patchIsPresent = $('patch').neq($.literal(null));
-  const patchIsNotArray = $.not($('Array').attr('isArray').call('patch'));
-  const canMerge = $.binary(
-    $.binary(
-      $.binary(
-        $.binary($.binary(valueIsObject, '&&', valueIsPresent), '&&', valueIsNotArray),
-        '&&',
-        patchIsObject
-      ),
-      '&&',
-      patchIsPresent
-    ),
-    '&&',
-    patchIsNotArray
+  const builderPatch = utility('BuilderPatch');
+  const builderTransform = utility('BuilderTransform');
+  plugin.node($.type.alias(builderPatch).export().generic('T').type($.type(patch).generic('T')));
+  plugin.node(
+    $.type.alias(builderTransform).export().generic('T').type($.type(transform).generic('T'))
   );
-  const mergeFunction = $.func(mergeBuilderPatch)
-    .decl()
-    .generic('T')
-    .param('value', (parameter) => parameter.type('T'))
-    .param('patch', (parameter) => parameter.type($.type(builderPatch).generic('T')))
-    .returns('T')
-    .do(
-      $.if(canMerge).do($.return($.object().spread('value').spread('patch').as('T'))),
-      $.return($('patch').as('T'))
-    );
-  plugin.node(mergeFunction);
-
-  const mergeBuilderPatches = plugin.symbol('mergeBuilderPatches', {
-    kind: 'function',
-    meta: {
-      category: 'utility',
-      resource: 'builder',
-    },
-  });
-  const leftIsObject = $.typeofExpr('left').eq($.literal('object'));
-  const leftIsPresent = $('left').neq($.literal(null));
-  const leftIsNotArray = $.not($('Array').attr('isArray').call('left'));
-  const rightIsObject = $.typeofExpr('right').eq($.literal('object'));
-  const rightIsPresent = $('right').neq($.literal(null));
-  const rightIsNotArray = $.not($('Array').attr('isArray').call('right'));
-  const patchesCanMerge = $.binary(
-    $.binary(
-      $.binary(
-        $.binary($.binary(leftIsObject, '&&', leftIsPresent), '&&', leftIsNotArray),
-        '&&',
-        rightIsObject
-      ),
-      '&&',
-      rightIsPresent
-    ),
-    '&&',
-    rightIsNotArray
-  );
-  const mergePatchesFunction = $.func(mergeBuilderPatches)
-    .decl()
-    .generic('T')
-    .param('left', (parameter) => parameter.type($.type(builderPatch).generic('T')))
-    .param('right', (parameter) => parameter.type($.type(builderPatch).generic('T')))
-    .returns($.type(builderPatch).generic('T'))
-    .do(
-      $.if(patchesCanMerge).do(
-        $.return($.object().spread('left').spread('right').as($.type(builderPatch).generic('T')))
-      ),
-      $.return('right')
-    );
-  plugin.node(mergePatchesFunction);
-
-  return {
-    builderOptions,
-    builderPatch,
-    builderTransform,
-    mergeBuilderPatch,
-    mergeBuilderPatches,
-  };
+  return { builderOptions, builderPatch, builderTransform, createBuilderClass };
 }
 
 /** Emit a builder for a reusable OpenAPI schema. */
@@ -438,83 +336,23 @@ function emitBuilder({
     },
   });
   const patchType = () => $.type(runtime.builderPatch).generic(target.modelSymbol);
-  const transformType = () => $.type(runtime.builderTransform).generic(target.modelSymbol);
-  const optionsType = () =>
-    $.type(runtime.builderOptions).generic($(target.factorySymbol).typeofType());
-  const callableFactoryType = () =>
-    $.type
-      .func()
-      .param('options', (parameter) => parameter.optional().type(optionsType()))
-      .returns(target.modelSymbol);
-
-  const classNode = $.class(builderSymbol)
-    .export()
-    .field('patch', (field) => field.private().optional().type(patchType()))
-    .field('hasPatch', (field) => field.private().type('boolean'))
-    .field('transforms', (field) =>
-      field.private().type($.type('ReadonlyArray').generic(transformType()))
-    )
-    .newline()
-    .init((constructor) =>
-      constructor
-        .param('initial', (parameter) => parameter.optional().type(patchType()))
-        .do(
-          $('this').attr('patch').assign('initial'),
-          $('this')
-            .attr('hasPatch')
-            .assign($.typeofExpr('initial').neq($.literal('undefined'))),
-          $('this').attr('transforms').assign($.array())
-        )
-    )
-    .newline()
-    .method('create', (method) =>
-      method
-        .private()
-        .static()
-        .param('patch', (parameter) => parameter.type($.type.or(patchType(), 'undefined')))
-        .param('hasPatch', (parameter) => parameter.type('boolean'))
-        .param('transforms', (parameter) =>
-          parameter.type($.type('ReadonlyArray').generic(transformType()))
-        )
-        .returns(builderSymbol)
-        .do(
-          $.const('builder').assign($.new(builderSymbol)),
-          $('builder').attr('patch').assign('patch'),
-          $('builder').attr('hasPatch').assign('hasPatch'),
-          $('builder').attr('transforms').assign('transforms'),
-          $.return('builder')
-        )
-    )
-    .newline()
-    .method('with', (method) =>
-      method
-        .param('patch', (parameter) => parameter.type(patchType()))
-        .returns(builderSymbol)
-        .do(
-          $.const('nextPatch').assign(
-            $.ternary($('this').attr('hasPatch'))
-              .do(
-                $(runtime.mergeBuilderPatches)
-                  .call($('this').attr('patch').as(patchType()), 'patch')
-                  .generic(target.modelSymbol)
-              )
-              .otherwise('patch')
-          ),
-          $.return(
-            $(builderSymbol)
-              .attr('create')
-              .call('nextPatch', $.literal(true), $('this').attr('transforms'))
-          )
-        )
-    );
-
+  const base = plugin.symbol(`${className}Base`, {
+    kind: 'var',
+    meta: { category: 'builder-base', resource: target.resource, resourceId: target.resourceId },
+  });
+  plugin.node($.const(base).assign($(runtime.createBuilderClass).call(target.factorySymbol)));
+  const classNode = $.class(builderSymbol).export().extends(base);
   for (const { methodName, propertyName } of propertyMethods(target.properties ?? [])) {
+    // Object unions require complete replacement, even through generated convenience methods.
+    const fieldType = $.type
+      .ternary(patchType())
+      .extends('never')
+      .do('never')
+      .otherwise($.type(target.modelSymbol).idx($.type.literal(propertyName)));
     classNode.method(methodName, (method) =>
       method
-        .param('value', (parameter) =>
-          parameter.type($.type(target.modelSymbol).idx($.type.literal(propertyName)))
-        )
-        .returns(builderSymbol)
+        .param('value', (parameter) => parameter.type(fieldType))
+        .returns('this')
         .do(
           $.return(
             $('this').attr('with').call($.object().prop(propertyName, 'value').as(patchType()))
@@ -523,77 +361,6 @@ function emitBuilder({
     );
   }
 
-  classNode
-    .newline()
-    .method('transform', (method) =>
-      method
-        .param('transform', (parameter) => parameter.type(transformType()))
-        .returns(builderSymbol)
-        .do(
-          $.return(
-            $(builderSymbol)
-              .attr('create')
-              .call(
-                $('this').attr('patch'),
-                $('this').attr('hasPatch'),
-                $.array($('this').attr('transforms').spread(), $('transform'))
-              )
-          )
-        )
-    )
-    .newline()
-    .method('build', (method) =>
-      method
-        .param('options', (parameter) => parameter.optional().type(optionsType()))
-        .returns(target.modelSymbol)
-        .do(
-          $.let('value')
-            .type(target.modelSymbol)
-            .assign($(target.factorySymbol).as(callableFactoryType()).call('options')),
-          $.if($('this').attr('hasPatch')).do(
-            $('value').assign(
-              $(runtime.mergeBuilderPatch)
-                .call('value', $('this').attr('patch').as(patchType()))
-                .generic(target.modelSymbol)
-            )
-          ),
-          $.for($.const('transform'))
-            .of($('this').attr('transforms'))
-            .do($('value').assign($('transform').call('value'))),
-          $.return('value')
-        )
-    )
-    .newline()
-    .method('buildList', (method) =>
-      method
-        .param('count', (parameter) => parameter.type('number'))
-        .param('options', (parameter) => parameter.optional().type(optionsType()))
-        .returns($.type('Array').generic(target.modelSymbol))
-        .do(
-          $.if(
-            $.binary(
-              $.not($('Number').attr('isSafeInteger').call('count')),
-              '||',
-              $('count').lt($.literal(0))
-            )
-          ).do(
-            $.throw('RangeError').message(
-              $.literal('buildList count must be a non-negative integer')
-            )
-          ),
-          $.return(
-            $('Array')
-              .attr('from')
-              .call(
-                $.object().prop('length', 'count'),
-                $.func()
-                  .arrow()
-                  .do($.return($('this').attr('build').call('options')))
-              )
-          )
-        )
-    );
-
   plugin.node(classNode);
 }
 
@@ -601,7 +368,26 @@ function propertyMethods(
   properties: ReadonlyArray<string>
 ): ReadonlyArray<{ methodName: string; propertyName: string }> {
   const methods: Array<{ methodName: string; propertyName: string }> = [];
-  const used = new Set<string>(['build', 'buildList', 'constructor', 'transform', 'with']);
+  const used = new Set<string>([
+    'build',
+    'buildList',
+    'buildAsync',
+    'buildListAsync',
+    'constructor',
+    'transform',
+    'transformAsync',
+    'with',
+    'withFactory',
+    'replace',
+    'replaceFactory',
+    'omit',
+    'describe',
+    'usingValidation',
+    'buildValidated',
+    'buildValidatedAsync',
+    'buildValidatedList',
+    'buildValidatedListAsync',
+  ]);
 
   for (const propertyName of properties) {
     const suffix = toCase(propertyName, 'PascalCase') || 'Value';

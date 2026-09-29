@@ -20,6 +20,8 @@ export type UserConfig = {
   name: 'hey-api-builders';
 } & Plugin.Hooks &
   Plugin.UserExports & {
+    /** Module supplying the canonical builder runtime. */
+    runtimeModule?: string;
     /** Casing shared by builder categories unless overridden. */
     case?: Casing;
     /** Builders for reusable schemas. Enabled by default. */
@@ -40,6 +42,7 @@ export type Config = {
   name: 'hey-api-builders';
 } & Plugin.Hooks &
   Plugin.Exports & {
+    runtimeModule: string;
     case: Casing;
     definitions: ResolvedBuilderFeature;
     requests: ResolvedBuilderFeature;

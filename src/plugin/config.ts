@@ -7,6 +7,7 @@ export const defaultConfig: BuildersPlugin['Config'] = {
   config: {
     $cascade: ['case'],
     case: 'PascalCase',
+    runtimeModule: '@jeffreynijs/test-builders',
     definitions: {
       enabled: true,
       name: '{{name}}Builder',

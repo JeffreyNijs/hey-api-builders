@@ -82,6 +82,9 @@ export async function withPackedConsumer(fixture, callback) {
   };
   try {
     await mkdir(artifacts);
+    // Packages are compiled outside the workspace to expose undeclared dependencies.
+    // Carry only the shared compiler policy, never workspace node_modules or aliases.
+    await cp(join(root, 'tsconfig.base.json'), join(temporary, 'tsconfig.base.json'));
     await cp(join(fixture, 'package.json'), join(temporary, 'package.json'));
     await cp(join(fixture, 'package-lock.json'), join(temporary, 'package-lock.json'));
     if (offline) {

@@ -7,8 +7,13 @@ test.beforeEach(async ({ page }) => {
   const found = [];
   errors.set(page, found);
   page.on('pageerror', (error) => found.push(error.message));
-  // Firefox can miss lifecycle notifications after a COOP process swap.
-  // Require the committed response AND the initialized UI, not a timing-only event.
+  // Playwright's COOP regression tests install a load observer for Firefox's missing
+  // protocol event (tests/page/page-request-continue.spec.ts). Keep browser security intact.
+  await page.addInitScript(() => {
+    globalThis.addEventListener('load', () => console.debug('toolkit-document-loaded'), {
+      once: true,
+    });
+  });
   const response = await page.goto('/', { waitUntil: 'commit' });
   expect(response.status()).toBe(200);
   await expect(page.getByRole('button', { name: 'Generate fixtures', exact: true })).toBeEnabled();

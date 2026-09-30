@@ -1,7 +1,7 @@
 # Local schema playground (alpha)
 
 A loopback-only browser application for JSON Schema fixture generation, with a
-reusable interruptible worker API. The package is optional; the core never starts
+reusable interruptible generation API. The package is optional; the core never starts
 a server or imports worker/HTTP dependencies.
 
 ```ts
@@ -53,10 +53,11 @@ JSON are rejected before the worker starts. Public JavaScript calls must supply
 ordinary JSON data; Proxy traps and other executable objects are not a separate
 untrusted-code boundary.
 
-Each generation runs in a fresh worker with an empty environment, no inherited
+In the stabilization source, each generation runs in a fresh Node child process with an empty environment, no inherited
 Node execution flags, a bounded heap, fixed schema/output budgets, and a default
 5-second wall-clock budget. `timeoutMs` is configurable from 1 to 30,000 and
-includes worker startup. `signal` cancels a worker. Timeouts terminate blocking
+includes worker startup. `signal` cancels the process. Cancellation and timeouts send an OS kill and wait
+for exit before releasing a slot; they also terminate blocking
 native work rather than merely racing a promise while that work continues.
 The HTTP server limits concurrent requests/workers (default two, maximum eight)
 and cancels work on disconnect/shutdown. The standalone `generateIsolated` API
@@ -92,3 +93,7 @@ and static asset headers. The worker's execution module is also tested directly
 so its implementation appears in coverage, not just the parent orchestration.
 Browser interaction tests are maintained separately from these Node conformance
 checks; successful HTTP tests alone are not presented as browser verification.
+
+The published alpha.1 uses worker threads. Repeated browser cancellation exposed
+a native-regex termination stall; the source now uses child processes, with a
+regression that cancels already-running pathological patterns repeatedly.

@@ -227,6 +227,45 @@ it('terminates time-budgeted and cancelled workers while keeping the main event 
   );
   assert.equal((await generateIsolated(simple)).values.length, 4);
 });
+it(
+  'repeatedly cancels running pathological schemas without retaining generation slots',
+  { timeout: 20000 },
+  async () => {
+    await withServer(
+      async (server) => {
+        const { token } = await session(server);
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const controller = new AbortController();
+          const pending = fetch(server.url + '/generate', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-test-builders-token': token },
+            body: JSON.stringify({
+              schema: { type: 'string', pattern: '^(a+)+$', examples: ['a'.repeat(35) + '!'] },
+              profile: 'examples',
+              count: 1,
+            }),
+            signal: controller.signal,
+          }).catch(() => null);
+          // Give the native pattern time to start, rather than only cancelling startup.
+          await delay(1200);
+          assert.equal((await session(server)).activeWorkers, 1);
+          const began = performance.now();
+          controller.abort();
+          await pending;
+          for (let i = 0; i < 200 && (await session(server)).activeWorkers > 0; i++)
+            await delay(10);
+          assert.equal((await session(server)).activeWorkers, 0);
+          assert.ok(
+            performance.now() - began < 3000,
+            'Cancellation must reap the process promptly'
+          );
+          assert.equal((await post(server, simple)).status, 200);
+        }
+      },
+      { maxConcurrent: 1, timeoutMs: 10000 }
+    );
+  }
+);
 it('validates cancellation handles and worker options before allocating a worker', async () => {
   for (const options of [
     { signal: {} },

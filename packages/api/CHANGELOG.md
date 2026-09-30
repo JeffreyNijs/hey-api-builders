@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-alpha.1
+
+### Patch Changes
+
+- @mimlet/core@0.1.0-alpha.1
+  - @mimlet/json-schema@0.1.0-alpha.1
+
 ## 0.1.0-alpha.0
 
 Initial prerelease source for @mimlet/api.

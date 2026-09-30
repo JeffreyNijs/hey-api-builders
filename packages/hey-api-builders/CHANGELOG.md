@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.0-alpha.1
+
+### Patch Changes
+
+- @mimlet/core@0.1.0-alpha.1
+
 ## 3.0.0-alpha.0
 
 - Move the plugin into the neutral toolkit workspace without changing its npm name.

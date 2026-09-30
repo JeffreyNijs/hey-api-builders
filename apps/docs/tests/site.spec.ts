@@ -1,6 +1,76 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { createMarkdownRenderer } from 'vitepress';
+import { fileURLToPath } from 'node:url';
+
+test('all rendered fences and Markdown recipes match their canonical source verbatim', async ({
+  page,
+  request,
+}) => {
+  const root = new URL('../../../', import.meta.url);
+  const markdown = await createMarkdownRenderer(fileURLToPath(root));
+  const sources: [string, string][] = [
+    ...(await readdir(new URL('docs/', root)))
+      .filter((name) => name.endsWith('.md'))
+      .map((name): [string, string] => [`docs/${name}`, `guide/${name}`]),
+    ...(await readdir(new URL('packages/', root))).map((name): [string, string] => [
+      `packages/${name}/README.md`,
+      `packages/${name}.md`,
+    ]),
+  ];
+  const discrepancies: string[] = [];
+  let checked = 0;
+  for (const [file, route] of sources) {
+    const original = await readFile(new URL(file, root), 'utf8');
+    const expected: string[] = [];
+    for (const token of markdown.parse(original, {}) as { type: string; content: string }[]) {
+      if (token.type === 'fence') {
+        expected.push(token.content.trimEnd());
+      }
+      const recipe =
+        token.type === 'html_block' && /^<!-- recipe:([a-z-]+) -->\s*$/.exec(token.content);
+      if (recipe) {
+        expected.push(
+          (await readFile(new URL(`examples/recipes/${recipe[1]}.ts`, root), 'utf8')).trimEnd()
+        );
+      }
+    }
+    await page.goto(route.replace(/\.md$/, '.html'));
+    const rendered = (await page.locator('.vp-doc pre code').allTextContents()).map((text) =>
+      text.trimEnd()
+    );
+    const clean = markdown.parse(await (await request.get(route)).text(), {}) as {
+      type: string;
+      content: string;
+    }[];
+    const downloaded = clean
+      .filter((token) => token.type === 'fence')
+      .map((token) => token.content.trimEnd());
+    for (const [surface, blocks] of [
+      ['HTML', rendered],
+      ['Markdown', downloaded],
+    ] as const) {
+      if (blocks.length !== expected.length) {
+        discrepancies.push(`${route}: ${surface} fence count`);
+      }
+      expected.forEach((code, index) => {
+        if (blocks[index] !== code) {
+          discrepancies.push(`${route}: ${surface} fence ${index + 1}`);
+        }
+      });
+    }
+    checked += expected.length;
+  }
+  await page.goto('./');
+  const hero = (await readFile(new URL('examples/recipes/hero.ts', root), 'utf8')).trimEnd();
+  expect((await page.locator('.hero-code pre code').textContent())?.trimEnd()).toBe(hero);
+  expect(checked).toBeGreaterThan(50);
+  expect(discrepancies).toEqual([]);
+  console.log(
+    `Verified ${checked} canonical code fences across ${sources.length} pages, plus the homepage recipe.`
+  );
+});
 
 test('every documentation route and its Markdown alternate resolve below /mimlet/', async ({
   request,

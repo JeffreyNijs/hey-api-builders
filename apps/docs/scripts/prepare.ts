@@ -90,7 +90,9 @@ export async function prepare(): Promise<void> {
   const expandRecipes = async (source: string) => {
     for (const match of source.matchAll(/<!-- recipe:([a-z-]+) -->/g)) {
       const snippet = await read(`examples/recipes/${match[1]}.ts`);
-      source = source.replace(match[0], `\`\`\`ts\n${snippet.trim()}\n\`\`\``);
+      // A callback inserts literal source. Replacement strings interpret $&, $`,
+      // and $' (the latter occurs naturally in anchored regular expressions).
+      source = source.replace(match[0], () => `\`\`\`ts\n${snippet.trim()}\n\`\`\``);
     }
     return source;
   };

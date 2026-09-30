@@ -1,0 +1,52 @@
+name: Prepare fixture consumer lock
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/test-builders-faker/package.json'
+      - 'packages/test-builders-consumers/package.json'
+      - '.github/workflows/prepare-consumer-lock.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  lock:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'chat/standard-schema-core-20260929'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.18.0
+      - name: Resolve only the lockfile without running dependency scripts
+        run: pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Commit the generated lockfile without replacing concurrent work
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git diff --exit-code -- . ':!pnpm-lock.yaml'
+          git add -- pnpm-lock.yaml
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: lock realistic fixture and consumer workspace dependencies'
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push origin HEAD:refs/heads/chat/standard-schema-core-20260929
+      - name: Retain the exact generated result for reproducible verification
+        run: |
+          mkdir -p /tmp/consumer-lock
+          cp pnpm-lock.yaml /tmp/consumer-lock/
+          git rev-parse HEAD > /tmp/consumer-lock/COMMIT
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: fixture-consumer-lock
+          path: /tmp/consumer-lock/
+          retention-days: 3
+          if-no-files-found: error

@@ -1,0 +1,19 @@
+{
+  "name": "test-builders-typebox-compatibility",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@sinclair/typebox": "0.34.52",
+    "typebox": "1.3.34"
+  },
+  "toolkitPackages": [
+    "test-builders-adapter",
+    "test-builders-typebox",
+    "test-builders-typebox-legacy"
+  ],
+  "coveragePackages": [
+    "test-builders-typebox",
+    "test-builders-typebox-legacy"
+  ]
+}

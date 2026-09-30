@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+
+# Internal runtime versions are exact and validated before installation/packing.
+# This keeps npm-pack consumer tests identical to the files actually published.
+linkWorkspacePackages: true
+preferWorkspacePackages: true
+saveWorkspaceProtocol: false
+sharedWorkspaceLockfile: true
+disallowWorkspaceCycles: true

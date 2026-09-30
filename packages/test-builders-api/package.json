@@ -1,0 +1,58 @@
+{
+  "name": "@jeffreynijs/test-builders-api",
+  "version": "0.1.0-alpha.0",
+  "private": false,
+  "description": "Offline OpenAPI operation fixtures with direction-aware schemas and explicit HTTP serialization.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "directory": "packages/test-builders-api"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "typecheck": "pnpm type-check",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "test:unit": "vitest run --root ../.. --project unit tests/unit/test-builders-api.test.ts"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "bugs": {
+    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
+  },
+  "homepage": "https://github.com/JeffreyNijs/hey-api-builders/tree/main/packages/test-builders-api#readme",
+  "keywords": [
+    "test-data",
+    "fixtures",
+    "builders",
+    "standard-schema"
+  ],
+  "dependencies": {
+    "@jeffreynijs/test-builders": "0.1.0-alpha.0",
+    "@jeffreynijs/test-builders-json-schema": "0.1.0-alpha.0"
+  }
+}

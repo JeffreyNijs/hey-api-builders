@@ -1,0 +1,24 @@
+{
+  "name": "test-builders-codegen-compatibility",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "json-schema-to-typescript": "16.0.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "json-schema-faker": "0.6.3",
+    "typescript": "6.0.3",
+    "@types/node": "26.6.3"
+  },
+  "toolkitPackages": [
+    "test-builders-json-schema",
+    "test-builders-codegen"
+  ],
+  "compilerTypes": [
+    "node"
+  ],
+  "coveragePackages": [
+    "test-builders-codegen"
+  ]
+}

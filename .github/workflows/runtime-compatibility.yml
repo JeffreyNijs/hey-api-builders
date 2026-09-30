@@ -1,0 +1,98 @@
+name: Portable runtime acceptance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable:
+    name: Packed core / ${{ matrix.runtime }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [node, bun, deno]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        if: matrix.runtime == 'bun'
+        with:
+          bun-version: 1.4.2
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed
+        if: matrix.runtime == 'deno'
+        with:
+          deno-version: 2.9.7
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:core
+      - run: node scripts/test-runtimes.mjs ${{ matrix.runtime }}
+
+  minimum-compiler:
+    name: TypeScript 5.8.3 / core and portable consumers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install the exact minimum compiler outside the workspace
+        run: npm install --prefix "$RUNNER_TEMP/minimum-ts" --ignore-scripts --no-audit --no-fund typescript@5.8.3
+      - name: Compile the core and all its negative declaration tests
+        run: |
+          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/test-builders/tsconfig.json --extendedDiagnostics
+          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/test-builders/test/tsconfig.json
+          node scripts/test-core.mjs
+      - name: Exercise packed consumers with the same minimum compiler
+        run: |
+          export TOOLKIT_TYPESCRIPT_COMPILER="$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc"
+          node scripts/test-optional.mjs adapter
+          node scripts/test-optional.mjs consumers
+          node scripts/test-optional.mjs faker
+
+  performance-and-recipes:
+    name: Executable recipes and performance report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: node scripts/test-examples.mjs
+      - run: node scripts/benchmark.ts
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: performance-report
+          path: test-results/performance.json
+          if-no-files-found: error
+          retention-days: 7

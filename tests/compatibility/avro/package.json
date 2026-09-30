@@ -1,0 +1,24 @@
+{
+  "name": "test-builders-avro-compatibility",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "avsc": "5.7.9",
+    "@types/node": "26.6.3"
+  },
+  "toolkitPackages": [
+    "test-builders-adapter",
+    "test-builders-avro"
+  ],
+  "compilerTypes": [
+    "node"
+  ],
+  "compilerLibs": [
+    "ES2022",
+    "DOM"
+  ],
+  "coveragePackages": [
+    "test-builders-avro"
+  ]
+}

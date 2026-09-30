@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@hey-api/openapi-ts';
 import * as ts from 'typescript';
 
-import { defineConfig as defineBuildersConfig } from '../../src/index';
+import { defineConfig as defineBuildersConfig } from '../../packages/hey-api-builders/src/index';
 
 type CommonJsModule = {
   exports: Record<string, unknown>;
@@ -61,6 +61,11 @@ async function compileGeneratedProject(
   }
 
   const compilerOptions: ts.CompilerOptions = {
+    paths: {
+      '@jeffreynijs/test-builders': [
+        join(workspaceDirectory, 'packages/test-builders/dist/index.d.ts'),
+      ],
+    },
     allowSyntheticDefaultImports: true,
     esModuleInterop: true,
     forceConsistentCasingInFileNames: true,
@@ -141,10 +146,15 @@ async function createGeneratedModuleLoader(): Promise<
   (entryFile: string) => Record<string, unknown>
 > {
   const nativeRequire = createRequire(import.meta.url);
-  const [fakerModule, zodModule] = await Promise.all([import('@faker-js/faker'), import('zod')]);
+  const [fakerModule, zodModule, builderModule] = await Promise.all([
+    import('@faker-js/faker'),
+    import('zod'),
+    import('../../packages/test-builders/src/index.js'),
+  ]);
   const externalModules = new Map<string, unknown>([
     ['@faker-js/faker', fakerModule],
     ['zod', zodModule],
+    ['@jeffreynijs/test-builders', builderModule],
   ]);
   const cache = new Map<string, CommonJsModule>();
 
@@ -280,6 +290,24 @@ export async function generateProject(
       ],
     });
 
+    if (fixture === 'openapi-3.1.json' && Object.keys(buildersConfig).length === 0) {
+      await writeFile(
+        join(generatedDirectory, 'builders.acceptance.ts'),
+        `
+import { PetBuilder, AnimalBuilder } from './hey-api-builders.gen';
+const pet = new PetBuilder().withDisplayName('Ada').with({ tags: [] }).withDisplayName2('snake');
+pet.build({ includeOptional: true });
+const asynchronous = pet.transformAsync(async (value) => value).withDisplayName('async');
+asynchronous.buildAsync();
+// @ts-expect-error Async fluent chains must not regain sync builds.
+asynchronous.withDisplayName('bad').build();
+// @ts-expect-error Generated methods retain their field types.
+pet.withDisplayName(123);
+// @ts-expect-error Object union transitions require complete replacements.
+new AnimalBuilder().with({ kind: 'cat' });
+`
+      );
+    }
     const sourceFiles = await compileGeneratedProject(generatedDirectory, compiledDirectory);
     const buildersSourceFile = await findBuildersSource(sourceFiles);
     const load = await createGeneratedModuleLoader();

@@ -69,6 +69,13 @@ export default [
     },
   },
   {
-    ignores: ['coverage/**', 'dist/**', 'node_modules/**', '*.log', 'test-results/**'],
+    ignores: [
+      '**/.turbo/**',
+      'coverage/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '*.log',
+      '**/test-results/**',
+    ],
   },
 ];

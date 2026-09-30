@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +15,7 @@ try {
     npm,
     ['pack', '--json', '--ignore-scripts', '--pack-destination', temporaryRoot],
     {
-      cwd: packageRoot,
+      cwd: join(packageRoot, 'packages/hey-api-builders'),
       encoding: 'utf8',
     }
   );
@@ -46,6 +46,21 @@ try {
   );
 
   const tarball = join(temporaryRoot, packResult.filename);
+  const [corePack] = JSON.parse(
+    execFileSync(
+      npm,
+      [
+        'pack',
+        join(packageRoot, 'packages/test-builders'),
+        '--json',
+        '--ignore-scripts',
+        '--pack-destination',
+        temporaryRoot,
+      ],
+      { encoding: 'utf8', cwd: temporaryRoot }
+    )
+  );
+  assert(corePack, 'Core tarball is required for generated consumers');
   execFileSync(
     npm,
     [
@@ -56,6 +71,7 @@ try {
       '--package-lock=false',
       '--save-exact',
       tarball,
+      join(temporaryRoot, corePack.filename),
       '@faker-js/faker@10.5.0',
       '@hey-api/openapi-ts@0.99.0',
       'typescript@6.0.3',
@@ -67,25 +83,7 @@ try {
   );
 
   const runtimeAcceptance = join(consumerDirectory, 'acceptance.mjs');
-  await writeFile(
-    runtimeAcceptance,
-    `import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import builders, { buildersPlugin, defaultConfig, defineConfig } from 'hey-api-builders';
-
-assert.equal(builders, defineConfig);
-assert.equal(buildersPlugin, defineConfig);
-assert.equal(defaultConfig.name, 'hey-api-builders');
-assert.equal(builders({ responses: false }).name, 'hey-api-builders');
-
-const require = createRequire(import.meta.url);
-assert.throws(
-  () => require('hey-api-builders'),
-  (error) => error?.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
-);
-`,
-    'utf8'
-  );
+  await cp(join(packageRoot, 'tests/package/acceptance.mjs'), runtimeAcceptance);
   execFileSync(node, [runtimeAcceptance], {
     cwd: consumerDirectory,
     stdio: 'inherit',

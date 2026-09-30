@@ -132,6 +132,12 @@ importers:
         specifier: 16.0.0
         version: 16.0.0
 
+  packages/test-builders-consumers:
+    dependencies:
+      '@jeffreynijs/test-builders':
+        specifier: 0.1.0-alpha.0
+        version: link:../test-builders
+
   packages/test-builders-effect:
     dependencies:
       '@jeffreynijs/test-builders':
@@ -141,6 +147,16 @@ importers:
       effect:
         specifier: 3.22.2
         version: 3.22.2
+
+  packages/test-builders-faker:
+    dependencies:
+      '@jeffreynijs/test-builders':
+        specifier: 0.1.0-alpha.0
+        version: link:../test-builders
+    devDependencies:
+      '@faker-js/faker':
+        specifier: 10.5.0
+        version: 10.5.0
 
   packages/test-builders-fast-check:
     dependencies:
@@ -3536,7 +3552,7 @@ snapshots:
       picomatch: 4.0.5
       postcss: 8.5.26
       rollup: 4.62.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 22.20.1
       fsevents: 2.3.3

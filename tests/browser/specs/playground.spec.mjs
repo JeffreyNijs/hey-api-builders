@@ -7,8 +7,10 @@ test.beforeEach(async ({ page }) => {
   const found = [];
   errors.set(page, found);
   page.on('pageerror', (error) => found.push(error.message));
-  // Document readiness plus the usable UI is the acceptance boundary, not late load events.
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  // Firefox can miss lifecycle notifications after a COOP process swap.
+  // Require the committed response AND the initialized UI, not a timing-only event.
+  const response = await page.goto('/', { waitUntil: 'commit' });
+  expect(response.status()).toBe(200);
   await expect(page.getByRole('button', { name: 'Generate fixtures', exact: true })).toBeEnabled();
 });
 test.afterEach(async ({ page }) => {

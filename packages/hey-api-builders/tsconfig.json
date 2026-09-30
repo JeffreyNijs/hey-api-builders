@@ -13,7 +13,9 @@
     "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": false,
+    // Hey API bundles declarations for optional client frameworks not used by this plugin.
+    // Match the root tooling boundary; our source and generated consumer type tests remain strict.
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["node"],
     "noEmit": true

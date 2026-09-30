@@ -21,7 +21,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@faker-js/faker": "10.5.0"
+    "@faker-js/faker": "10.6.0"
   },
   "repository": {
     "type": "git",
@@ -55,7 +55,7 @@
     "standard-schema"
   ],
   "devDependencies": {
-    "@faker-js/faker": "10.5.0"
+    "@faker-js/faker": "10.6.0"
   },
   "dependencies": {
     "@jeffreynijs/test-builders": "0.1.0-alpha.0"

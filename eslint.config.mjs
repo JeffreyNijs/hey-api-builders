@@ -75,7 +75,7 @@ export default [
       '**/dist/**',
       '**/node_modules/**',
       '*.log',
-      'test-results/**',
+      '**/test-results/**',
     ],
   },
 ];

@@ -1,7 +1,6 @@
 # Mimlet's Zod adapter
 
-**Next-release source preview.** `@mimlet/zod` is not part of the existing
-`0.1.0-alpha.0` release. It will ship with the next coordinated toolkit release.
+Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
 Native builders for **Zod 4.4.3**, including Zod Mini. Input and output types come
 from the original schema. Automatic generation uses its input JSON Schema;

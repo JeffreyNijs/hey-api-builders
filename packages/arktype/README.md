@@ -1,7 +1,6 @@
 # Mimlet's ArkType adapter
 
-**Next-release source preview.** `@mimlet/arktype` is not part of the existing
-`0.1.0-alpha.0` release. It will ship with the next coordinated toolkit release.
+Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
 Native builders for **ArkType 2.2.5**. `fromArkType(schema, options)` generates
 encoded input through ArkType's Standard JSON Schema projection and validates

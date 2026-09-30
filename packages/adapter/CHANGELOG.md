@@ -1,10 +1,19 @@
 # Changelog
 
+## 0.1.0-alpha.1
+
+### Patch Changes
+
+- @mimlet/core@0.1.0-alpha.1
+
 ## 0.1.0-alpha.0
 
 Initial prerelease source for @mimlet/adapter.
 
 Capability-aware adapter SDK, inspection and reusable conformance checks for test builders.
+
+Conformance accepts adapters that declare generation or other capabilities without
+a separate pure input checker.
 
 The package README defines supported behavior, tested dependency versions, and
 explicit limitations. This changelog does not assert that the version has been

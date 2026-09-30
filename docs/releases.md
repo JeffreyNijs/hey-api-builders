@@ -16,10 +16,10 @@ manifests must contain the matching actual versions. `check-workspace.mjs` rejec
 missing internal packages, version drift, dependency cycles, unexpected exports,
 core vendor dependencies and incorrect release channels before installation.
 
-Add a changeset for subsequent changes. The initial source versions are already
-explicitly assigned; the initial metadata-only changeset does not release them.
-Before subsequent alpha versioning, enter prerelease mode with
-`pnpm changeset pre enter alpha`, then run `pnpm version-packages`. Review the
+Add a changeset for subsequent changes. The repository is in Changesets prerelease
+mode (`.changeset/pre.json`), so run `pnpm version-packages` for the next alpha.
+Only use `pnpm changeset pre enter alpha` when starting a new prerelease cycle.
+Review the
 version plan, generated changelogs, exact internal dependency versions and package
 `publishConfig.tag` fields. They must be `next` for prereleases and `latest` only
 for an explicitly reviewed stable train. Refresh `pnpm-lock.yaml` after versioning
@@ -58,7 +58,7 @@ reports are correctness-checked measurements, not hardware-independent speed pro
 ### First publication of the new npm names
 
 npm requires a package to exist before it can receive a trusted-publisher
-configuration. The first Mimlet release therefore has a separate bootstrap:
+configuration. Releases introducing new package names use a separate bootstrap:
 
 1. On the renamed repository's reviewed `main`, dispatch **Prepare provenance-backed
    first publication**. It runs the full acceptance gates, packs the entire train,

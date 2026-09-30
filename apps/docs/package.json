@@ -9,7 +9,7 @@
     "docs:build": "pnpm docs:prepare && vitepress build .",
     "docs:preview": "node scripts/preview.ts",
     "type-check": "pnpm docs:prepare && vue-tsc --noEmit",
-    "test": "playwright test",
+    "test": "playwright test && node scripts/test-dev.ts",
     "test:install": "playwright install --with-deps chromium"
   },
   "devDependencies": {

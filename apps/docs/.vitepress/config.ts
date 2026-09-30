@@ -23,7 +23,11 @@ export default defineConfig({
   lastUpdated: false,
   // The public static site targets current evergreen browsers. The toolkit's
   // independent browser/runtime matrix retains its existing targets.
-  vite: { build: { target: 'es2022' } },
+  vite: {
+    build: { target: 'es2022' },
+    esbuild: { target: 'es2022' },
+    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+  },
   markdown: { theme: codeTheme },
   sitemap: { hostname: `${hostname}${base}` },
   head: [

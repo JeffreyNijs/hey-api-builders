@@ -1,7 +1,8 @@
 # Shrink-aware property fixtures (unreleased)
 
 This optional package targets exactly `fast-check@4.10.2` and the accompanying
-unreleased builder core. It is private and is not yet available from npm.
+unreleased builder core. Its public package metadata is prepared, but it has not
+been released to npm.
 The core itself does not depend on fast-check.
 
 ## Native arbitraries and ordinary builders

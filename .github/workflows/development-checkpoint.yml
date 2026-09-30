@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   checkpoint:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'chat/standard-schema-core-20260929'
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6

@@ -34,6 +34,7 @@ pnpm install --frozen-lockfile
 pnpm build
 pnpm validate
 pnpm pack:check
+pnpm audit:production
 pnpm test:examples
 node scripts/test-browser.mjs --install
 ```

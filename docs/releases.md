@@ -53,6 +53,42 @@ reports are correctness-checked measurements, not hardware-independent speed pro
 
 ## Publish through the reviewed release workflow
 
+### First publication of the new npm names
+
+npm requires a package to exist before it can receive a trusted-publisher
+configuration. The first Mimlet release therefore has a separate bootstrap:
+
+1. On the renamed repository's reviewed `main`, dispatch **Prepare provenance-backed
+   first publication**. It runs the full acceptance gates, packs the entire train,
+   and signs the verified archives in a separate credential-isolated GitHub job.
+   It does not publish to npm and needs no npm token.
+2. Download the `mimlet-first-publication` artifact from that exact workflow run.
+   It contains `release/` and `provenance/`. Install `npm@11.19.0` into a temporary
+   directory with lifecycle scripts disabled.
+3. Run the verifier, then the publisher in an interactive terminal:
+
+   ```sh
+   node scripts/bootstrap-release.mjs verify /path/to/npm-runtime/node_modules/npm /path/to/artifact/release /path/to/artifact/provenance
+   node scripts/bootstrap-release.mjs publish /path/to/npm-runtime/node_modules/npm /path/to/artifact/release /path/to/artifact/provenance
+   ```
+
+   Every archive, internal dependency, provenance signature, GitHub certificate
+   identity, source commit and registry collision is checked before the first
+   write. npm handles interactive security-key/2FA verification. Existing identical
+   versions are skipped, so an interrupted batch can resume from the same artifact.
+
+4. Configure each package's trusted publisher for `JeffreyNijs/mimlet`, workflow
+   `npm-publish.yml`, environment `npm-publish`, allowing publication. Future
+   releases use the normal workflow below.
+
+The bootstrap pins npm's own configuration, 2FA, publishing and Sigstore modules.
+It selects the pre-signed bundle instead of local automatic signing; it does not
+strip provenance or change packed bytes. This avoids the npm CLI's conflicting
+`publishConfig.provenance` and `--provenance-file` options. Updating the pinned npm
+runtime requires reviewing those interfaces. Keep credentials out of artifacts.
+
+### Subsequent releases
+
 The publishing trigger is a GitHub release with tag
 `toolkit-v<core version>`, for example `toolkit-v0.1.0-alpha.0`. The workflow checks
 that the release commit belongs to `main`, runs acceptance, audits dependencies,

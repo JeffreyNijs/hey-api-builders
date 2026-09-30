@@ -1,0 +1,85 @@
+name: Prepare provenance-backed first publication
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: toolkit-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  portable:
+    if: github.repository == 'JeffreyNijs/mimlet' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/runtime-compatibility.yml
+    permissions:
+      contents: read
+
+  prepare:
+    if: github.repository == 'JeffreyNijs/mimlet' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: git merge-base --is-ancestor HEAD refs/remotes/origin/main
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm validate
+      - run: pnpm audit:production
+      - run: pnpm test:examples
+      - run: node scripts/test-browser.mjs --install
+      - run: pnpm docs:build
+      - run: pnpm docs:test
+      - run: pnpm release:prepare
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bootstrap-verified-packages
+          path: release/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  attest:
+    needs: [prepare, portable]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm-publish
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: bootstrap-verified-packages
+          path: release
+          digest-mismatch: error
+      - name: Install the isolated signing runtime without product lifecycle scripts
+        run: npm install --prefix "$RUNNER_TEMP/mimlet-attestor" --ignore-scripts --no-audit --no-fund npm@11.19.0
+      - name: Sign every verified package with the GitHub workflow identity
+        run: node scripts/bootstrap-release.mjs attest "$RUNNER_TEMP/mimlet-attestor/node_modules/npm" release provenance
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mimlet-first-publication
+          path: |
+            release/
+            provenance/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0

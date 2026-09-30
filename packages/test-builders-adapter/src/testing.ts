@@ -10,12 +10,11 @@ export interface ConformanceCase {
   /** Compare transformed output using application/native equality, not stringification. */
   readonly output?: (value: unknown) => boolean;
 }
-export interface ConformanceSubject {
+export interface ConformanceSubject<Operations extends object = object> {
   readonly standard: StandardSchemaV1;
   /** Other capabilities are opaque; adapters need not implement a pure input check. */
-  readonly operations: {
+  readonly operations: Operations & {
     readonly checkInput?: (value: unknown) => boolean;
-    readonly [capability: string]: unknown;
   };
   inspect(): AdapterInspection;
 }
@@ -29,8 +28,8 @@ export interface ConformanceResult {
   }[];
 }
 /** Test helper: invokes trusted fixtures/validators explicitly. Inspection itself never executes them. */
-export async function checkAdapterConformance(
-  subject: ConformanceSubject,
+export async function checkAdapterConformance<Operations extends object>(
+  subject: ConformanceSubject<Operations>,
   cases: readonly ConformanceCase[]
 ): Promise<ConformanceResult> {
   const operations = subject.operations;
@@ -118,8 +117,8 @@ export async function checkAdapterConformance(
     cases: Object.freeze(results),
   });
 }
-export async function assertAdapterConformance(
-  subject: ConformanceSubject,
+export async function assertAdapterConformance<Operations extends object>(
+  subject: ConformanceSubject<Operations>,
   cases: readonly ConformanceCase[]
 ): Promise<void> {
   const result = await checkAdapterConformance(subject, cases);

@@ -60,3 +60,19 @@ void assertAdapterConformance(
   },
   [{ name: 'valid', input: () => ({ age: '42' }), valid: true }]
 );
+
+// Third-party adapters may expose named interfaces rather than index signatures.
+interface CreationOperations {
+  create(): { age: string };
+}
+interface CheckingOperations {
+  checkInput(value: unknown): boolean;
+}
+declare const creationOperations: CreationOperations;
+declare const checkingOperations: CheckingOperations;
+void assertAdapterConformance({ ...generatorOnly, operations: creationOperations }, [
+  { name: 'valid', input: () => ({ age: '42' }), valid: true },
+]);
+void assertAdapterConformance({ ...generatorOnly, operations: checkingOperations }, [
+  { name: 'valid', input: () => ({ age: '42' }), valid: true },
+]);

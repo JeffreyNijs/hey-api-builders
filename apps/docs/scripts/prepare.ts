@@ -94,6 +94,11 @@ export async function prepare(): Promise<void> {
     return source;
   };
   await mkdir(resolve(generated, 'public'), { recursive: true });
+  await writeChanged(
+    resolve(generated, 'scenario-demo.ts'),
+    '// Generated verbatim from the packed-consumer recipe.\n' +
+      (await read('examples/recipes/scenario-demo.ts'))
+  );
   const previous = await readFile(resolve(generated, 'site-manifest.json'), 'utf8').then(
     (text) => JSON.parse(text) as { pages: string[] },
     () => ({ pages: [] })
@@ -113,7 +118,14 @@ export async function prepare(): Promise<void> {
     for (const markdown of [false, true]) {
       const destination = resolve(generated, markdown ? 'public' : '', route);
       await mkdir(dirname(destination), { recursive: true });
-      await writeChanged(destination, rewriteLinks(source, file, markdown));
+      await writeChanged(
+        destination,
+        rewriteLinks(source, file, markdown).replace('<!-- interactive:scenario -->', () =>
+          markdown
+            ? `[Open the interactive demo](${base}guide/scenario-demo.html).`
+            : '<ScenarioDemo />'
+        )
+      );
     }
   }
   const hero = await read('examples/recipes/hero.ts');
@@ -155,10 +167,11 @@ export async function prepare(): Promise<void> {
       'Task recipes, validation, replay, shrinking and deterministic code generation',
     ],
     ['Scenarios', 'correlated-scenarios', 'Shared identities and recomputed dependent values'],
+    ['Interactive demo', 'scenario-demo', 'Run, shrink and replay a coherent order scenario'],
     [
       'Zod and ArkType',
       'zod-and-arktype',
-      'Dedicated native builders and factories; next-release source preview',
+      'Dedicated native builders, codecs and factories, published since alpha.1',
     ],
     [
       'Replay',

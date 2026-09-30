@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "docs:prepare": "node scripts/prepare.ts",
-    "docs:dev": "node scripts/dev.ts",
-    "docs:build": "pnpm docs:prepare && vitepress build .",
+    "docs:dev": "pnpm docs:runtime && node scripts/dev.ts",
+    "docs:build": "pnpm docs:runtime && pnpm docs:prepare && vitepress build .",
     "docs:preview": "node scripts/preview.ts",
-    "type-check": "pnpm docs:prepare && vue-tsc --noEmit",
+    "type-check": "pnpm docs:runtime && pnpm docs:prepare && vue-tsc --noEmit",
     "test": "playwright test && node scripts/test-dev.ts",
-    "test:install": "playwright install --with-deps chromium"
+    "test:install": "playwright install --with-deps chromium",
+    "docs:runtime": "pnpm --filter @mimlet/core --filter @mimlet/fast-check build"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -19,6 +20,9 @@
     "typescript": "6.0.3",
     "vitepress": "1.6.4",
     "vue": "3.5.43",
-    "vue-tsc": "3.3.11"
+    "vue-tsc": "3.3.11",
+    "@mimlet/core": "workspace:*",
+    "@mimlet/fast-check": "workspace:*",
+    "fast-check": "4.10.2"
   }
 }

@@ -7,8 +7,9 @@ description: Use Mimlet to create typed test fixtures, native-schema builders, c
 
 Mimlet is a modular schema-aware test-data toolkit. This is an optional product
 skill, not permission to install dependencies, change unrelated code, or replace
-the user's chosen library. The new package names are currently an unpublished
-source preview; inspect the installed version or use verified local tarballs.
+the user's chosen library. The first alpha is
+`@mimlet/*@0.1.0-alpha.0` on npm's `next` channel. Inspect the installed versions
+and use the matching documented APIs.
 
 1. Inspect the project's package manifest, schema and nearby tests. Choose the
    smallest relevant package: `@mimlet/core` for the core, `@mimlet/<adapter>` for an

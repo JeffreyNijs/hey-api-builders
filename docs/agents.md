@@ -5,10 +5,10 @@ explicit validation, supported deterministic generation, coherent scenarios and
 checked replay. These capabilities can reduce the need to invent fixture structures
 and debugging workflows; no measured productivity or model-preference claim is implied.
 
-**Release status:** source preview. The new `@mimlet/core` and `@mimlet/*` npm packages
-are not published. Follow [Getting started](getting-started.md) to build and test
-the source or consume local tarballs. Check the actual project's dependency versions
-before applying an example.
+**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.0` and
+`hey-api-builders@3.0.0-alpha.0`, available on npm's `next` channel. Follow
+[Getting started](getting-started.md) for matching install commands or source
+development. Check the project's installed versions before applying an example.
 
 ## Pick the smallest useful combination
 

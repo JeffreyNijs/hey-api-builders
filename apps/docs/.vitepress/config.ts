@@ -127,7 +127,7 @@ export default defineConfig({
       },
     ],
     footer: {
-      message: 'Mimlet · source preview · MIT licensed',
+      message: 'Mimlet · alpha · MIT licensed',
       copyright: 'Made by Jeffrey Nijs',
     },
   },

@@ -5,18 +5,24 @@
 Typed fixtures. Coherent scenarios. Failures you can replay.
 
 Mimlet is the schema-aware toolkit behind `@mimlet/core`, `@mimlet/*`, and the
-`hey-api-builders` integration. The new package names are a **source preview**;
-npm publication is pending. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
+`hey-api-builders` integration. The first coordinated **alpha is published on npm’s `next` channel**. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
 
 A modular TypeScript toolkit for reproducible test data: immutable builders,
 schema-driven generation, native validation and codecs, related fixtures,
 property-based testing, and generated fluent classes. **Hey API is one integration,
 not a prerequisite.** The schema-free core has no runtime or peer dependencies.
 
-This repository prepares the **0.1.0-alpha.0** toolkit and **3.0.0-alpha.0** Hey API
-integration. These are source versions, not a statement that packages have been
-published. The repository root is private; individual packages are independently
-packable. The existing published Hey API v2 package is unchanged.
+The published alpha is **0.1.0-alpha.0** for the toolkit and **3.0.0-alpha.0** for
+the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`
+remains on v2; opt into the alpha explicitly.
+
+```sh
+npm install --save-dev @mimlet/core@0.1.0-alpha.0
+```
+
+Add only the adapters you need. [Getting started](docs/getting-started.md) includes
+a native TypeBox example and source-development instructions. The workspace root
+is private; each toolkit package is independently installable.
 
 ## Start with the smallest interface you need
 
@@ -130,7 +136,7 @@ capabilities you use; schema vendors and generation backends do not enter the co
 validation, codecs, shrinking and execution environments. It is not a blanket
 promise to generate every possible refinement or support every vendor release.
 
-## Develop and use the unpublished source
+## Develop from source
 
 Use Node 22.18.0 or newer and the pinned pnpm 10.34.5 toolchain:
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useData, withBase } from 'vitepress';
 import { agentBenefits, identity, stories } from '../../content';
-import { heroHtml, preparedVersion } from '../../.generated/hero';
+import { heroHtml } from '../../.generated/hero';
 const { theme } = useData();
 </script>
 
@@ -22,8 +22,8 @@ const { theme } = useData();
           >
         </div>
         <p class="release-note">
-          {{ identity.releaseStatus }} · {{ preparedVersion }}<br />New npm packages are not
-          published yet.
+          {{ identity.releaseStatus }} · {{ identity.releaseVersion }}<br />Available on npm’s next
+          channel.
         </p>
       </div>
       <div class="hero-stage">

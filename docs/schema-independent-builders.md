@@ -1,41 +1,94 @@
-# Schema-independent builders: architecture and migration
+# Architecture and migration
 
-## Repository decision
+## Repository and package boundaries
 
-Keep one repository with independently packable, neutrally named packages. The existing `hey-api-builders` npm package remains the compatibility integration. Do not rename the repository, publish a new package, or migrate existing consumers as a side effect of an implementation PR.
+The repository is a private pnpm workspace containing seventeen independently
+packable packages. Neutral packages share version `0.1.0-alpha.0`; the unscoped
+Hey API integration uses `3.0.0-alpha.0`. Individual package manifests are marked
+publishable for the verified release process, but no publication is implied by
+these source versions or by this implementation PR. The repository name and
+existing published Hey API v2 package are unchanged.
 
-Current packages are private and unreleased:
+The core has no runtime or peer dependencies. Native vendors, JSON Schema
+providers, Faker, property testing, compiler tools, protocol codecs and the local
+playground live behind optional package boundaries. Internal runtime dependencies
+use exact coordinated versions. Clean tarball consumers test those boundaries
+without relying on workspace module aliases.
 
-- `packages/test-builders`: shared immutable execution runtime and Standard Schema support.
-- `packages/test-builders-typebox`: native modern TypeBox creation, strict checking, and codecs.
-- `packages/test-builders-typebox-legacy`: native maintained legacy TypeBox support.
+## One execution runtime
 
-A full workspace and package-aware release process are still required before publication. The isolated consumer tests prove these package boundaries without allowing undeclared monorepo dependencies to conceal packaging errors.
+The core separates public capability types from immutable construction state.
+Factory argument tuples, distinct sync/async methods, encoded input, validated
+output, explicit cloning, nested paths and class-facade types are tested together.
+All configured patches, replacements and omissions run in registration order
+before all transforms. Validation runs only for a validated build, after those
+operations, through the selected Standard Schema entry point.
 
-## Implemented behavior
+Builder configuration is immutable, not every object passed into it. The default
+preserves caller-supplied references; `withFactory`, `replaceFactory`, clone policies
+and capture-based cloning provide explicit isolation. Nullable objects and union
+transitions require complete replacement. Native TypeBox adds complete branch
+selection without discarding root union constraints or codec behavior.
 
-The core separates public capability types from one execution runtime. It preserves factory argument tuples, distinguishes synchronous and asynchronous factories, supports synchronous and explicitly asynchronous transforms, and carries Standard Schema input/output types through validation. It has record-only merging, conservative full replacement for object unions, per-build overrides, optional omission, list budgets, and operation-only descriptions.
+Class facades and Hey API-generated classes delegate to this runtime. Generated
+helpers retain subclass fluent types, including after asynchronous transitions.
+The standalone generator's self-contained mode copies the canonical compiled core
+and declarations. There is no separately maintained inlined runtime.
 
-The native adapters retain original schema objects and use native operations. Modern TypeBox's default decode pipeline can normalize data; the adapter instead checks encoded input and then applies only codec callbacks to a clone. Legacy Decode has a different pipeline and is handled separately. No adapter serializes codecs or native types through JSON merely to share a generator.
+## Schemas preserve their own semantics
 
-Native automatic creation is a limited defaults/minimal-example provider. It is not seeded random generation or a universal solver. Failure retains its cause and offers a custom factory rather than inventing a validity guarantee.
+Standard Schema provides common validation and input/output typing. Standard JSON
+Schema adds optional input metadata for generation. Canonical interfaces are
+vendored with attribution, and the real Zod, Valibot and ArkType compatibility
+suite exercises standards interoperability rather than a private approximation.
+Native TypeBox and Effect adapters retain schema/codec handles where conversion
+would be lossy. Vendor registries and callbacks remain caller-owned trusted code.
 
-## One runtime, rich adapters
+JSON Schema uses a replaceable generation provider and independent Ajv instances
+for draft-07, 2019-09 and 2020-12. Candidate normalization affects only generation;
+acceptance checks the original schema. Unknown unsupported assertions fail rather
+than disappearing. Profiles, custom formats/assertions, explicit references and
+negative mutations all have declared contracts and resource limits.
 
-The architectural rule is capability preservation. Typed factories, Standard Schema validators, Standard JSON Schema conversion, and native adapters are complementary inputs. Standard Schema alone supplies no generation algorithm. A native adapter can retain capabilities that are absent from a JSON representation.
+Protocol adapters retain protocol meaning: OpenAPI direction and HTTP groups,
+AsyncAPI message envelopes, GraphQL input/response distinction, Protobuf 64-bit
+values and oneofs, and Avro tagged unions and native binary codecs. A runtime
+schema file does not prove an application TypeScript type. Standalone codegen can
+emit structural declarations; application factories retain their own inferred types.
 
-The canonical Standard interfaces are vendored as type-only code with their license. Vendoring avoids a runtime dependency and allows isolated offline core testing; it requires periodic parity checks against the upstream spec. Native adapters remain separate packages with explicitly tested peer versions.
+## Stateful execution is explicit
 
-## Existing Hey API compatibility
+Generation sessions own seeded streams, reference dates, sequences, uniqueness
+and work budgets. Named scopes isolate unrelated draws. Replay records carry
+provider/schema/configuration identity and reject incompatible inputs. Arbitrary
+user functions using ambient randomness do not inherit replay guarantees.
 
-The old plugin continues to emit its existing self-contained runtime. This PR does not claim its generated classes have acquired the new core's guards or methods. Adopting the new runtime requires a deliberate packaging and versioning step, with the existing generation/compilation/behavior tests as acceptance gates.
+Scenarios are dependency graphs with explicit overrides and conflict-checked
+presets. Recomputing dependent nodes preserves relationships. Fast-check mappings
+shrink explicit parameters and recompute scenarios. Effect retains its native
+arbitraries; an arbitrary factory is not advertised as a shrinker.
 
-Imported runtime output should be the default future codegen mode. An optional self-contained mode must be generated from the same canonical implementation, never maintained as a second handwritten runtime. Arbitrary closures or native schema callbacks cannot simply be serialized; such consumers need imports or a documented limitation.
+## Consumers and tooling
 
-## Trust and correctness boundaries
+Preview loaders, response resolvers and persistence handoffs consume explicit
+callbacks. They do not install global interceptors, connect to production systems,
+or pretend that arbitrary callbacks are transactional. The playground is optional,
+local-only and uses cancellable workers. The code generator reads bounded JSON
+configuration, never evaluates application modules during emission, and tracks
+which output files it owns before changing them.
 
-Factories, schemas, registries, codecs, and callback implementations remain trusted application code. List budgets do not sandbox native recursion or regex execution. Runtime schema validation is explicit; typed unchecked fixtures are not automatically valid against refinements. Native callback failures are not a reason to repair or retry user overrides.
+## Trust and release boundaries
 
-Compile-time union restrictions prevent common incomplete-variant patches, but erased runtime types cannot be reconstructed. Raw JSON inputs, validation-aware variant selection, sandboxed execution, and per-operation generation budgets require additional work.
+Raw schema data, native callbacks and generated application imports have different
+trust levels. Offline resolution, strict data copying, allocation/work budgets,
+path checks and explicit validation do not constitute arbitrary-code sandboxing.
+The playground can interrupt worker execution but is not an OS security boundary.
+See [security](../SECURITY.md) and [compatibility](compatibility.md).
 
-See `product-roadmap.md` for the accepted long-term scope and its release gates. Package READMEs describe implemented APIs; roadmap entries are not promises of current support.
+The Hey API runtime migration is a breaking major version; consumers must install
+the matching core and regenerate clients. See [migration](hey-api-migration.md).
+The release process verifies complete tarball inventories, declarations, hashes,
+internal dependencies, acceptance suites and prerelease channels before publication.
+[Release operations](releases.md) separates implemented tooling from account setup
+and actual publication. [Acceptance](acceptance.md) maps implemented work to the
+original [product plan](product-roadmap.md) without claiming unlimited schema support.

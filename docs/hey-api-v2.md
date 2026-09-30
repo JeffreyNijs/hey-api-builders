@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/hey-api-builders.svg)](https://www.npmjs.com/package/hey-api-builders)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
 `hey-api-builders` is a custom [Hey API](https://heyapi.dev/openapi-ts/) plugin
 that turns the official `@faker-js/faker` factories into immutable, type-safe
@@ -484,10 +484,10 @@ package. Open an issue or pull request in the
 
 ## Releases
 
-See [CHANGELOG.md](./CHANGELOG.md) for user-visible changes. Maintainer releases
+See [CHANGELOG.md](../packages/hey-api-builders/CHANGELOG.md) for user-visible changes. Maintainer releases
 use a `v<package-version>` GitHub release tag; publishing runs from the tagged
 commit after the repository validation gates pass.
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](../LICENSE)

@@ -1,6 +1,6 @@
 # Legacy TypeBox builders (unreleased)
 
-`@jeffreynijs/test-builders-typebox-legacy` is the native adapter for `@sinclair/typebox`. It is private and unpublished. The current compatibility target is exactly `@sinclair/typebox@0.34.52`; this does not claim compatibility with every 0.x release.
+`@jeffreynijs/test-builders-typebox-legacy` is the native adapter for `@sinclair/typebox`. Its prepared alpha is unpublished. The current compatibility target is exactly `@sinclair/typebox@0.34.52`; this does not claim compatibility with every 0.x release.
 
 ```ts
 import { Type } from '@sinclair/typebox';
@@ -37,4 +37,14 @@ The reference array is copied, but schemas remain caller-owned. Native recursive
 
 Neither the adapter nor the core downloads references or changes global format/type registries. Custom types still need appropriate native registration and may require an explicit factory. Native generation is intended for trusted schemas: the core's list budget does not isolate recursive generation, expensive regexes, or user code.
 
-See the modern adapter README for the shared API details and the root `docs/product-roadmap.md` for capabilities still under development. Run `pnpm test:typebox` to test both package lines using real independently installed tarballs and strict declaration checks.
+See the modern adapter README for the shared API details and the root `docs/acceptance.md` for the implementation and acceptance boundaries. Run `pnpm test:typebox` to test both package lines using real independently installed tarballs and strict declaration checks.
+
+## Complete union variants
+
+`fromTypeBoxVariant(union, index, options)` constructs an entire selected top-level
+`anyOf` branch before applying patches. Input types are narrowed to that branch;
+validation and output retain the original union and its root codecs.
+`typeBoxVariantAdapter` exposes native checking, issues, creation, decoding and
+encoding for that selection. Use `createSchemaBuilder(adapter.standard, factory)`
+for a custom factory. See the repository's `docs/union-variants.md` for the full
+contract and overlap/reference caveats.

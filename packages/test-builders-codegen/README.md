@@ -50,4 +50,4 @@ the output directory; concurrent writers and hostile filesystem races are not
 supported. Paths are bounded, relative and checked for symlinks. Do not edit the
 manifest to bypass ownership protection.
 
-All new packages remain private until the coordinated release process is ready.
+Individual package manifests are prepared for the coordinated alpha release; publication is a separate operation.

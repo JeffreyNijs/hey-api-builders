@@ -12,17 +12,23 @@ Public support has separate dimensions: accepted interface, inspected fields, ge
 
 ## Current implementation
 
-Implemented in the draft: a shared immutable runtime; sync/async factory capability types; complete replacement for object-union transitions; record-safe patches; per-build overrides; optional omission; explicit async transforms; validation options; allocation budgets; operation descriptions; and native TypeBox adapters for both package lines.
+The accepted workstreams below now map to implemented packages and their conformance
+suites. The repository is a private seventeen-package workspace, not the original
+three-package prototype. It includes sessions/capture/scenarios, native and standards
+adapters, generation profiles, Faker, shrink-aware property testing, shared Hey API
+and standalone code generation, protocol adapters, fixture consumers, a local
+playground, package-aware release tooling and cross-runtime acceptance.
 
-The TypeBox adapters create native default/minimal fixtures and retain codec input/output semantics. Their compatibility fixture pins actual native packages and tests built tarballs outside the repository. This is not random generation, full vocabulary coverage, an untrusted-schema sandbox, or a complete native-version matrix.
+Complete TypeBox union selection now constructs a branch before applying patches
+while retaining the original union's codecs and validation. The original emitter
+has been migrated to the shared runtime. Neither change alters already-published
+Hey API v2 packages. New source versions are unpublished alpha versions.
 
-Additional committed slices add bounded scoped sessions and replay, data-only fixture
-capture and opt-in cloning, dependency-ordered scenarios and conflict-checked traits,
-and an optional real fast-check mapping/check/replay integration. These provide
-reproducible execution and shrinking of explicit parameters, not automatic arbitrary
-derivation for every schema. See the focused guides and package compatibility tests.
-
-Still unchanged: the old Hey API emitter and published package API. No neutral package is published. No repository rename or consumer migration has occurred.
+The [acceptance record](acceptance.md) maps each workstream to implementation and
+evidence. [Compatibility](compatibility.md) states exact version/capability boundaries;
+[release operations](releases.md) separates source readiness from external account
+setup, actual publication and downstream production migration. Sections below retain
+the accepted design criteria, not a claim of universal solver or vendor support.
 
 ## Stage 1: strengthen the behavioral model
 

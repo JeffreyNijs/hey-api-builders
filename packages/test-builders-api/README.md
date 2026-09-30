@@ -41,10 +41,11 @@ No HTTP request is ever made.
 Inline component references, recursive schemas, external in-memory references,
 webhook metadata, schema-only preparation, error paths, bounded sessions and replay
 are covered by the packed-consumer suite. Embedded JSON Schema resource IDs/anchors
-are rejected in this projection path; use the standalone JSON Schema adapter for
-those resources. This is not a full OpenAPI document validator or an API client.
+are rejected in this projection path. The standalone JSON Schema adapter supports
+explicit resource IDs within its own reference contract; unsupported anchors still
+fail rather than being interpreted differently. This is not a full OpenAPI document validator or an API client.
 
-All packages remain private pending coordinated release preparation.
+Individual packages are prepared for coordinated publication; no publication is implied by this source.
 
 ## AsyncAPI messages
 

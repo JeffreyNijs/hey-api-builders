@@ -67,7 +67,7 @@
     "test:package": "node scripts/validate-package.mjs",
     "test:browser": "node scripts/test-browser.mjs",
     "check:workspace": "node scripts/check-workspace.mjs",
-    "check": "pnpm check:workspace && pnpm build && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:tooling && pnpm test:coverage",
+    "check": "pnpm check:workspace && pnpm check:docs && pnpm build && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:tooling && pnpm test:coverage",
     "validate": "pnpm check && pnpm test:package",
     "pack:check": "node scripts/pack-workspace.mjs --check",
     "release:prepare": "node scripts/pack-workspace.mjs",
@@ -75,6 +75,7 @@
     "version-packages": "changeset version",
     "test:runtimes": "node scripts/test-runtimes.mjs",
     "test:examples": "node scripts/test-examples.mjs",
-    "benchmark": "node scripts/benchmark.mjs"
+    "benchmark": "node scripts/benchmark.mjs",
+    "check:docs": "node scripts/check-documentation.mjs"
   }
 }

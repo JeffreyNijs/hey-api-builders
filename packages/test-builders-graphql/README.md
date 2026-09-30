@@ -71,4 +71,4 @@ retain their cause for deliberate diagnostics.
 
 The compatibility suite installs built tarballs in an isolated consumer, checks
 public declarations without DOM types, and tests the native runtime rather than a
-mock. All packages remain private pending coordinated release preparation.
+mock. Individual packages are prepared for coordinated publication; no publication is implied by this source.

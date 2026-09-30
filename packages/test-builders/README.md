@@ -2,14 +2,14 @@
 
 A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
 
-The provisional name is `@jeffreynijs/test-builders`. It is private and unpublished. Build and pack locally rather than installing it from npm:
+The package name is `@jeffreynijs/test-builders`. Its prepared alpha is unpublished. Build and pack locally rather than installing it from npm:
 
 ```sh
 pnpm build:core
 npm pack ./packages/test-builders --ignore-scripts
 ```
 
-The package emits ESM and TypeScript declarations. The declarations use `NoInfer` (TypeScript 5.4+); individual adapters can require newer compiler versions. Canonical Standard Typed, Standard Schema, and Standard JSON Schema v1 interfaces are vendored as type-only code with MIT attribution in `THIRD_PARTY_NOTICES.md`. There is no reduced private validation protocol.
+The package emits ESM and TypeScript declarations. The core declarations are tested with TypeScript 5.8.3 and 6.0.3; individual adapters can require newer compiler versions. Canonical Standard Typed, Standard Schema, and Standard JSON Schema v1 interfaces are vendored as type-only code with MIT attribution in `THIRD_PARTY_NOTICES.md`. There is no reduced private validation protocol.
 
 ## Existing factories
 
@@ -85,7 +85,7 @@ const dog = pets.replace({ kind: 'dog', bark: true }).build();
 // pets.with({ kind: 'dog' }) is rejected: it could omit required dog fields.
 ```
 
-This is deliberately conservative until native variant selection exists. There is no runtime introspection of erased TypeScript unions. JavaScript or unsafe casts can bypass compile-time rules; validated builds remain the source of runtime schema guarantees. Partial record patches onto null, undefined, scalars, or class instances are rejected at runtime. Use `replace()` for custom classes.
+This generic path is deliberately conservative; native TypeBox adapters additionally offer `fromTypeBoxVariant()` for complete branch selection. There is no runtime introspection of erased TypeScript unions. JavaScript or unsafe casts can bypass compile-time rules; validated builds remain the source of runtime schema guarantees. Partial record patches onto null, undefined, scalars, or class instances are rejected at runtime. Use `replace()` for custom classes.
 
 `omit(...keys)` accepts optional keys only. It creates a new plain record without those own properties; it does not assign undefined or null. With `exactOptionalPropertyTypes`, those three states remain distinct. Required-field omission for negative tests needs an explicitly unsafe JavaScript/cast boundary, not an incorrect ordinary return type.
 
@@ -118,7 +118,7 @@ This budget limits list allocation, not arbitrary factory runtime, recursive sch
 
 ## Inspection and adapters
 
-`describe()` returns frozen operation names, the list budget, and whether validation is attached. It deliberately excludes fixture values and callbacks. It is a small diagnostic surface, not a schema inspector or replay format yet.
+`describe()` returns frozen operation names, the list budget, and whether validation is attached. It deliberately excludes fixture values and callbacks. It is a small diagnostic surface. Schema inspection belongs to the adapter SDK; replay state is exposed separately by generation sessions.
 
 Native TypeBox packages are available in this repository:
 
@@ -127,7 +127,7 @@ Native TypeBox packages are available in this repository:
 
 Their `fromTypeBox()` entry points can create native defaults without a handwritten factory, retain encoded/decoded types, and validate using native operations. Their READMEs document the precise version targets and generation limitations.
 
-The old Hey API emitter is unchanged and does not yet consume this runtime. Broader generation providers, replay sessions, scenarios, shrinking, and standalone generated classes remain on the explicit product roadmap; these APIs do not imply those capabilities already exist.
+The Hey API emitter and standalone generated classes now use this runtime. Sessions, capture, scenarios, generation providers and property testing are implemented in the core or optional packages. The root README and compatibility guide distinguish the packages and tested capabilities; publication and downstream production migration remain separate operations.
 
 ## Verification
 

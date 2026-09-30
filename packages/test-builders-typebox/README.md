@@ -1,6 +1,6 @@
 # Native TypeBox builders (unreleased)
 
-`@jeffreynijs/test-builders-typebox` accepts native `typebox` schemas. The package is private and unpublished. Its current compatibility target is exactly `typebox@1.3.34`; broader ranges require additional matrix testing.
+`@jeffreynijs/test-builders-typebox` accepts native `typebox` schemas. The prepared alpha is unpublished. Its current compatibility target is exactly `typebox@1.3.34`; broader ranges require additional matrix testing.
 
 ```ts
 import Type from 'typebox';
@@ -38,7 +38,7 @@ Custom factory arguments are preserved, including required and multiple argument
 
 ## Strict checking, codecs and references
 
-`typeBoxAdapter(schema, options)` exposes the original `source`, a Standard Schema `standard` wrapper, and `check`, `create`, `decode`, and `encode` operations. `check` does not coerce or decode. The Standard Schema wrapper first checks the encoded input and then executes decode callbacks on a clone. It deliberately does not invoke the modern `Value.Decode` default/convert/clean pipeline.
+`typeBoxAdapter(schema, options)` exposes the original `source`, a Standard Schema `standard` wrapper, and `check`, `issues`, `create`, `decode`, and `encode` operations. `check` does not coerce or decode. The Standard Schema wrapper first checks the encoded input and then executes decode callbacks on a clone. It deliberately does not invoke the modern `Value.Decode` default/convert/clean pipeline.
 
 `build()` produces encoded input without applying codecs. `buildValidated()` returns decoded output. Patches remain encoded-input typed. Codec callbacks execute once per successful validated build; exceptions propagate and are not treated as permission to regenerate the fixture. Encoding executes the native encode callbacks and checks the resulting encoded value. An absent or invalid inverse codec is not synthesized.
 
@@ -55,8 +55,18 @@ The adapter does not install formats or change global TypeBox settings. Configur
 
 ## Limits and verification
 
-These adapters are for trusted native schemas and callbacks. The core's `maxListSize` limits list allocation, not recursive native generation time, regex complexity, or arbitrary callback execution. Sandboxed processing and generation budgets are separate roadmap items.
+These adapters are for trusted native schemas and callbacks. The core's `maxListSize` limits list allocation, not recursive native generation time, regex complexity, or arbitrary callback execution. The optional playground offers bounded worker execution for JSON schema data, not arbitrary native callbacks or an OS sandbox.
 
 `pnpm test:typebox` builds real core/adapter tarballs, installs them into an isolated consumer outside the repository, compiles their public declarations, and executes the conformance fixtures against the pinned native packages. The compatibility fixture has its own committed npm lockfile. The core itself does not depend on TypeBox.
 
 For the maintained `@sinclair/typebox` package line, use `@jeffreynijs/test-builders-typebox-legacy` instead. No schema conversion between the two package lines is performed.
+
+## Complete union variants
+
+`fromTypeBoxVariant(union, index, options)` constructs an entire selected top-level
+`anyOf` branch before applying patches. Input types are narrowed to that branch;
+validation and output retain the original union and its root codecs.
+`typeBoxVariantAdapter` exposes native checking, issues, creation, decoding and
+encoding for that selection. Use `createSchemaBuilder(adapter.standard, factory)`
+for a custom factory. See the repository's `docs/union-variants.md` for the full
+contract and overlap/reference caveats.

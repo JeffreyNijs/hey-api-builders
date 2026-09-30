@@ -109,6 +109,11 @@ test('every documentation route and its Markdown alternate resolve below /mimlet
   expect(index.status()).toBe(200);
   const text = await index.text();
   expect(text).toContain('Published alpha: 0.1.0-alpha.0');
+  for (const name of ['zod', 'arktype']) {
+    expect(text).toContain(
+      `[@mimlet/${name}](/mimlet/packages/${name}.md): Next-release source preview; not in the published alpha.`
+    );
+  }
   for (const name of manifest.packages) {
     expect(text).toContain(`[${name}]`);
   }

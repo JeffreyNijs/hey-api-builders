@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createMarkdownRenderer } from 'vitepress';
-import { agentBenefits, base, codeTheme, identity, stories } from '../content.ts';
+import { agentBenefits, base, codeTheme, identity, previewPackages, stories } from '../content.ts';
 
 export const root = fileURLToPath(new URL('../../../', import.meta.url));
 const generated = resolve(root, 'apps/docs/.generated');
@@ -178,7 +178,10 @@ export async function prepare(): Promise<void> {
         .join('\n') +
       `\n\n## Packages\n\n` +
       packages
-        .map(({ name, directory }) => `- [${name}](${base}packages/${directory}.md)`)
+        .map(
+          ({ name, directory }) =>
+            `- [${name}](${base}packages/${directory}.md)${previewPackages.includes(name) ? ': Next-release source preview; not in the published alpha.' : ''}`
+        )
         .join('\n') +
       `\n\n## Optional\n\n- [Mimlet skill](${sourceUrl}skills/mimlet/SKILL.md): Optional agent usage guide; install only when requested.\n`
   );

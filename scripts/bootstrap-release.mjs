@@ -188,6 +188,8 @@ export async function bootstrapRelease(mode, npmRoot, directory, provenanceDirec
       // verifies and attaches it; the tarball's provenance policy remains true.
       const options = {
         ...npm.flatOptions,
+        // Match the native CLI context so npm can apply an approved publish session.
+        npmCommand: 'publish',
         registry,
         '@mimlet:registry': registry,
         access: 'public',

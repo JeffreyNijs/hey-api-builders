@@ -4,8 +4,8 @@ A builder is an immutable recipe. A generation session owns mutable execution
 state for one test or scenario. Never share a session across independent tests.
 
 ```ts
-import { createBuilder, createSession, restoreSession } from 'mimlet';
-import type { GenerationSession } from 'mimlet';
+import { createBuilder, createSession, restoreSession } from '@mimlet/core';
+import type { GenerationSession } from '@mimlet/core';
 
 const identity = {
   fingerprint: 'users/v1',

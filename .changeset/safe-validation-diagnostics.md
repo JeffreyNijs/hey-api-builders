@@ -1,5 +1,5 @@
 ---
-'mimlet': patch
+'@mimlet/core': patch
 '@mimlet/adapter': patch
 ---
 

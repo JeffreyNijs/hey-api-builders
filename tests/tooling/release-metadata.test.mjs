@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { URL } from 'node:url';
 import { validateReleasePackageMetadata } from '../../scripts/release-manifest.mjs';
-const core = 'mimlet';
+const core = '@mimlet/core';
 const version = '0.1.0-alpha.0';
 const manifest = {
   packages: [
@@ -41,6 +41,7 @@ test('checks internal dependencies in every dependency group including missing p
       'invalid',
       { [core]: '^' + version },
       { '@mimlet/absent': version },
+      { mimlet: version },
       { external: 1 },
     ]) {
       const value = metadata();

@@ -7,7 +7,7 @@ cycles before invoking any application callback; cyclic data can still be create
 inside an explicitly managed node and captured with `captureFixture`.
 
 ```ts
-import { createScenario, createSession } from 'mimlet';
+import { createScenario, createSession } from '@mimlet/core';
 
 const checkout = createScenario({ name: 'checkout' })
   .node('customer', [], (_dependencies, session) => ({

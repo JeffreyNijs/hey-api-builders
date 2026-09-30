@@ -4,7 +4,7 @@ import Type from 'typebox';
 import { Type as Legacy, FormatRegistry } from '@sinclair/typebox';
 import * as NativeValue from 'typebox/value';
 import * as LegacyValue from '@sinclair/typebox/value';
-import { createBuilder, BuilderValidationError, BuilderGenerationError } from 'mimlet';
+import { createBuilder, BuilderValidationError, BuilderGenerationError } from '@mimlet/core';
 import * as modern from '@mimlet/typebox';
 import * as legacy from '@mimlet/typebox-legacy';
 

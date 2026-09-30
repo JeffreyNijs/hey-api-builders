@@ -1,5 +1,5 @@
 import { defineAdapter, fromAdapter } from '@mimlet/adapter';
-import type { StandardSchemaV1 } from 'mimlet';
+import type { StandardSchemaV1 } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 declare const standard: StandardSchemaV1<{ age: string }, { age: number }>;
 const adapter = defineAdapter({

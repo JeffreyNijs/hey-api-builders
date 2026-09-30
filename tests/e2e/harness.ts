@@ -62,7 +62,7 @@ async function compileGeneratedProject(
 
   const compilerOptions: ts.CompilerOptions = {
     paths: {
-      mimlet: [join(workspaceDirectory, 'packages/core/dist/index.d.ts')],
+      '@mimlet/core': [join(workspaceDirectory, 'packages/core/dist/index.d.ts')],
     },
     allowSyntheticDefaultImports: true,
     esModuleInterop: true,
@@ -152,7 +152,7 @@ async function createGeneratedModuleLoader(): Promise<
   const externalModules = new Map<string, unknown>([
     ['@faker-js/faker', fakerModule],
     ['zod', zodModule],
-    ['mimlet', builderModule],
+    ['@mimlet/core', builderModule],
   ]);
   const cache = new Map<string, CommonJsModule>();
 

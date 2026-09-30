@@ -1,4 +1,4 @@
-import type { SchemaBuilderConfig } from 'mimlet';
+import type { SchemaBuilderConfig } from '@mimlet/core';
 export interface ProtobufFixtureOptions extends SchemaBuilderConfig {
   readonly profile?: 'minimal' | 'random' | 'boundary' | 'defaults';
   readonly filename?: string;

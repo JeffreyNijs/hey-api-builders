@@ -4,7 +4,7 @@
 
 - Move the plugin into the neutral toolkit workspace without changing its npm name.
 - Generated builders now import the shared runtime, retain fluent property methods, and use the tested record/async/list contracts.
-- Consumers must install the matching `mimlet` runtime. See `docs/hey-api-migration.md`.
+- Consumers must install the matching `@mimlet/core` runtime. See `docs/hey-api-migration.md`.
 - This version is prepared source, not a publication announcement.
 
 All notable changes to this project are documented in this file.

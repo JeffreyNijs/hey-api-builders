@@ -1,5 +1,5 @@
 import { protobufAdapter, fromProtobuf } from '@mimlet/protobuf';
-import type { SchemaBuilder, GenerationSession } from 'mimlet';
+import type { SchemaBuilder, GenerationSession } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 const p = protobufAdapter('syntax="proto3";message X{int64 id=1;}', 'X');
 expectType<Uint8Array>(p.encode({ id: 1n }));

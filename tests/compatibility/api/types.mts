@@ -5,7 +5,7 @@ import {
   serializeParameter,
   type HttpRequestFixture,
 } from '@mimlet/api';
-import type { SchemaBuilder, GenerationSession } from 'mimlet';
+import type { SchemaBuilder, GenerationSession } from '@mimlet/core';
 declare const document: unknown;
 declare function expectType<T>(value: T): void;
 const request = fromOpenApiRequest(document, { operationId: 'users' });

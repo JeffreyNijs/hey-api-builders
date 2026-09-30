@@ -1,5 +1,5 @@
 import { jsonSchemaAdapter } from '@mimlet/json-schema';
-import type { GenerationSession, SchemaBuilder } from 'mimlet';
+import type { GenerationSession, SchemaBuilder } from '@mimlet/core';
 import {
   ApiContractError,
   Documents,

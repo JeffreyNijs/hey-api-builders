@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { createScenario, createSession, createBuilder, type StandardSchemaV1 } from 'mimlet';
+import { createScenario, createSession, createBuilder, type StandardSchemaV1 } from '@mimlet/core';
 import {
   fromArbitrary,
   fromSchemaArbitrary,

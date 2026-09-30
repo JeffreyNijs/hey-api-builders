@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import protobuf from 'protobufjs';
 import { protobufAdapter, fromProtobuf, ProtobufFixtureError } from '@mimlet/protobuf';
-import { BuilderValidationError, restoreSession } from 'mimlet';
+import { BuilderValidationError, restoreSession } from '@mimlet/core';
 const fail = (run) => assert.throws(run, ProtobufFixtureError);
 const proto = `syntax="proto3"; package demo;
 enum E { NONE=0; FIRST=1; SECOND=2; }

@@ -1,4 +1,4 @@
-import type { GenerationSession } from 'mimlet';
+import type { GenerationSession } from '@mimlet/core';
 import type { JsonSchemaIssue } from './index.js';
 import { copyJson, type JsonSchema, type SchemaLimits } from './schema.js';
 

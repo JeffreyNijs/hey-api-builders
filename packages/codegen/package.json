@@ -34,7 +34,7 @@
     "test:unit": "vitest run --root ../.. --project unit tests/unit/mimlet-codegen.test.ts"
   },
   "dependencies": {
-    "mimlet": "0.1.0-alpha.0",
+    "@mimlet/core": "0.1.0-alpha.0",
     "@mimlet/json-schema": "0.1.0-alpha.0",
     "json-schema-to-typescript": "16.0.0"
   },

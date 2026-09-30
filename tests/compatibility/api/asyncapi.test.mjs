@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { setImmediate } from 'node:timers/promises';
 import { ApiContractError, asyncApi, fromAsyncApiMessage, messageExpression } from '@mimlet/api';
-import { BuilderValidationError, cloneFixture, restoreSession } from 'mimlet';
+import { BuilderValidationError, cloneFixture, restoreSession } from '@mimlet/core';
 const pointer = (value) => value.replace(/~/g, '~0').replace(/\//g, '~1');
 function spec(
   version = '3.1.0',

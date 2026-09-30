@@ -7,7 +7,7 @@ export const defaultConfig: BuildersPlugin['Config'] = {
   config: {
     $cascade: ['case'],
     case: 'PascalCase',
-    runtimeModule: 'mimlet',
+    runtimeModule: '@mimlet/core',
     definitions: {
       enabled: true,
       name: '{{name}}Builder',

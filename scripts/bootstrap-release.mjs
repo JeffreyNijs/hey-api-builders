@@ -14,6 +14,12 @@ export const bootstrapIdentity =
   'https://github.com/JeffreyNijs/mimlet/.github/workflows/npm-bootstrap.yml@refs/heads/main';
 const registry = 'https://registry.npmjs.org/';
 
+export function bootstrapFailureMessage(error) {
+  // npm HTTP errors contain response headers, including session cookies. Report
+  // the actionable message without serializing the response or nested causes.
+  return error instanceof Error ? error.message : 'Bootstrap release failed';
+}
+
 export function validateBootstrapContext(env, commit) {
   if (
     env.GITHUB_ACTIONS !== 'true' ||
@@ -210,5 +216,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     resolve(process.argv[3]),
     resolve(process.argv[4]),
     resolve(process.argv[5])
-  );
+  ).catch((error) => {
+    console.error(bootstrapFailureMessage(error));
+    process.exitCode = 1;
+  });
 }

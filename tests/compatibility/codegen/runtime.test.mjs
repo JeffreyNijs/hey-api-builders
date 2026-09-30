@@ -137,7 +137,7 @@ describe('standalone builder emission', () => {
       await writeFile(
         join(directory, 'source.ts'),
         `
-import { createBuilder } from 'mimlet';
+import { createBuilder } from '@mimlet/core';
 export const makeUser = (id: string) => ({ id, name: '' });
 export const configured = createBuilder(makeUser).with({ name: 'configured' });
 export const Schema = { '~standard': { version: 1 as const, vendor: 'test', types: undefined as undefined | { input: { id: string; name: string }; output: { id: number; name: string } }, validate: (value: unknown) => ({ value: { ...(value as {name:string}), id: Number((value as {id:string}).id) } }) } };

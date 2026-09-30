@@ -5,7 +5,7 @@ generation and native library integrations are opt-in.
 
 | Your input or job                              | Package                                                        | What to expect                                                                                                          |
 | ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| A factory or Standard Schema validator         | [mimlet](../packages/core/README.md)                           | Immutable builders, input/output typing, async capabilities, sessions and scenarios; provide the factory.               |
+| A factory or Standard Schema validator         | [@mimlet/core](../packages/core/README.md)                     | Immutable builders, input/output typing, async capabilities, sessions and scenarios; provide the factory.               |
 | Modern `typebox`                               | [@mimlet/typebox](../packages/typebox/README.md)               | Native creation, checking and codecs; explicit factory escape hatch.                                                    |
 | `@sinclair/typebox`                            | [@mimlet/typebox-legacy](../packages/typebox-legacy/README.md) | Native legacy TypeBox and Transform semantics.                                                                          |
 | JSON Schema or Standard JSON Schema conversion | [@mimlet/json-schema](../packages/json-schema/README.md)       | Supported draft validation, profiles and bounded generation; inspect unsupported capabilities.                          |

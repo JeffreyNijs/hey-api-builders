@@ -1,4 +1,4 @@
-import { createSchemaBuilder } from 'mimlet';
+import { createSchemaBuilder } from '@mimlet/core';
 import type {
   AnyFactory,
   SchemaBuilderConfig,
@@ -6,7 +6,7 @@ import type {
   SchemaInput,
   SchemaOutput,
   StandardSchemaV1,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export interface AdapterField {
   readonly name: string;

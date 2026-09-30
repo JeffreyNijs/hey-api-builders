@@ -9,15 +9,15 @@ packages. [Choose an adapter](adapters.md) for the capabilities you need.
 
 ## Source preview
 
-The source prepares `mimlet` and `@mimlet/*` at `0.1.0-alpha.0`, alongside
-`hey-api-builders@3.0.0-alpha.0`. The new names are **not published or reserved**.
-Do not assume a similarly named registry package is this project.
+The source prepares `@mimlet/core` and `@mimlet/*` at `0.1.0-alpha.0`, alongside
+`hey-api-builders@3.0.0-alpha.0`. The new packages are **not published yet**. The project controls the `@mimlet`
+organization; package publication is still pending.
 
 During review, use Node **22.18 or newer** and the repository's pinned pnpm:
 
 ```sh
-git clone --branch codex/mimlet-brand-and-docs https://github.com/JeffreyNijs/hey-api-builders.git
-cd hey-api-builders
+git clone https://github.com/JeffreyNijs/mimlet.git
+cd mimlet
 corepack pnpm install --frozen-lockfile
 corepack pnpm build
 corepack pnpm test:examples
@@ -51,7 +51,7 @@ In a separate test project, install the core and TypeBox adapter tarballs togeth
 ```sh
 npm init -y
 npm pkg set type=module
-npm install /absolute/path/to/checkout/release/mimlet-0.1.0-alpha.0.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.0.tgz typebox@1.3.34
+npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.0.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.0.tgz typebox@1.3.34
 ```
 
 Replace the absolute paths with the checkout you built. Add only the adapters you

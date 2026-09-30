@@ -2,7 +2,7 @@
 
 ## 0.1.0-alpha.0
 
-Initial prerelease source for mimlet.
+Initial prerelease source for @mimlet/core.
 
 Schema-independent immutable test-data builders with Standard Schema validation.
 

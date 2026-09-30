@@ -9,7 +9,21 @@ import {
   readBootstrapRelease,
   validateBootstrapContext,
   validateBootstrapStatement,
+  bootstrapFailureMessage,
 } from '../../scripts/bootstrap-release.mjs';
+
+test('publication errors retain the registry reason without leaking response credentials', () => {
+  const error = Object.assign(new Error('403 Forbidden: package name rejected'), {
+    headers: { 'set-cookie': 'private-session-value' },
+    body: { token: 'private-token-value' },
+    cause: new Error('private-cause-value'),
+  });
+  assert.equal(bootstrapFailureMessage(error), '403 Forbidden: package name rejected');
+  assert.equal(
+    bootstrapFailureMessage({ token: 'private-token-value' }),
+    'Bootstrap release failed'
+  );
+});
 
 const commit = 'a'.repeat(40);
 test('first-publication signing is restricted to the exact main workflow and commit', () => {
@@ -86,8 +100,8 @@ test('bootstrap preflight verifies actual tarballs and rejects tampering before 
   await mkdir(artifacts);
   try {
     const packages = [];
-    for (const name of ['mimlet', 'hey-api-builders']) {
-      const version = name === 'mimlet' ? '0.1.0-alpha.0' : '3.0.0-alpha.0';
+    for (const name of ['@mimlet/core', 'hey-api-builders']) {
+      const version = name === '@mimlet/core' ? '0.1.0-alpha.0' : '3.0.0-alpha.0';
       const folder = join(root, name, 'package');
       await mkdir(folder, { recursive: true });
       await writeFile(
@@ -98,10 +112,10 @@ test('bootstrap preflight verifies actual tarballs and rejects tampering before 
           private: false,
           repository: { url: 'git+https://github.com/JeffreyNijs/mimlet.git' },
           publishConfig: { provenance: true },
-          dependencies: name === 'mimlet' ? {} : { mimlet: '0.1.0-alpha.0' },
+          dependencies: name === '@mimlet/core' ? {} : { '@mimlet/core': '0.1.0-alpha.0' },
         })
       );
-      const filename = `${name}-${version}.tgz`;
+      const filename = `${name.replace('@', '').replace('/', '-')}-${version}.tgz`;
       execFileSync('tar', ['-czf', join(artifacts, filename), '-C', join(root, name), 'package']);
       const bytes = await readFile(join(artifacts, filename));
       packages.push({

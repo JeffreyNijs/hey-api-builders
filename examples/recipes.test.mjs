@@ -24,7 +24,7 @@ test('the documented shrinking recipe retains its dependent total', () => {
   assert.deepEqual(report.details.counterexample, [{ prices: [5], total: 5 }]);
 });
 test('the generated API uses Mimlet imports and named fluent methods', () => {
-  assert.match(files[0].content, /from "mimlet"/);
+  assert.match(files[0].content, /from "@mimlet\/core"/);
   assert.match(files[0].content, /withId\(/);
   assert.match(files[0].content, /withRole\(/);
 });

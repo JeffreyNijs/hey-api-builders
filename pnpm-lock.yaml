@@ -35,6 +35,9 @@ importers:
       '@hey-api/openapi-ts':
         specifier: 0.99.0
         version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
+      '@mimlet/core':
+        specifier: workspace:*
+        version: link:packages/core
       '@resvg/resvg-js':
         specifier: 2.6.2
         version: 2.6.2
@@ -74,9 +77,6 @@ importers:
       hey-api-builders:
         specifier: workspace:*
         version: link:packages/hey-api-builders
-      mimlet:
-        specifier: workspace:*
-        version: link:packages/core
       prettier:
         specifier: 3.9.6
         version: 3.9.6
@@ -131,43 +131,43 @@ importers:
 
   packages/adapter:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
 
   packages/api:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/avro:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       avsc:
         specifier: 5.7.9
         version: 5.7.9
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/codegen:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
       json-schema-to-typescript:
         specifier: 16.0.0
         version: 16.0.0
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/consumers:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
 
@@ -175,7 +175,7 @@ importers:
 
   packages/effect:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -185,7 +185,7 @@ importers:
 
   packages/faker:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -195,7 +195,7 @@ importers:
 
   packages/fast-check:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -205,12 +205,12 @@ importers:
 
   packages/graphql:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       graphql:
         specifier: 17.0.2
         version: 17.0.2
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/hey-api-builders:
     devDependencies:
@@ -220,7 +220,7 @@ importers:
       '@hey-api/openapi-ts':
         specifier: 0.99.0
         version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
-      mimlet:
+      '@mimlet/core':
         specifier: workspace:*
         version: link:../core
       typescript:
@@ -229,6 +229,9 @@ importers:
 
   packages/json-schema:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       ajv:
         specifier: 8.20.0
         version: 8.20.0
@@ -238,22 +241,19 @@ importers:
       json-schema-faker:
         specifier: 0.6.3
         version: 0.6.3
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/playground:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
 
   packages/protobuf:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
       protobufjs:
@@ -262,7 +262,7 @@ importers:
 
   packages/typebox:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -272,7 +272,7 @@ importers:
 
   packages/typebox-legacy:
     dependencies:
-      mimlet:
+      '@mimlet/core':
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -282,15 +282,15 @@ importers:
 
   packages/valibot:
     dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
       '@valibot/to-json-schema':
         specifier: 1.8.0
         version: 1.8.0(valibot@1.5.0(typescript@6.0.3))
-      mimlet:
-        specifier: 0.1.0-alpha.0
-        version: link:../core
     devDependencies:
       valibot:
         specifier: 1.5.0

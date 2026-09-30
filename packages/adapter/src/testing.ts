@@ -1,5 +1,5 @@
-import { createSchemaBuilder } from 'mimlet';
-import type { StandardSchemaV1 } from 'mimlet';
+import { createSchemaBuilder } from '@mimlet/core';
+import type { StandardSchemaV1 } from '@mimlet/core';
 import type { AdapterInspection } from './index.js';
 
 export interface ConformanceCase {

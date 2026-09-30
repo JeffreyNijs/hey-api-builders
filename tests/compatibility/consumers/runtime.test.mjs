@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { fixtureLoader, jsonResponseResolver, persistFixtureBatch } from '@mimlet/consumers';
-import { createBuilder, createSchemaBuilder, createSession } from 'mimlet';
+import { createBuilder, createSchemaBuilder, createSession } from '@mimlet/core';
 const request = () => new Request('https://example.invalid/test');
 const reject = () => {
   throw new Error('must not run');

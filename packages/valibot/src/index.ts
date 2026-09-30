@@ -2,7 +2,7 @@ import type { GenericSchema, InferInput, InferOutput } from 'valibot';
 import { toStandardJsonSchema } from '@valibot/to-json-schema';
 import { fromStandardJsonSchema } from '@mimlet/json-schema';
 import type { JsonSchemaOptions } from '@mimlet/json-schema';
-import type { StandardSchemaV1, StandardJSONSchemaV1 } from 'mimlet';
+import type { StandardSchemaV1, StandardJSONSchemaV1 } from '@mimlet/core';
 
 /** Native conversion adds metadata without replacing Valibot's parser or its input/output types. */
 export function valibotAdapter<S extends GenericSchema>(source: S) {

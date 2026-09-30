@@ -1,23 +1,29 @@
 # From Test Builders to Mimlet
 
 Mimlet is the same schema-independent toolkit under a new product identity.
-The core is `mimlet`; the optional packages use `@mimlet/*`. These names describe
+The core is `@mimlet/core`; the optional packages use `@mimlet/*`. These names describe
 the prepared, unpublished alpha. Package ownership and publication are separate
 launch steps; an install command is not evidence that a package is available.
 
+The earlier source preview used the unscoped `mimlet` package name. npm rejected
+its first publication as too similar to existing package names, so the core now
+uses `@mimlet/core`. No unscoped Mimlet toolkit version was published. Update
+preview imports and regenerate builders; the `mimlet` executable still comes
+from `@mimlet/codegen`. The product, repository and website remain Mimlet.
+
 | Previous source identity               | Mimlet identity                         |
 | -------------------------------------- | --------------------------------------- |
-| `@jeffreynijs/test-builders`           | `mimlet`                                |
+| `@jeffreynijs/test-builders`           | `@mimlet/core`                          |
 | `@jeffreynijs/test-builders-<adapter>` | `@mimlet/<adapter>`                     |
 | `test-builders --config …`             | `mimlet --config …`                     |
 | `test-builders-playground`             | `mimlet-playground`                     |
 | `hey-api-builders`                     | Unchanged: Mimlet's Hey API integration |
 
 Update source imports and dependencies together. Regenerate builders with the
-renamed CLI or Hey API plugin so emitted imports point to `mimlet` and `@mimlet/*`.
+renamed CLI or Hey API plugin so emitted imports point to `@mimlet/core` and `@mimlet/*`.
 The Hey API plugin name, generated filename, configuration API and prepared
 `3.0.0-alpha.0` version remain unchanged. Its default external runtime import is
-now `mimlet`. Existing published Hey API v2 users should follow the separate
+now `@mimlet/core`. Existing published Hey API v2 users should follow the separate
 [Hey API migration guide](hey-api-migration.md).
 
 Public functions, fluent methods, package boundaries and toolkit
@@ -48,10 +54,9 @@ versions. A product rename does not authorize replaying data against a changed s
 
 ## Repository and releases
 
-The target repository name is `JeffreyNijs/mimlet`. Its public rename and Pages
-launch are coordinated after merge. During review, the existing
-[repository](https://github.com/JeffreyNijs/hey-api-builders) remains the source location.
-Local checkouts are not moved by this change.
+The [repository](https://github.com/JeffreyNijs/mimlet) is `JeffreyNijs/mimlet`, and
+the [website](https://jeffreynijs.github.io/mimlet/) is live. The old GitHub repository
+URL redirects to the renamed repository. Local checkout directories need not move.
 
 The `toolkit-v<version>` release tag convention, fixed neutral-package version train,
 exact internal dependencies, provenance checks and protected publication process

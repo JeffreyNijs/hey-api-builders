@@ -1,4 +1,4 @@
-import { cloneFixture } from 'mimlet';
+import { cloneFixture } from '@mimlet/core';
 import type { GraphQLError } from 'graphql';
 import type { GraphQLFixtureIssue } from './types.js';
 export { GraphQLFixtureError } from './errors.js';

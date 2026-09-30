@@ -4,7 +4,7 @@ import {
   type GenerationRequest,
   PlaygroundError,
 } from '@mimlet/playground';
-import type { SessionSnapshot } from 'mimlet';
+import type { SessionSnapshot } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 const request = {
   schema: { type: 'integer' },

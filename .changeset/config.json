@@ -4,7 +4,7 @@
   "commit": false,
   "fixed": [
     [
-      "mimlet",
+      "@mimlet/core",
       "@mimlet/adapter",
       "@mimlet/api",
       "@mimlet/avro",

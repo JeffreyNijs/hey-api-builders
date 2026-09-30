@@ -1,4 +1,4 @@
-import type { GenerationSession, StandardSchemaV1 } from 'mimlet';
+import type { GenerationSession, StandardSchemaV1 } from '@mimlet/core';
 import type { GraphQLInputType, GraphQLScalarType } from 'graphql';
 import {
   isEnumType,

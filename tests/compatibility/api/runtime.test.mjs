@@ -11,7 +11,7 @@ import {
   openApi,
   serializeParameter,
 } from '@mimlet/api';
-import { BuilderValidationError, restoreSession } from 'mimlet';
+import { BuilderValidationError, restoreSession } from '@mimlet/core';
 const content = (schema, type = 'application/json') => ({ content: { [type]: { schema } } });
 const parameter = (name, location = 'query', schema = { type: 'string' }, extra = {}) => ({
   name,

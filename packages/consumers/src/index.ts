@@ -1,4 +1,4 @@
-import { cloneFixture } from 'mimlet';
+import { cloneFixture } from '@mimlet/core';
 export type MaybePromise<T> = T | PromiseLike<T>;
 export interface FixtureConsumerOptions<T> {
   /** Portable fixture cloning is the default; use a native clone hook for other values. */

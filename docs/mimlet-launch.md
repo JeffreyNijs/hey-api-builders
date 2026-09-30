@@ -1,9 +1,10 @@
 # Mimlet website launch
 
-The rebrand is prepared on `codex/mimlet-brand-and-docs`, stacked on
-`codex/schema-toolkit-completion` (PR #21). The recorded starting commit is
-`017dfb5d2fd4d147d7724f468d77aa35a961e869`. Reconcile later base-branch changes
-before retargeting the branding PR to `main` after #21 merges.
+The toolkit completion and branding PRs (#21 and #22) have merged. The repository
+is now `JeffreyNijs/mimlet`, and the public site is live at
+<https://jeffreynijs.github.io/mimlet/>. The project controls the `@mimlet` npm
+organization. Initial package publication is still pending; the core uses
+`@mimlet/core` after npm rejected the unscoped `mimlet` name.
 
 ## Review without publishing
 
@@ -22,13 +23,15 @@ brand assets. `pnpm docs:preview` serves the built site on loopback port 4174 un
 The documentation application is private and is never part of the 17-package release.
 
 Website CI builds an artifact for review on pull requests, including stacked PRs.
-Deployment is restricted to `main` in `JeffreyNijs/mimlet`; the current repository
-name and feature branches cannot trigger a public deployment. Package publication
+Deployment is restricted to `main` in `JeffreyNijs/mimlet`; feature branches
+cannot trigger a public deployment. Package publication
 continues to use its separate protected release workflow.
 
-## After the PRs merge
+## Deployment checklist
 
-These are launch actions, not steps already performed by this change:
+The repository rename, environment configuration and first site deployment are
+complete. Use this checklist when checking the deployment or preparing a future
+repository move:
 
 1. Confirm both PRs and all required checks are merged into `main`. Verify control
    of the intended npm names and `@mimlet` organization before scheduling a package
@@ -50,8 +53,8 @@ These are launch actions, not steps already performed by this change:
    branch. Keep the unpublished-package notice and local-tarball workflow until
    actual npm ownership, trusted publishing and publication are verified.
 
-The checked-in GitHub links use the current repository during review and the new
-repository automatically in its GitHub Actions environment. Pages project URLs
+The checked-in GitHub links use `JeffreyNijs/mimlet` and default to `main`.
+`DOCS_SOURCE_REF` can select the reviewed source revision. Pages project URLs
 do not share GitHub's repository-URL redirects. There is no prior Pages site to migrate.
 
 ## Package publication stays separate

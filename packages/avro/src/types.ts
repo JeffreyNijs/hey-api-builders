@@ -1,4 +1,4 @@
-import type { SchemaBuilderConfig } from 'mimlet';
+import type { SchemaBuilderConfig } from '@mimlet/core';
 export type AvroSchema = string | readonly AvroSchema[] | Readonly<Record<string, unknown>>;
 export interface AvroFixtureOptions extends SchemaBuilderConfig {
   readonly profile?: 'minimal' | 'random' | 'boundary' | 'defaults';

@@ -7,7 +7,7 @@ import {
   fromGraphQLResponse,
   GraphQLFixtureError,
 } from '@mimlet/graphql';
-import { BuilderValidationError, restoreSession } from 'mimlet';
+import { BuilderValidationError, restoreSession } from '@mimlet/core';
 const failure = (run) => assert.throws(run, GraphQLFixtureError);
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const schema = `

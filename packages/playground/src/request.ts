@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import type { SessionSnapshot } from 'mimlet';
+import type { SessionSnapshot } from '@mimlet/core';
 import type { GenerationProfile, JsonSchema, SchemaDialect } from '@mimlet/json-schema';
 
 export interface GenerationRequest {

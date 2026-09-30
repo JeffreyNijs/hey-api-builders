@@ -158,7 +158,7 @@ export function emitBuilders(
   targets: readonly BuilderTarget[],
   options: EmitOptions = {}
 ): GeneratedFile[] {
-  const runtime = moduleName(options.runtimeModule ?? 'mimlet');
+  const runtime = moduleName(options.runtimeModule ?? '@mimlet/core');
   return selected(targets, options).map((target) => {
     const source = target.source;
     let imports = reference(source, 'source');
@@ -201,7 +201,7 @@ export async function emitJsonSchemaBuilders(
   targets: readonly JsonBuilderTarget[],
   options: EmitOptions = {}
 ): Promise<GeneratedFile[]> {
-  const runtime = moduleName(options.runtimeModule ?? 'mimlet');
+  const runtime = moduleName(options.runtimeModule ?? '@mimlet/core');
   const files: GeneratedFile[] = [];
   for (const target of selected(targets, options)) {
     if (target.options !== undefined) {

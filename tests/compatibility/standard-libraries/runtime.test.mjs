@@ -5,7 +5,7 @@ import { type } from 'arktype';
 import * as v from 'valibot';
 import { fromStandardJsonSchema } from '@mimlet/json-schema';
 import { fromValibot, valibotAdapter } from '@mimlet/valibot';
-import { createSchemaBuilder, createSession, BuilderValidationError } from 'mimlet';
+import { createSchemaBuilder, createSession, BuilderValidationError } from '@mimlet/core';
 const session = () =>
   createSession({ seed: 42, fingerprint: 'library-corpus/v1', provider: 'test' });
 

@@ -6,7 +6,7 @@ import {
   createSession,
   cloneFixture,
   BuilderValidationError,
-} from 'mimlet';
+} from '@mimlet/core';
 import type {
   BuilderFor,
   BuilderConfig,
@@ -18,7 +18,7 @@ import type {
   GenerationSession,
   SessionIdentity,
   SessionOptions,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export class PropertyIntegrationError extends Error {
   constructor(

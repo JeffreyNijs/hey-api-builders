@@ -1,5 +1,10 @@
-import { BuilderValidationError, createSchemaBuilder, createSession } from 'mimlet';
-import type { GenerationSession, SchemaBuilder, StandardSchemaV1, ValidationIssue } from 'mimlet';
+import { BuilderValidationError, createSchemaBuilder, createSession } from '@mimlet/core';
+import type {
+  GenerationSession,
+  SchemaBuilder,
+  StandardSchemaV1,
+  ValidationIssue,
+} from '@mimlet/core';
 import { jsonSchemaAdapter } from '@mimlet/json-schema';
 import {
   ApiContractError,

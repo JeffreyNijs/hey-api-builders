@@ -1,4 +1,4 @@
-import { createScenario, createSession } from 'mimlet';
+import { createScenario, createSession } from '@mimlet/core';
 
 export const checkout = createScenario({ name: 'checkout' })
   .node('customer', [], (_, session) => ({ id: `user-${session.sequence('id', 1)}` }))

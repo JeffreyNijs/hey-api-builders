@@ -34,7 +34,7 @@
     "test:unit": "vitest run --root ../.. --project unit tests/unit/mimlet-graphql.test.ts"
   },
   "dependencies": {
-    "mimlet": "0.1.0-alpha.0",
+    "@mimlet/core": "0.1.0-alpha.0",
     "graphql": "17.0.2"
   },
   "engines": {

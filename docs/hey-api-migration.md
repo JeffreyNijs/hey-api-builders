@@ -1,7 +1,7 @@
 # Hey API migration to the shared runtime
 
 This is an unreleased, major-version migration. Existing v2 published packages
-are unchanged. Newly generated builders import `mimlet`, so
+are unchanged. Newly generated builders import `@mimlet/core`, so
 install the matching core package alongside the generated client before using
 this branch. During development, build and install its local tarball; there is
 no published neutral package to install yet.

@@ -8,11 +8,8 @@ import { agentBenefits, base, codeTheme, identity, stories } from '../content.ts
 
 export const root = fileURLToPath(new URL('../../../', import.meta.url));
 const generated = resolve(root, 'apps/docs/.generated');
-const repository =
-  process.env.GITHUB_REPOSITORY === 'JeffreyNijs/mimlet'
-    ? 'JeffreyNijs/mimlet'
-    : 'JeffreyNijs/hey-api-builders';
-const ref = process.env.DOCS_SOURCE_REF ?? 'codex/mimlet-brand-and-docs';
+const repository = 'JeffreyNijs/mimlet';
+const ref = process.env.DOCS_SOURCE_REF ?? 'main';
 const sourceUrl = `https://github.com/${repository}/blob/${encodeURIComponent(ref)}/`;
 const read = (file: string) => readFile(resolve(root, file), 'utf8');
 

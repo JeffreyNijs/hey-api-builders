@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { createScenario } from 'mimlet';
+import { createScenario } from '@mimlet/core';
 import { scenarioArbitrary, checkFixtureProperty } from '@mimlet/fast-check';
 
 const identity = { fingerprint: 'basket/v1', provider: 'my-test@1' };

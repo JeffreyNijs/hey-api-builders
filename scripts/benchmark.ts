@@ -14,10 +14,18 @@ import {
 } from '../packages/test-builders/dist/index.js';
 import { jsonSchemaAdapter } from '../packages/test-builders-json-schema/dist/index.js';
 import { emitBuilders } from '../packages/test-builders-codegen/dist/index.js';
-const measurements = [];
+const measurements: {
+  name: string;
+  operationsPerSample: number;
+  medianMs: number;
+  minMs: number;
+  maxMs: number;
+}[] = [];
 let checksum = '';
-function measure(name, operations, run) {
-  for (let warmup = 0; warmup < 2; warmup++) run();
+function measure(name: string, operations: number, run: () => unknown): void {
+  for (let warmup = 0; warmup < 2; warmup++) {
+    run();
+  }
   const samples = [];
   for (let round = 0; round < 7; round++) {
     const before = performance.now();
@@ -28,18 +36,24 @@ function measure(name, operations, run) {
       .digest('hex');
   }
   samples.sort((a, b) => a - b);
+  const minMs = samples[0],
+    medianMs = samples[3],
+    maxMs = samples[6];
+  assert(minMs !== undefined && medianMs !== undefined && maxMs !== undefined);
   measurements.push({
     name,
     operationsPerSample: operations,
-    medianMs: samples[3],
-    minMs: samples[0],
-    maxMs: samples[6],
+    medianMs,
+    minMs,
+    maxMs,
   });
 }
 const identity = { seed: 42, fingerprint: 'benchmark/v1', provider: 'toolkit' };
 measure('construct immutable 200-operation builder', 200, () => {
   let b = createBuilder(() => ({ n: 0 }));
-  for (let i = 0; i < 200; i++) b = b.with({ n: i });
+  for (let i = 0; i < 200; i++) {
+    b = b.with({ n: i });
+  }
   assert.equal(b.build().n, 199);
   return b.describe().operations.length;
 });
@@ -51,25 +65,45 @@ measure('build shallow records', 5000, () => {
   return values.reduce((sum, v) => sum + v.n, 0);
 });
 let long = createBuilder(() => ({ n: 0 }));
-for (let i = 0; i < 200; i++) long = long.with({ n: i });
+for (let i = 0; i < 200; i++) {
+  long = long.with({ n: i });
+}
 measure('replay long operation chains', 1000, () => {
   const values = long.buildList(1000);
-  assert.equal(values[999].n, 199);
+  assert.equal(values.at(-1)?.n, 199);
   return values.length;
 });
 measure('seeded named stream draws', 5000, () => {
   const session = createSession(identity).scope('entity', 'field');
   let total = 0;
-  for (let i = 0; i < 5000; i++) total += session.integer(0, 1000);
+  for (let i = 0; i < 5000; i++) {
+    total += session.integer(0, 1000);
+  }
   return total;
 });
 const shared = { id: 1, date: new Date(1), bytes: new Uint8Array([1, 2, 3]) };
-const graph = { shared, duplicate: shared };
+const graph: { shared: typeof shared; duplicate: typeof shared; self?: unknown } = {
+  shared,
+  duplicate: shared,
+};
 graph.self = graph;
 measure('capture and restore cyclic fixture graphs', 200, () => {
   let total = 0;
   for (let i = 0; i < 200; i++) {
     const copy = restoreFixture(captureFixture(graph));
+    assert(
+      copy !== null &&
+        typeof copy === 'object' &&
+        'self' in copy &&
+        'shared' in copy &&
+        'duplicate' in copy
+    );
+    assert(
+      copy.shared !== null &&
+        typeof copy.shared === 'object' &&
+        'bytes' in copy.shared &&
+        copy.shared.bytes instanceof Uint8Array
+    );
     assert.equal(copy.self, copy);
     assert.equal(copy.shared, copy.duplicate);
     total += copy.shared.bytes.length;
@@ -81,7 +115,7 @@ const recipe = createScenario()
   .node('total', ['lines'], ({ lines }) => lines.reduce((a, b) => a + b, 0));
 measure('correlated scenario construction', 1000, () => {
   const values = recipe.buildList(1000, createSession(identity));
-  assert.equal(values[999].total, 5);
+  assert.equal(values.at(-1)?.total, 5);
   return values.length;
 });
 const schema = {
@@ -94,7 +128,9 @@ const schema = {
   additionalProperties: false,
 };
 measure('prepare JSON Schema and independent validator', 5, () => {
-  for (let i = 0; i < 5; i++) assert(jsonSchemaAdapter(schema).check({ id: 1, role: 'reader' }));
+  for (let i = 0; i < 5; i++) {
+    assert(jsonSchemaAdapter(schema).check({ id: 1, role: 'reader' }));
+  }
   return 5;
 });
 const provider = jsonSchemaAdapter(schema, { profile: 'random' });
@@ -104,13 +140,16 @@ measure('generate from prepared JSON Schema', 100, () => {
   for (let i = 0; i < 100; i++) {
     const value = provider.create(session);
     assert(provider.check(value));
+    assert(
+      value !== null && typeof value === 'object' && 'id' in value && typeof value.id === 'number'
+    );
     total += value.id;
   }
   return total;
 });
 const models = Array.from({ length: 100 }, (_, i) => ({
   name: `Model${i}Builder`,
-  source: { kind: 'factory', module: '../models.js', export: `model${i}` },
+  source: { kind: 'factory' as const, module: '../models.js', export: `model${i}` },
   fields: ['id', 'name'],
 }));
 measure('emit deterministic named classes', 100, () => {

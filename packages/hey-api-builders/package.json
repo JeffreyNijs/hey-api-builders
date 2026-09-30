@@ -67,7 +67,10 @@
   "scripts": {
     "build": "tsup",
     "watch": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "prepack": "npm run build"
+    "typecheck": "pnpm type-check",
+    "prepack": "npm run build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "test:unit": "vitest run --root ../.. --project unit tests/unit/hey-api-builders.test.ts"
   }
 }

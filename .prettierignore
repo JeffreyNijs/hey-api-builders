@@ -4,3 +4,5 @@ dist
 pnpm-lock.yaml
 test-results
 .idea
+
+.turbo

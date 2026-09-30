@@ -204,3 +204,6 @@ coverage-report.md
 test-results/
 release/
 .toolkit-release-*/
+
+# Workspace task cache
+.turbo/

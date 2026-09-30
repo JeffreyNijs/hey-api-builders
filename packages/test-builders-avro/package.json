@@ -28,7 +28,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "npm run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "pnpm type-check",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "test:unit": "vitest run --root ../.. --project unit tests/unit/test-builders-avro.test.ts"
   },
   "dependencies": {
     "@jeffreynijs/test-builders": "0.1.0-alpha.0",

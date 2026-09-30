@@ -7,6 +7,28 @@ schema-free core or introduce an independently maintained runtime.
 
 ## Verification
 
+For everyday changes, use the typed source suites:
+
+```sh
+pnpm test:unit
+pnpm test:watch
+pnpm --filter @jeffreynijs/test-builders-protobuf test:unit
+pnpm type-check
+```
+
+Vitest watches the core and every integration through source imports. These fast
+suites include native codec/conformance checks and seeded behavioral properties.
+The integration project retains the real Hey API generation tests. Full verification
+also runs the original Node suites against emitted code and isolated package
+archives; a source-test pass alone does not establish package compatibility.
+
+Build and package type-check tasks use Turbo's dependency graph and local cache.
+Portable packages extend the shared strict NodeNext compiler policy; the Hey API
+bundler configuration and minimum-compiler tests retain their distinct requirements.
+The consumer harness copies the compiler policy into its isolated temporary tree
+without exposing the workspace's dependencies. `typecheck` remains an alias for
+`type-check` for existing automation.
+
 ```sh
 pnpm install --frozen-lockfile
 pnpm build

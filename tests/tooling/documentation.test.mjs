@@ -8,7 +8,7 @@ import {
   checkFileLinks,
   checkPackageIndex,
   checkDocumentation,
-} from '../../scripts/check-documentation.mjs';
+} from '../../scripts/check-documentation.ts';
 
 async function fixture(markdown, run) {
   const root = await mkdtemp(join(tmpdir(), 'toolkit-docs-'));

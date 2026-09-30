@@ -92,6 +92,7 @@ export default defineConfig({
         items: [
           { text: 'Getting started', link: '/guide/getting-started' },
           { text: 'Choose an adapter', link: '/guide/adapters' },
+          { text: 'Zod and ArkType', link: '/guide/zod-and-arktype' },
           { text: 'For coding agents', link: '/guide/agents' },
         ],
       },

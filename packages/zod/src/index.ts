@@ -1,0 +1,148 @@
+import * as z from 'zod/v4/core';
+import { createSchemaBuilder } from '@mimlet/core';
+import type {
+  AsyncSchemaBuilder,
+  GenerationSession,
+  SchemaBuilder,
+  SchemaBuilderFor,
+  StandardSchemaV1,
+} from '@mimlet/core';
+import { jsonSchemaAdapter } from '@mimlet/json-schema';
+import type { JsonSchema, JsonSchemaOptions } from '@mimlet/json-schema';
+
+export interface ZodOptions extends JsonSchemaOptions {
+  /** Native error customization, input reporting and JIT policy. */
+  readonly parseOptions?: z.ParseContext<z.$ZodIssue>;
+}
+
+/** Native parsing and codecs; JSON conversion is needed only for automatic generation. */
+export function zodAdapter<S extends z.$ZodType>(source: S, options: ZodOptions = {}) {
+  type Input = z.input<S>;
+  type Output = z.output<S>;
+  const configured = { ...options };
+  const parseOptions = Object.freeze({ ...options.parseOptions });
+  const standard: StandardSchemaV1<Input, Output> = {
+    '~standard': {
+      version: 1,
+      vendor: 'mimlet/zod',
+      validate(value) {
+        // Zod's Standard entry retries thrown sync parses asynchronously. Select
+        // the native mode explicitly so user callbacks are never probed twice.
+        const result = z.safeParse(source, value, parseOptions);
+        return result.success ? { value: result.data } : { issues: result.error.issues };
+      },
+    },
+  };
+  const standardAsync: StandardSchemaV1<Input, Output> = {
+    '~standard': {
+      version: 1,
+      vendor: 'mimlet/zod',
+      async validate(value) {
+        const result = await z.safeParseAsync(source, value, parseOptions);
+        return result.success ? { value: result.data } : { issues: result.error.issues };
+      },
+    },
+  };
+  let generated: ReturnType<typeof jsonSchemaAdapter> | undefined;
+  const generation = () => {
+    if (!generated) {
+      const dialect = configured.dialect ?? 'draft-2020-12';
+      if (dialect !== 'draft-07' && dialect !== 'draft-2020-12') {
+        throw new TypeError('Zod input conversion supports draft-07 and draft-2020-12');
+      }
+      // Bind the native input projection, never the transformed output type.
+      const input = z.toJSONSchema(source, {
+        io: 'input',
+        target: dialect,
+        unrepresentable: 'throw',
+      });
+      const descriptors = Object.getOwnPropertyDescriptors(input);
+      const standardMetadata = descriptors['~standard'];
+      // Zod attaches this known protocol as non-enumerable root data. Preserve
+      // every other descriptor so JSON preparation still rejects active/hidden data.
+      if (standardMetadata && !standardMetadata.enumerable && 'value' in standardMetadata) {
+        Reflect.deleteProperty(descriptors, '~standard');
+      }
+      const data = Object.create(Object.getPrototypeOf(input), descriptors) as JsonSchema;
+      generated = jsonSchemaAdapter(data, configured);
+    }
+    return generated;
+  };
+  return Object.freeze({
+    source,
+    standard,
+    standardAsync,
+    generation,
+    create: (session?: GenerationSession): Input => generation().create(session) as Input,
+    decode: (value: Input): Output => z.decode(source, value, parseOptions),
+    decodeAsync: (value: Input): Promise<Output> => z.decodeAsync(source, value, parseOptions),
+    // These retain Zod's own failure for one-way transforms; no inverse is synthesized.
+    encode: (value: Output): Input => z.encode(source, value, parseOptions),
+    encodeAsync: (value: Output): Promise<Input> => z.encodeAsync(source, value, parseOptions),
+    metadata: Object.freeze({
+      vendor: 'zod',
+      version: '4.4.3',
+      generation: 'input-json-schema',
+      validation: 'explicit-native-sync-or-async',
+      encoding: 'native-supported-schemas-only',
+    }),
+  });
+}
+
+/** Generate input metadata and validate synchronously through the original Zod schema. */
+export function fromZod<S extends z.$ZodType>(
+  source: S,
+  options: ZodOptions = {}
+): SchemaBuilder<z.input<S>, z.output<S>, [session?: GenerationSession]> {
+  const adapter = zodAdapter(source, options);
+  adapter.generation();
+  // Successful JSON preparation guarantees synchronous, non-thenable generation.
+  return createSchemaBuilder(adapter.standard, adapter.create, options) as unknown as SchemaBuilder<
+    z.input<S>,
+    z.output<S>,
+    [session?: GenerationSession]
+  >;
+}
+
+/** Async refinements and codecs run once through safeParseAsync, without a sync probe. */
+export function fromZodAsync<S extends z.$ZodType>(
+  source: S,
+  options: ZodOptions = {}
+): AsyncSchemaBuilder<z.input<S>, z.output<S>, [session?: GenerationSession]> {
+  const adapter = zodAdapter(source, options);
+  adapter.generation();
+  return createSchemaBuilder(
+    adapter.standardAsync,
+    async (session?: GenerationSession) => adapter.create(session),
+    options
+  );
+}
+
+/** Native values and opaque constraints do not need a JSON representation when using a factory. */
+export function fromZodFactory<
+  S extends z.$ZodType,
+  F extends (...args: never[]) => NoInfer<z.input<S>> | PromiseLike<NoInfer<z.input<S>>>,
+>(
+  source: S,
+  factory: F,
+  options: ZodOptions = {}
+): SchemaBuilderFor<StandardSchemaV1<z.input<S>, z.output<S>>, F> {
+  return createSchemaBuilder(zodAdapter(source, options).standard, factory, options);
+}
+
+/** Explicit native async validation with either a synchronous or asynchronous factory. */
+export function fromZodFactoryAsync<
+  S extends z.$ZodType,
+  F extends (...args: never[]) => NoInfer<z.input<S>> | PromiseLike<NoInfer<z.input<S>>>,
+>(
+  source: S,
+  factory: F,
+  options: ZodOptions = {}
+): AsyncSchemaBuilder<z.input<S>, z.output<S>, Parameters<F>> {
+  // Forward the original factory tuple, while deliberately forcing async mode.
+  return createSchemaBuilder(
+    zodAdapter(source, options).standardAsync,
+    async (...args: never[]) => factory(...args),
+    options
+  ) as unknown as AsyncSchemaBuilder<z.input<S>, z.output<S>, Parameters<F>>;
+}

@@ -6,6 +6,14 @@ import { fileURLToPath } from 'node:url';
 import { base } from '../content.ts';
 
 const directory = await realpath(fileURLToPath(new URL('../.vitepress/dist/', import.meta.url)));
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== '--port' || !/^\d+$/.test(args[1] ?? ''))) {
+  throw new TypeError('Usage: preview.ts [--port 0..65535]');
+}
+const port = args.length ? Number(args[1]) : 4174;
+if (!Number.isInteger(port) || port < 0 || port > 65535) {
+  throw new RangeError('Preview port must be between 0 and 65535');
+}
 const types: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -50,7 +58,12 @@ const server = createServer(async (request, response) => {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
   }
 });
-server.listen(4174, '127.0.0.1', () => console.log(`Mimlet preview: http://127.0.0.1:4174${base}`));
+server.listen(port, '127.0.0.1', () => {
+  const address = server.address();
+  if (address && typeof address !== 'string') {
+    console.log(`Mimlet preview: http://127.0.0.1:${address.port}${base}`);
+  }
+});
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => server.close());
 }

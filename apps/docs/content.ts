@@ -8,6 +8,9 @@ export const identity = {
     'Give your tests a little life. Build fixtures that fit your schemas, keep related data connected, and bring a failing case back on cue.',
 };
 
+/** Implemented in source, but excluded from the currently published release train. */
+export const previewPackages: readonly string[] = ['@mimlet/zod', '@mimlet/arktype'];
+
 export const stories = [
   {
     number: '01',

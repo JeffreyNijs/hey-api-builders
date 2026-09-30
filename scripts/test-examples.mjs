@@ -22,6 +22,7 @@ await withPackedConsumer(fixture, async ({ temporary, compiler, run }) => {
         module: 'NodeNext',
         moduleResolution: 'NodeNext',
         lib: ['ES2022', 'DOM'],
+        types: ['node'],
         strict: true,
         noUncheckedIndexedAccess: true,
         rootDir: 'recipes',

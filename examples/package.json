@@ -12,7 +12,9 @@
     "json-schema-to-typescript": "16.0.0",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
-    "json-schema-faker": "0.6.3"
+    "json-schema-faker": "0.6.3",
+    "zod": "4.4.3",
+    "arktype": "2.2.5"
   },
   "toolkitPackages": [
     "faker",
@@ -21,7 +23,9 @@
     "typebox",
     "fast-check",
     "json-schema",
-    "codegen"
+    "codegen",
+    "zod",
+    "arktype"
   ],
   "overrides": {
     "js-yaml@4": "4.3.2"

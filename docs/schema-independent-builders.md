@@ -2,12 +2,13 @@
 
 ## Repository and package boundaries
 
-The repository is a private pnpm workspace containing seventeen independently
+The repository is a private pnpm workspace containing nineteen independently
 packable packages. Neutral packages share version `0.1.0-alpha.0`; the unscoped
 Hey API integration uses `3.0.0-alpha.0`. Individual package manifests are marked
 publishable for the verified release process, but no publication is implied by
-these source versions or by this implementation PR. The repository name and
-existing published Hey API v2 package are unchanged.
+these source versions or by this implementation PR. The existing published
+Hey API v2 package is unchanged. The two new Zod/ArkType packages are prepared
+for the next release and are not in the existing seventeen-package alpha train.
 
 The core has no runtime or peer dependencies. Native vendors, JSON Schema
 providers, Faker, property testing, compiler tools, protocol codecs and the local

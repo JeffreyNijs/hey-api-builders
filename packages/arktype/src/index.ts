@@ -1,0 +1,72 @@
+import type { BaseType } from 'arktype';
+import { createSchemaBuilder } from '@mimlet/core';
+import type {
+  GenerationSession,
+  SchemaBuilder,
+  SchemaBuilderFor,
+  SchemaInput,
+  SchemaOutput,
+} from '@mimlet/core';
+import { jsonSchemaAdapter } from '@mimlet/json-schema';
+import type { JsonSchema, JsonSchemaOptions } from '@mimlet/json-schema';
+
+export type ArkTypeOptions = JsonSchemaOptions;
+/** Keep only the native operations needed here, so caller-owned scopes remain compatible. */
+export type ArkTypeSchema = Pick<BaseType, '~standard' | 'allows' | 'assert'>;
+
+/** Retain the native Type, input checks, morphs and errors without reconstructing a validator. */
+export function arkTypeAdapter<S extends ArkTypeSchema>(source: S, options: ArkTypeOptions = {}) {
+  const configured = { ...options };
+  let generated: ReturnType<typeof jsonSchemaAdapter> | undefined;
+  const generation = () => {
+    if (!generated) {
+      const input = source['~standard'].jsonSchema.input({
+        target: configured.dialect ?? 'draft-2020-12',
+      });
+      // ArkType advertises this input projection; JSON preparation still checks
+      // the converted data, references and supported generation constraints.
+      generated = jsonSchemaAdapter(input as JsonSchema, configured);
+    }
+    return generated;
+  };
+  return Object.freeze({
+    source,
+    standard: source,
+    generation,
+    create: (session?: GenerationSession): SchemaInput<S> =>
+      generation().create(session) as SchemaInput<S>,
+    /** Native allows() checks input without running morphs or output predicates. */
+    checkInput: (value: unknown): value is SchemaInput<S> => source.allows(value),
+    decode: (value: SchemaInput<S>): SchemaOutput<S> => source.assert(value) as SchemaOutput<S>,
+    metadata: Object.freeze({
+      vendor: 'arktype',
+      version: '2.2.5',
+      generation: 'input-json-schema',
+      validation: 'native-standard-schema',
+      encoding: false,
+    }),
+  });
+}
+
+/** Automatic generation uses input metadata; validated builds invoke the native Type once. */
+export function fromArkType<S extends ArkTypeSchema>(
+  source: S,
+  options: ArkTypeOptions = {}
+): SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, [session?: GenerationSession]> {
+  const adapter = arkTypeAdapter(source, options);
+  adapter.generation();
+  // Successful JSON preparation guarantees synchronous, non-thenable generation.
+  return createSchemaBuilder(adapter.standard, adapter.create, options) as unknown as SchemaBuilder<
+    SchemaInput<S>,
+    SchemaOutput<S>,
+    [session?: GenerationSession]
+  >;
+}
+
+/** Factory arguments, native input/output types and known async factories are preserved. */
+export function fromArkTypeFactory<
+  S extends ArkTypeSchema,
+  F extends (...args: never[]) => NoInfer<SchemaInput<S>> | PromiseLike<NoInfer<SchemaInput<S>>>,
+>(source: S, factory: F, options: ArkTypeOptions = {}): SchemaBuilderFor<S, F> {
+  return createSchemaBuilder(arkTypeAdapter(source, options).standard, factory, options);
+}

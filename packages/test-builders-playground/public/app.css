@@ -1,0 +1,358 @@
+:root {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color: #203044;
+  background: #f3f5f8;
+  --surface: #fff;
+  --border: #d7dfe9;
+  --muted: #52627a;
+  --accent: #214ec2;
+  --focus: #d37500;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+.masthead {
+  background: #132339;
+  color: #f5f8fc;
+  padding: 20px max(24px, calc((100vw - 1440px) / 2));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.wordmark {
+  font-weight: 750;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.badge {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  font-weight: 750;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 5px 8px;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+.privacy {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+main {
+  max-width: 1488px;
+  padding: 36px 24px;
+  margin: auto;
+}
+.intro {
+  margin-bottom: 24px;
+}
+.eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 750;
+}
+h1 {
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.16;
+  letter-spacing: -1px;
+  margin: 10px 0;
+}
+.intro > p:last-child {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 820px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+select,
+input,
+button {
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 40px;
+  padding: 8px 11px;
+  color: inherit;
+  background: var(--surface);
+}
+select,
+input {
+  color: #203044;
+  font-size: 14px;
+}
+.small-field {
+  width: 94px;
+}
+button {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  padding: 10px 17px;
+}
+button.secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: inherit;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+button:not(:disabled):hover {
+  filter: brightness(0.9);
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+#status {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  padding: 12px 4px;
+}
+#status[data-error='true'] {
+  color: #a6232f;
+  font-weight: 650;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  min-width: 0;
+}
+.panel-heading {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  min-height: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.example-label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.example-label select {
+  font-size: 12px;
+  min-height: 34px;
+  max-width: 185px;
+}
+textarea,
+pre {
+  font:
+    13px / 1.65 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  tab-size: 2;
+}
+textarea {
+  display: block;
+  border: none;
+  width: 100%;
+  color: inherit;
+  background: transparent;
+  padding: 20px;
+  resize: vertical;
+}
+#schema {
+  min-height: 425px;
+}
+#output {
+  margin: 0;
+  padding: 20px;
+  min-height: 425px;
+  max-height: 680px;
+  overflow: auto;
+  white-space: pre;
+  background: #f9fafc;
+}
+.hint {
+  color: var(--muted);
+  font-size: 11px;
+  padding: 0 20px;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+details {
+  border-top: 1px solid var(--border);
+}
+summary {
+  font-weight: 650;
+  font-size: 12px;
+  padding: 17px 20px;
+  cursor: pointer;
+  color: var(--muted);
+}
+#inspection {
+  padding: 0 20px 20px;
+  max-height: 350px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+.result-actions button {
+  font-size: 11px;
+  padding: 8px 11px;
+  min-height: 34px;
+}
+footer {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 1000px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .masthead {
+    align-items: start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  main {
+    padding: 24px 16px;
+  }
+  #schema,
+  #output {
+    min-height: 310px;
+  }
+}
+@media (max-width: 520px) {
+  .toolbar {
+    gap: 12px;
+  }
+  .toolbar > label:not(.small-field) {
+    flex-basis: 100%;
+  }
+  .toolbar > button {
+    flex-grow: 1;
+  }
+  .wordmark {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .panel-heading {
+    padding: 14px;
+  }
+  .example-label {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #e0e8f3;
+    background: #111d2c;
+    --surface: #182739;
+    --border: #35465c;
+    --muted: #abbace;
+    --accent: #3e69db;
+    --focus: #ffc061;
+  }
+  select,
+  input {
+    color: #e0e8f3;
+  }
+  #output {
+    background: #132133;
+  }
+  #status[data-error='true'] {
+    color: #ffabb1;
+  }
+  .eyebrow {
+    color: #9bb9ff;
+  }
+}
+
+.import-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-top: 16px;
+}
+.import-row .hint {
+  padding: 0;
+  margin-bottom: 8px;
+}
+input[type='file'] {
+  max-width: 300px;
+  padding: 6px;
+  font-size: 12px;
+}

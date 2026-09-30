@@ -1,0 +1,39 @@
+{
+  "name": "@jeffreynijs/test-builders-playground",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-only schema playground with interruptible data-only fixture generation.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "public",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@jeffreynijs/test-builders": "0.0.0",
+    "@jeffreynijs/test-builders-json-schema": "0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "directory": "packages/test-builders-playground"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "bin": {
+    "test-builders-playground": "./dist/cli.js"
+  }
+}

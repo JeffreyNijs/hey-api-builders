@@ -119,7 +119,10 @@ export async function bootstrapRelease(mode, npmRoot, directory, provenanceDirec
     validateBootstrapContext(process.env, manifest.commit);
     await mkdir(provenanceDirectory, { recursive: true });
     for (const [index, pkg] of manifest.packages.entries()) {
-      const bundle = await generateProvenance([subjects[index]], {});
+      // Rekor can accept a statement before its response exceeds npm's default
+      // five-second timeout. Retrying the same POST then returns a duplicate 409.
+      // Give signing services time to respond; retry a failed job as a new attempt.
+      const bundle = await generateProvenance([subjects[index]], { timeout: 30000, retry: 0 });
       validateBootstrapStatement(bundle, manifest, pkg);
       await writeFile(
         join(provenanceDirectory, `${pkg.filename}.sigstore`),

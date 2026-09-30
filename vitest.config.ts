@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.{test,spec}.ts', 'tests/**/*.{test,spec}.ts'],
+    include: ['packages/hey-api-builders/src/**/*.{test,spec}.ts', 'tests/e2e/**/*.{test,spec}.ts'],
     testTimeout: 30_000,
     hookTimeout: 30_000,
     coverage: {
@@ -20,7 +20,7 @@ export default defineConfig({
         '**/index.ts',
         'packages/test-builders/**',
       ],
-      include: ['src/**/*.ts'],
+      include: ['packages/hey-api-builders/src/**/*.ts'],
       thresholds: {
         lines: 80,
         functions: 80,

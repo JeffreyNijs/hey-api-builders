@@ -1,0 +1,73 @@
+{
+  "name": "hey-api-builders",
+  "version": "3.0.0-alpha.0",
+  "description": "Hey API integration for schema-independent immutable test-data builders.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "hey-api",
+    "openapi",
+    "openapi-ts",
+    "plugin",
+    "faker",
+    "builder",
+    "test-data",
+    "mock"
+  ],
+  "author": "JeffreyNijs",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "directory": "packages/hey-api-builders"
+  },
+  "homepage": "https://github.com/JeffreyNijs/hey-api-builders/tree/main/packages/hey-api-builders#readme",
+  "bugs": {
+    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
+  },
+  "peerDependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "@hey-api/openapi-ts": "^0.99.0",
+    "typescript": "^6.0.0",
+    "@jeffreynijs/test-builders": "0.1.0-alpha.0"
+  },
+  "private": false,
+  "devDependencies": {
+    "@jeffreynijs/test-builders": "workspace:*",
+    "@hey-api/openapi-ts": "0.99.0",
+    "@faker-js/faker": "10.5.0",
+    "typescript": "6.0.3"
+  },
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build"
+  }
+}

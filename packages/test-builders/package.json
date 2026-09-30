@@ -1,7 +1,7 @@
 {
   "name": "@jeffreynijs/test-builders",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0-alpha.0",
+  "private": false,
   "description": "Schema-independent immutable test-data builders with Standard Schema validation.",
   "type": "module",
   "sideEffects": false,
@@ -17,7 +17,8 @@
     "dist",
     "README.md",
     "LICENSE",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "CHANGELOG.md"
   ],
   "license": "MIT",
   "repository": {
@@ -28,6 +29,25 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsc -p tsconfig.json && tsc -p test/tsconfig.json && node --test test/*.test.mjs",
-    "prepack": "npm run build"
-  }
+    "prepack": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "bugs": {
+    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
+  },
+  "homepage": "https://github.com/JeffreyNijs/hey-api-builders/tree/main/packages/test-builders#readme",
+  "keywords": [
+    "test-data",
+    "fixtures",
+    "builders",
+    "standard-schema"
+  ]
 }

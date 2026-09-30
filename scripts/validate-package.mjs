@@ -15,7 +15,7 @@ try {
     npm,
     ['pack', '--json', '--ignore-scripts', '--pack-destination', temporaryRoot],
     {
-      cwd: packageRoot,
+      cwd: join(packageRoot, 'packages/hey-api-builders'),
       encoding: 'utf8',
     }
   );

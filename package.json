@@ -1,68 +1,14 @@
 {
-  "name": "hey-api-builders",
-  "version": "2.0.0",
-  "description": "Immutable, type-safe test data builders powered by Hey API's generated Faker factories.",
+  "name": "test-builders-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Modular schema-independent test-data toolkit and integrations.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    },
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist",
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md"
-  ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "tsup",
-    "build:core": "tsc -p packages/test-builders/tsconfig.json",
-    "watch": "tsup --watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write . --ignore-unknown",
-    "format:check": "prettier --check . --ignore-unknown",
-    "test": "pnpm test:core && vitest run && pnpm test:typebox && pnpm test:optional",
-    "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node scripts/test-core.mjs",
-    "test:typebox": "node scripts/test-typebox.mjs",
-    "test:package": "node scripts/validate-package.mjs",
-    "test:watch": "vitest",
-    "test:coverage": "pnpm test:core && vitest run --coverage && pnpm test:typebox && pnpm test:optional",
-    "typecheck": "tsc --noEmit",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage",
-    "validate": "pnpm check && pnpm build && pnpm test:package",
-    "pack:check": "npm pack --dry-run",
-    "prepack": "pnpm build",
-    "prepublishOnly": "pnpm check",
-    "test:optional": "node scripts/test-optional-all.mjs"
-  },
-  "keywords": [
-    "hey-api",
-    "openapi",
-    "openapi-ts",
-    "plugin",
-    "faker",
-    "builder",
-    "test-data",
-    "mock"
-  ],
-  "author": "JeffreyNijs",
   "license": "MIT",
+  "author": "JeffreyNijs",
   "packageManager": "pnpm@10.34.5",
   "engines": {
     "node": ">=22.18.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -71,26 +17,13 @@
     "overrides": {
       "esbuild": "0.28.1",
       "flatted": "3.4.4",
-      "js-yaml": "4.3.1",
       "nanoid@3": "3.3.18",
       "picomatch": "4.0.5",
       "postcss": "8.5.26",
       "rollup": "4.62.4",
-      "vite@7": "7.3.5"
+      "vite@7": "7.3.5",
+      "js-yaml@4": "4.3.1"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git"
-  },
-  "homepage": "https://github.com/JeffreyNijs/hey-api-builders#readme",
-  "bugs": {
-    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
-  },
-  "peerDependencies": {
-    "@faker-js/faker": "^10.0.0",
-    "@hey-api/openapi-ts": "^0.99.0",
-    "typescript": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -107,6 +40,38 @@
     "tsup": "8.5.1",
     "typescript": "6.0.3",
     "vitest": "4.1.10",
-    "zod": "4.4.3"
+    "zod": "4.4.3",
+    "@changesets/cli": "3.0.3",
+    "@arethetypeswrong/cli": "0.18.5",
+    "publint": "0.3.24",
+    "@jeffreynijs/test-builders": "workspace:*",
+    "hey-api-builders": "workspace:*"
+  },
+  "scripts": {
+    "preinstall": "node scripts/check-workspace.mjs",
+    "build": "pnpm -r --workspace-concurrency=1 run build",
+    "build:core": "tsc -p packages/test-builders/tsconfig.json",
+    "watch": "pnpm --filter hey-api-builders watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
+    "typecheck": "pnpm -r --workspace-concurrency=1 run typecheck && tsc --noEmit",
+    "test": "pnpm test:core && vitest run && pnpm test:typebox && pnpm test:optional",
+    "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node scripts/test-core.mjs",
+    "test:watch": "vitest",
+    "test:coverage": "pnpm test:core && vitest run --coverage && pnpm test:typebox && pnpm test:optional",
+    "test:typebox": "node scripts/test-typebox.mjs",
+    "test:optional": "node scripts/test-optional-all.mjs",
+    "test:tooling": "node --test tests/tooling/*.test.mjs",
+    "test:package": "node scripts/validate-package.mjs",
+    "test:browser": "node scripts/test-browser.mjs",
+    "check:workspace": "node scripts/check-workspace.mjs",
+    "check": "pnpm check:workspace && pnpm build && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:tooling && pnpm test:coverage",
+    "validate": "pnpm check && pnpm test:package",
+    "pack:check": "node scripts/pack-workspace.mjs --check",
+    "release:prepare": "node scripts/pack-workspace.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version"
   }
 }

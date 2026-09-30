@@ -1,39 +1,76 @@
-name: Prepare browser dependency lock
+name: Prepare exact workspace lock
 
 on:
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/prepare-toolkit-locks.yml'
-      - 'tests/browser/package.json'
+      - 'package.json'
+      - 'packages/*/package.json'
+      - 'pnpm-workspace.yaml'
 
 permissions:
   contents: read
 
 jobs:
-  prepare:
+  resolve:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'chat/standard-schema-core-20260929'
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 22.18.0
           package-manager-cache: false
-      - run: npm install --prefix tests/browser --ignore-scripts --no-audit --no-fund
-      - name: Export the resolver output without writing to the branch
+      - run: node scripts/check-workspace.mjs
+      - run: pnpm install --lockfile-only --ignore-scripts
+      - name: Export only the package-manager resolver output
         run: |
-          mkdir -p /tmp/browser-lock
-          cp tests/browser/package-lock.json /tmp/browser-lock/
-          git rev-parse HEAD > /tmp/browser-lock/COMMIT
-          tar -C tests/browser -czf /tmp/browser-lock/dependencies.tgz node_modules
+          mkdir -p /tmp/workspace-lock
+          cp pnpm-lock.yaml /tmp/workspace-lock/
+          git rev-parse HEAD > /tmp/workspace-lock/COMMIT
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        id: upload
         with:
-          name: browser-dependency-lock
-          path: /tmp/browser-lock/
+          name: workspace-dependency-lock
+          path: /tmp/workspace-lock/
           retention-days: 3
-          compression-level: 0
           if-no-files-found: error
+
+  checkpoint:
+    needs: resolve
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.resolve.outputs.artifact-id }}
+          path: /tmp/workspace-lock
+          digest-mismatch: error
+      - name: Commit only the resolved lockfile on an unchanged draft branch
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(cat /tmp/workspace-lock/COMMIT)" = "$EXPECTED_HEAD"
+          test "$(wc -c < /tmp/workspace-lock/pnpm-lock.yaml)" -lt 2000000
+          cp /tmp/workspace-lock/pnpm-lock.yaml pnpm-lock.yaml
+          git add -- pnpm-lock.yaml
+          if git diff --cached --quiet; then exit 0; fi
+          test "$(git diff --cached --name-only)" = 'pnpm-lock.yaml'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: lock the coordinated toolkit workspace'
+          git push "https://x-access-token:${GH_TOKEN}@github.com/JeffreyNijs/hey-api-builders.git" HEAD:refs/heads/chat/standard-schema-core-20260929

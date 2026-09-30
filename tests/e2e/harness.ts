@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@hey-api/openapi-ts';
 import * as ts from 'typescript';
 
-import { defineConfig as defineBuildersConfig } from '../../src/index';
+import { defineConfig as defineBuildersConfig } from '../../packages/hey-api-builders/src/index';
 
 type CommonJsModule = {
   exports: Record<string, unknown>;

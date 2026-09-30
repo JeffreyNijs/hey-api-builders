@@ -1,7 +1,7 @@
 {
   "name": "@jeffreynijs/test-builders-codegen",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0-alpha.0",
+  "private": false,
   "description": "Deterministic schema-independent builder classes, owned output and CLI.",
   "type": "module",
   "sideEffects": false,
@@ -16,26 +16,44 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "license": "MIT",
-  "peerDependencies": {
-    "@jeffreynijs/test-builders": "0.0.0",
-    "@jeffreynijs/test-builders-json-schema": "0.0.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
     "directory": "packages/test-builders-codegen"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "prepack": "npm run build"
+    "build": "tsc -p tsconfig.json && node --input-type=module -e \"import { chmodSync } from 'node:fs'; chmodSync('dist/cli.js', 0o755);\"",
+    "prepack": "npm run build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@jeffreynijs/test-builders": "0.1.0-alpha.0",
+    "@jeffreynijs/test-builders-json-schema": "0.1.0-alpha.0",
     "json-schema-to-typescript": "16.0.0"
   },
   "bin": {
     "test-builders": "./dist/cli.js"
-  }
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "bugs": {
+    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
+  },
+  "homepage": "https://github.com/JeffreyNijs/hey-api-builders/tree/main/packages/test-builders-codegen#readme",
+  "keywords": [
+    "test-data",
+    "fixtures",
+    "builders",
+    "standard-schema"
+  ]
 }

@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "json-schema-to-typescript": "16.0.0",
+    "@types/node": "26.6.3",
+    "@types/semver": "7.8.0",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "json-schema-faker": "0.6.3",
-    "typescript": "6.0.3",
-    "@types/node": "26.6.3"
+    "json-schema-to-typescript": "16.0.0",
+    "semver": "7.8.5",
+    "typescript": "6.0.3"
   },
   "toolkitPackages": [
     "json-schema",

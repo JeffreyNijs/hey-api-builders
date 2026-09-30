@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { emitBuilders } from '../../packages/codegen/src/index.js';
+import { emitBuilders, inspectSchema } from '../../packages/codegen/src/index.js';
 it('generates deterministic collision-safe fluent helpers', () => {
   const targets = [
     {
@@ -17,4 +17,17 @@ it('generates deterministic collision-safe fluent helpers', () => {
       { name: '../escape', source: { kind: 'factory', module: './users.js', export: 'makeUser' } },
     ])
   ).toThrow();
+});
+
+it('inspection reports preparation, not satisfiability or sampled fixtures', () => {
+  expect(inspectSchema(false)).toMatchObject({
+    format: 'mimlet/diagnostics',
+    version: 1,
+    ok: true,
+    sampled: false,
+    capabilities: { preparation: true, network: false },
+  });
+  const unsupported = inspectSchema({ $ref: 'https://example.invalid/not-supplied' });
+  expect(unsupported.ok).toBe(false);
+  expect(unsupported.diagnostics[0]?.code).toBe('SCHEMA_PREPARATION_FAILED');
 });

@@ -51,3 +51,9 @@ supported. Paths are bounded, relative and checked for symlinks. Do not edit the
 manifest to bypass ownership protection.
 
 Individual package manifests are prepared for the coordinated alpha release; publication is a separate operation.
+
+## Local diagnostics
+
+The stabilization branch adds `mimlet doctor`, `mimlet inspect`, `--version` and
+opt-in JSON reports. See [CLI diagnostics](../../docs/cli-diagnostics.md) for
+contracts, limitations and source-preview availability.

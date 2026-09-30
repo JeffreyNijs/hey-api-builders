@@ -1,5 +1,5 @@
 /* global document, innerWidth */
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures.mjs';
 import { readFile } from 'node:fs/promises';
 
 const errors = new WeakMap();
@@ -47,10 +47,14 @@ test.beforeEach(async ({ page }, info) => {
   } catch (error) {
     // Node-side observations remain available when the test deadline prevents
     // further browser calls. Do not swallow the failure or print fixture values.
-    await info.attach('navigation-state', {
-      body: JSON.stringify({ ...navigation, pageErrors: found.length }),
-      contentType: 'application/json',
-    });
+    await info
+      .attach('navigation-state', {
+        body: JSON.stringify({ ...navigation, pageErrors: found.length }),
+        contentType: 'application/json',
+      })
+      .catch(() => {
+        console.error('Could not retain navigation diagnostics');
+      });
     throw error;
   }
 });

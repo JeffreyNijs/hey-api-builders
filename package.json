@@ -46,7 +46,7 @@
     "eslint-plugin-prettier": "5.5.6",
     "fast-check": "4.10.2",
     "hey-api-builders": "workspace:*",
-    "mimlet": "workspace:*",
+    "@mimlet/core": "workspace:*",
     "prettier": "3.9.6",
     "publint": "0.3.24",
     "tsup": "8.5.1",

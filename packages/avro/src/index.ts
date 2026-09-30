@@ -1,5 +1,5 @@
-import type { GenerationSession, SchemaBuilder, SessionKey, StandardSchemaV1 } from 'mimlet';
-import { createSchemaBuilder, createSession } from 'mimlet';
+import type { GenerationSession, SchemaBuilder, SessionKey, StandardSchemaV1 } from '@mimlet/core';
+import { createSchemaBuilder, createSession } from '@mimlet/core';
 import type { Type } from 'avsc';
 import avro from 'avsc';
 import { createHash } from 'node:crypto';

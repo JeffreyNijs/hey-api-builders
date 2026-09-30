@@ -4,9 +4,9 @@
 
 Typed fixtures. Coherent scenarios. Failures you can replay.
 
-Mimlet is the schema-aware toolkit behind `mimlet`, `@mimlet/*`, and the
+Mimlet is the schema-aware toolkit behind `@mimlet/core`, `@mimlet/*`, and the
 `hey-api-builders` integration. The new package names are a **source preview**;
-npm publication and the public site launch are separate steps.
+npm publication is pending. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
 
 A modular TypeScript toolkit for reproducible test data: immutable builders,
 schema-driven generation, native validation and codecs, related fixtures,
@@ -23,7 +23,7 @@ packable. The existing published Hey API v2 package is unchanged.
 ### An existing factory
 
 ```ts
-import { createBuilder } from 'mimlet';
+import { createBuilder } from '@mimlet/core';
 
 interface User {
   id: string;
@@ -101,12 +101,12 @@ const value = provider.create(session);
 
 ## Packages
 
-The core is `mimlet`; optional toolkit packages use the `@mimlet/` scope. Install only the
+The core is `@mimlet/core`; optional toolkit packages use the `@mimlet/` scope. Install only the
 capabilities you use; schema vendors and generation backends do not enter the core.
 
 | Package                                                     | Purpose                                                                                                          |
 | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [mimlet](packages/core/README.md)                           | Immutable runtime, Standard Schema, sessions, capture, scenarios, class facades and typed paths.                 |
+| [@mimlet/core](packages/core/README.md)                     | Immutable runtime, Standard Schema, sessions, capture, scenarios, class facades and typed paths.                 |
 | [@mimlet/typebox](packages/typebox/README.md)               | Modern native TypeBox, encoded/decoded types, complete union variants.                                           |
 | [@mimlet/typebox-legacy](packages/typebox-legacy/README.md) | Maintained legacy TypeBox and Transform support.                                                                 |
 | [@mimlet/json-schema](packages/json-schema/README.md)       | Draft-07, 2019-09 and 2020-12 generation; standards conversion; profiles, extensions and checked negative cases. |

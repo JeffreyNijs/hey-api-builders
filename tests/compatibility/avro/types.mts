@@ -1,5 +1,5 @@
 import { avroAdapter, fromAvro, type AvroSchema } from '@mimlet/avro';
-import type { GenerationSession } from 'mimlet';
+import type { GenerationSession } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 const schema = {
   type: 'record',

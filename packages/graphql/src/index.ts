@@ -1,5 +1,10 @@
-import type { GenerationSession, SchemaBuilder, StandardSchemaV1, ValidationIssue } from 'mimlet';
-import { createSchemaBuilder, createSession } from 'mimlet';
+import type {
+  GenerationSession,
+  SchemaBuilder,
+  StandardSchemaV1,
+  ValidationIssue,
+} from '@mimlet/core';
+import { createSchemaBuilder, createSession } from '@mimlet/core';
 import { getVariableValues } from 'graphql';
 import { createGraphQLExecutor } from './execution.js';
 import { createGraphQLGenerators } from './generation.js';

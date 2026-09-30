@@ -10,7 +10,7 @@ import {
   captureFixture,
   restoreFixture,
   BuilderValidationError,
-} from 'mimlet';
+} from '@mimlet/core';
 import {
   fromArbitrary,
   fromSchemaArbitrary,

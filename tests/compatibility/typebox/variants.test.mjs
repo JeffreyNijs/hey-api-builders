@@ -4,7 +4,7 @@ import Type from 'typebox';
 import { Type as Legacy } from '@sinclair/typebox';
 import * as modern from '@mimlet/typebox';
 import * as legacy from '@mimlet/typebox-legacy';
-import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from 'mimlet';
+import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from '@mimlet/core';
 
 for (const [name, T, api] of [
   ['modern', Type, modern],

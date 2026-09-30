@@ -7,7 +7,7 @@ import {
   NegativeCaseError,
   SchemaGenerationError,
 } from '@mimlet/json-schema';
-import { BuilderValidationError, restoreSession } from 'mimlet';
+import { BuilderValidationError, restoreSession } from '@mimlet/core';
 
 describe('generation capabilities', () => {
   it('uses the 2019-09 validator while adapting tuple and definition sampling', () => {

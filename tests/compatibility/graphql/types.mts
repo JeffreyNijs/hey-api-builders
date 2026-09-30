@@ -5,7 +5,7 @@ import {
   type GraphQLFixtureResult,
   type GraphQLScalarFixture,
 } from '@mimlet/graphql';
-import type { SchemaBuilder, GenerationSession } from 'mimlet';
+import type { SchemaBuilder, GenerationSession } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 const variables = fromGraphQLVariables('type Query{x:Int}', '{x}');
 expectType<

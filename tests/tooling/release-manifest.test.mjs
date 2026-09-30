@@ -9,9 +9,9 @@ const fixture = () => ({
   distTag: 'next',
   packages: [
     {
-      name: 'mimlet',
+      name: '@mimlet/core',
       version: '0.1.0-alpha.0',
-      filename: 'mimlet-0.1.0-alpha.0.tgz',
+      filename: 'mimlet-core-0.1.0-alpha.0.tgz',
       sha256: 'b'.repeat(64),
       integrity: 'sha512-YQ==',
     },
@@ -56,6 +56,10 @@ it('rejects unsafe metadata, artifact paths, duplicates and mismatched release v
       value.packages[0].name = '@other/private';
     },
     (value) => {
+      value.packages[0].name = 'mimlet';
+      value.packages[0].filename = 'mimlet-0.1.0-alpha.0.tgz';
+    },
+    (value) => {
       value.packages[0].sha256 = 'x';
     },
     (value) => {
@@ -66,7 +70,7 @@ it('rejects unsafe metadata, artifact paths, duplicates and mismatched release v
     },
     (value) => {
       value.packages[0].version = '0.2.0-alpha.0';
-      value.packages[0].filename = 'mimlet-0.2.0-alpha.0.tgz';
+      value.packages[0].filename = 'mimlet-core-0.2.0-alpha.0.tgz';
     },
     (value) => {
       value.packages[1].version = '3.0.0';

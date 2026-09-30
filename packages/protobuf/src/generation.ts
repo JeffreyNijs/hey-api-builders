@@ -1,4 +1,4 @@
-import type { GenerationSession } from 'mimlet';
+import type { GenerationSession } from '@mimlet/core';
 import type { Field, Type } from 'protobufjs';
 import protobuf from 'protobufjs';
 import type { ProtobufFixtureOptions } from './types.js';

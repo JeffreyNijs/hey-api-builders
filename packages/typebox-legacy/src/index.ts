@@ -1,13 +1,13 @@
 import type { StaticDecode, StaticEncode, TSchema } from '@sinclair/typebox';
 import { Errors } from '@sinclair/typebox/errors';
 import * as Value from '@sinclair/typebox/value';
-import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from 'mimlet';
+import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from '@mimlet/core';
 import type {
   SchemaBuilderConfig,
   SchemaBuilderFor,
   StandardSchemaV1,
   ValidationIssue,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export interface TypeBoxOptions extends SchemaBuilderConfig {
   /** Explicit native references. Remote fetching is never performed. */

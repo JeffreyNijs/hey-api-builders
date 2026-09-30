@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { setTimeout, clearTimeout } from 'node:timers';
 import { Worker } from 'node:worker_threads';
-import type { SessionSnapshot } from 'mimlet';
+import type { SessionSnapshot } from '@mimlet/core';
 import type { GenerationProfile, SchemaDialect } from '@mimlet/json-schema';
 import {
   integer,

@@ -189,7 +189,7 @@ export async function writeGenerated(
 /** Copy the installed canonical runtime plus its declarations and attribution, never reimplement it. */
 export async function selfContainedRuntime(prefix = 'builder-runtime'): Promise<GeneratedFile[]> {
   safePath(`${prefix}/index.js`);
-  const directory = dirname(fileURLToPath(import.meta.resolve('mimlet')));
+  const directory = dirname(fileURLToPath(import.meta.resolve('@mimlet/core')));
   const files: GeneratedFile[] = [];
   for (const name of (await readdir(directory)).sort()) {
     if (!/^[a-zA-Z0-9._-]+\.(?:js|d\.ts)$/.test(name)) {

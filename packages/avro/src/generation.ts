@@ -1,4 +1,4 @@
-import type { GenerationSession } from 'mimlet';
+import type { GenerationSession } from '@mimlet/core';
 import type { Type } from 'avsc';
 import type avro from 'avsc';
 import { Buffer } from 'node:buffer';

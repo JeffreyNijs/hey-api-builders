@@ -1,5 +1,5 @@
-import { cloneFixture } from 'mimlet';
-import type { GenerationSession, ValidationIssue } from 'mimlet';
+import { cloneFixture } from '@mimlet/core';
+import type { GenerationSession, ValidationIssue } from '@mimlet/core';
 import type { Documents } from './document.js';
 import {
   ApiContractError,

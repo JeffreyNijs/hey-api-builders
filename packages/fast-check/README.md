@@ -14,7 +14,7 @@ not a new shrinker; use the mapping functions for property-based testing.
 
 ```ts
 import * as fc from 'fast-check';
-import { createBuilder } from 'mimlet';
+import { createBuilder } from '@mimlet/core';
 import { mapFixtureArbitrary, assertFixtureProperty } from '@mimlet/fast-check';
 
 const users = fc.record({ age: fc.integer({ min: 18, max: 100 }), role: fc.string() });
@@ -46,7 +46,7 @@ input arbitrary, for example through `createSchemaBuilder(...).buildValidatedAsy
 
 ```ts
 import * as fc from 'fast-check';
-import { createScenario } from 'mimlet';
+import { createScenario } from '@mimlet/core';
 import { scenarioArbitrary } from '@mimlet/fast-check';
 
 const cart = createScenario()

@@ -6,7 +6,7 @@ The stable v2 line remains available separately.
 
 The plugin discovers generated model, request and response factories from
 `@hey-api/openapi-ts`, then emits named fluent classes backed by the shared
-`mimlet` runtime. Hey API and Faker are not dependencies of
+`@mimlet/core` runtime. Hey API and Faker are not dependencies of
 the neutral runtime itself.
 
 ## Installation and generation
@@ -51,7 +51,7 @@ implementation or fetch that module during emission.
 
 ## Migration from v2
 
-Generated clients must install the matching `mimlet` runtime.
+Generated clients must install the matching `@mimlet/core` runtime.
 Regenerate clients with the upgraded plugin and keep that generated diff in the
 consumer migration. Do not silently release these changes as a v2 patch.
 

@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { restoreSession } from 'mimlet';
+import { restoreSession } from '@mimlet/core';
 import {
   jsonSchemaAdapter,
   SchemaPreparationError,

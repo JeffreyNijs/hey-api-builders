@@ -1,5 +1,5 @@
-import { createBuilder, createSession, restoreSession } from 'mimlet';
-import type { GenerationSession } from 'mimlet';
+import { createBuilder, createSession, restoreSession } from '@mimlet/core';
+import type { GenerationSession } from '@mimlet/core';
 
 const identity = { fingerprint: 'users/v1', provider: 'my-factory@1' };
 const session = createSession({ ...identity, seed: 42 });

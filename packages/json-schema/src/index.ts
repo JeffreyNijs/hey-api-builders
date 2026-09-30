@@ -3,7 +3,7 @@ import { Ajv2019 } from 'ajv/dist/2019.js';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import formatsModule from 'ajv-formats';
 import { generateSync, type JsonSchema as ProviderSchema } from 'json-schema-faker';
-import { createSchemaBuilder, createSession, SessionBudgetError } from 'mimlet';
+import { createSchemaBuilder, createSession, SessionBudgetError } from '@mimlet/core';
 import type {
   GenerationSession,
   SchemaBuilder,
@@ -14,7 +14,7 @@ import type {
   StandardJSONSchemaV1,
   StandardSchemaV1,
   ValidationIssue,
-} from 'mimlet';
+} from '@mimlet/core';
 import {
   copyJson,
   draft7ValidationSchema,

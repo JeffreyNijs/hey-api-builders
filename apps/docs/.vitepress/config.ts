@@ -2,11 +2,8 @@ import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vitepress';
 import { base, codeTheme, hostname, identity } from '../content';
 
-const repository =
-  process.env.GITHUB_REPOSITORY === 'JeffreyNijs/mimlet'
-    ? 'JeffreyNijs/mimlet'
-    : 'JeffreyNijs/hey-api-builders';
-const ref = process.env.DOCS_SOURCE_REF ?? 'codex/mimlet-brand-and-docs';
+const repository = 'JeffreyNijs/mimlet';
+const ref = process.env.DOCS_SOURCE_REF ?? 'main';
 const inventory = JSON.parse(
   readFileSync(new URL('../.generated/site-manifest.json', import.meta.url), 'utf8')
 ) as { packages: string[] };
@@ -113,7 +110,7 @@ export default defineConfig({
         text: 'Package reference',
         items: inventory.packages.map((name) => ({
           text: name,
-          link: `/packages/${name === 'mimlet' ? 'core' : name.replace('@mimlet/', '')}`,
+          link: `/packages/${name.replace('@mimlet/', '')}`,
         })),
       },
       {

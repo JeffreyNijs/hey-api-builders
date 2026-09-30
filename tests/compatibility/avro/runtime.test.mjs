@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import avro from 'avsc';
 import { avroAdapter, fromAvro, AvroFixtureError } from '@mimlet/avro';
-import { BuilderValidationError, restoreSession } from 'mimlet';
+import { BuilderValidationError, restoreSession } from '@mimlet/core';
 
 const scalar = (type) => avroAdapter(type);
 const Event = {

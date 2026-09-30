@@ -33,7 +33,7 @@ it('recognizes the complete workspace and orders internal dependencies first', (
   fixture(async ({ root }) => {
     const workspace = await readWorkspace(root);
     const names = workspace.packages.map((item) => item.manifest.name);
-    assert.equal(names[0], 'mimlet');
+    assert.equal(names[0], '@mimlet/core');
     for (const item of workspace.packages)
       for (const dependency of Object.keys(item.manifest.dependencies ?? {})) {
         if (names.includes(dependency))
@@ -44,11 +44,15 @@ it('rejects missing/mismatched internal packages before installation falls back 
   fixture(async ({ root, change }) => {
     const path = 'packages/adapter/package.json';
     await change(path, (pkg) => {
-      pkg.dependencies['mimlet'] = '99.0.0';
+      pkg.dependencies['@mimlet/core'] = '99.0.0';
     });
     await assert.rejects(readWorkspace(root), /must match/);
     await change(path, (pkg) => {
       pkg.dependencies = { '@mimlet/missing': '0.1.0' };
+    });
+    await assert.rejects(readWorkspace(root), /missing internal/);
+    await change(path, (pkg) => {
+      pkg.dependencies = { mimlet: '0.1.0-alpha.0' };
     });
     await assert.rejects(readWorkspace(root), /missing internal/);
   }));

@@ -11,7 +11,7 @@ the user's chosen library. The new package names are currently an unpublished
 source preview; inspect the installed version or use verified local tarballs.
 
 1. Inspect the project's package manifest, schema and nearby tests. Choose the
-   smallest relevant package: `mimlet` for the core, `@mimlet/<adapter>` for an
+   smallest relevant package: `@mimlet/core` for the core, `@mimlet/<adapter>` for an
    optional integration, or `hey-api-builders` for its existing generator plugin.
 2. Distinguish schema input from output. `.with()` accepts input-typed overrides;
    `.build()` creates input; `.buildValidated()` returns validated/decoded output.
@@ -35,7 +35,7 @@ In a Mimlet source checkout, read `docs/adapters.md`, `docs/agents.md`, and the
 matching package README. `examples/recipes/` contains the actual typed examples;
 `pnpm test:examples` compiles and executes them against isolated tarballs.
 
-After the website launches, use [the agent guide](https://jeffreynijs.github.io/mimlet/guide/agents.md)
+Use [the agent guide](https://jeffreynijs.github.io/mimlet/guide/agents.md)
 or the [documentation index](https://jeffreynijs.github.io/mimlet/llms.txt). If the
 site is not live or does not match the installed version, use the source checkout
 or report that the matching contract is unavailable. Do not invent missing APIs.

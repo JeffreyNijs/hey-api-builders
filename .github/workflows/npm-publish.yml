@@ -110,7 +110,7 @@ jobs:
             return response.json();
           };
           for (const p of m.packages) {
-            if (!/^(hey-api-builders|mimlet|@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(p.name) || !version.test(p.version) || seen.has(p.name)) throw new Error('Invalid package identity');
+            if (!/^(hey-api-builders|@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(p.name) || !version.test(p.version) || seen.has(p.name)) throw new Error('Invalid package identity');
             if (p.filename !== `${p.name.replace('@', '').replace('/', '-')}-${p.version}.tgz` || files.has(p.filename)) throw new Error('Invalid artifact filename');
             if (p.name !== 'hey-api-builders' && p.version !== m.coreVersion) throw new Error('Version train mismatch');
             if (p.version.includes('-') !== prerelease) throw new Error('Mixed release channels');
@@ -123,7 +123,7 @@ jobs:
             metadataSet.push(metadata);
             seen.add(p.name); files.add(p.filename);
           }
-          if (m.packages[0].name !== 'mimlet' || !seen.has('hey-api-builders')) throw new Error('Missing core or integration');
+          if (m.packages[0].name !== '@mimlet/core' || !seen.has('hey-api-builders')) throw new Error('Missing core or integration');
           if (readdirSync('release').some((file) => !files.has(file))) throw new Error('Unexpected artifact file');
           // BEGIN CANONICAL METADATA GUARD
           function validateReleasePackageMetadata(manifest, metadata) {

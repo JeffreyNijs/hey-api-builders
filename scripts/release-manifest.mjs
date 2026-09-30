@@ -23,7 +23,7 @@ export function validateReleaseManifest(value, expectedTag) {
   for (const item of value.packages) {
     if (
       !item ||
-      !/^(hey-api-builders|mimlet|@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(item.name ?? '') ||
+      !/^(hey-api-builders|@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(item.name ?? '') ||
       !versionPattern.test(item.version ?? '')
     )
       fail('invalid package identity');
@@ -42,7 +42,7 @@ export function validateReleaseManifest(value, expectedTag) {
     names.add(item.name);
     files.add(filename);
   }
-  if (value.packages[0].name !== 'mimlet' || !names.has('hey-api-builders'))
+  if (value.packages[0].name !== '@mimlet/core' || !names.has('hey-api-builders'))
     fail('core must be first and the integration must be included');
   return value;
 }

@@ -1,12 +1,12 @@
 import type { StaticDecode, StaticEncode, TProperties, TSchema } from 'typebox';
 import * as Value from 'typebox/value';
-import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from 'mimlet';
+import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from '@mimlet/core';
 import type {
   SchemaBuilderConfig,
   SchemaBuilderFor,
   StandardSchemaV1,
   ValidationIssue,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export interface TypeBoxOptions<
   Context extends TProperties = Record<never, never>,

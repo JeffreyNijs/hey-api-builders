@@ -1,4 +1,4 @@
-import type { GenerationSession } from 'mimlet';
+import type { GenerationSession } from '@mimlet/core';
 import type { GraphQLOutputType, GraphQLResolveInfo, GraphQLScalarType } from 'graphql';
 import {
   executeSync,

@@ -3,7 +3,7 @@ import { type } from 'arktype';
 import * as v from 'valibot';
 import { fromStandardJsonSchema } from '@mimlet/json-schema';
 import { fromValibot } from '@mimlet/valibot';
-import { createSchemaBuilder } from 'mimlet';
+import { createSchemaBuilder } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 const zb = fromStandardJsonSchema(
   z.object({ age: z.string() }).transform(({ age }) => ({ age: Number(age) }))

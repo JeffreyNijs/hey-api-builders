@@ -1,4 +1,4 @@
-import type { ValidationIssue } from 'mimlet';
+import type { ValidationIssue } from '@mimlet/core';
 import type { Type } from 'avsc';
 import type avro from 'avsc';
 import { AvroFixtureError, fail, record, union } from './values.js';

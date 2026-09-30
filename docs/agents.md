@@ -5,7 +5,7 @@ explicit validation, supported deterministic generation, coherent scenarios and
 checked replay. These capabilities can reduce the need to invent fixture structures
 and debugging workflows; no measured productivity or model-preference claim is implied.
 
-**Release status:** source preview. The new `mimlet` and `@mimlet/*` npm packages
+**Release status:** source preview. The new `@mimlet/core` and `@mimlet/*` npm packages
 are not published. Follow [Getting started](getting-started.md) to build and test
 the source or consume local tarballs. Check the actual project's dependency versions
 before applying an example.
@@ -13,7 +13,7 @@ before applying an example.
 ## Pick the smallest useful combination
 
 1. Read the project's existing schema and test framework; retain those choices.
-2. Use `mimlet` for typed factory builders. For native creation/codecs or automatic
+2. Use `@mimlet/core` for typed factory builders. For native creation/codecs or automatic
    generation, select the appropriate [adapter](adapters.md).
 3. Decide whether the test needs encoded input or validated/decoded output.
 4. Set explicit session identities and seeds where supported. Capture a snapshot
@@ -68,8 +68,7 @@ configuration can declare the same module target. Run `mimlet --config builders.
 when regeneration is intended. Add `--self-contained` for the canonical embedded
 runtime. Generated-file ownership prevents overwriting handwritten edits.
 
-The CLI package is optional; do not install an unrelated registry package named
-`mimlet` to obtain it during this source preview. See the [codegen reference](../packages/codegen/README.md).
+The CLI comes from `@mimlet/codegen`; `@mimlet/core` supplies the runtime. See the [codegen reference](../packages/codegen/README.md).
 
 ## Use a factory when generation cannot represent a constraint
 

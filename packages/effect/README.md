@@ -7,7 +7,7 @@ separately tested fast-check 4 adapter.
 
 ```ts
 import * as S from 'effect/Schema';
-import { createSession } from 'mimlet';
+import { createSession } from '@mimlet/core';
 import { fromEffect } from '@mimlet/effect';
 const schema = S.Struct({ age: S.NumberFromString });
 const session = createSession({ seed: 123, fingerprint: 'person/v1', provider: 'effect@3.22.2' });

@@ -25,7 +25,7 @@ describe('canonical generated runtime', () => {
   it('imports the core instead of emitting another merge implementation', async () => {
     const openApi31 = await generateProject('openapi-3.1.json');
     try {
-      expect(openApi31.buildersSource).toContain('mimlet');
+      expect(openApi31.buildersSource).toContain('@mimlet/core');
       expect(openApi31.buildersSource).not.toContain('mergeBuilderPatch');
       expect(openApi31.buildersSource).not.toContain('hasPatch');
     } finally {

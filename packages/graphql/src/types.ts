@@ -1,4 +1,4 @@
-import type { GenerationSession, SchemaBuilderConfig } from 'mimlet';
+import type { GenerationSession, SchemaBuilderConfig } from '@mimlet/core';
 export interface GraphQLScalarFixture {
   readonly id: string;
   /** Encoded variable data. The native input coercion boundary remains authoritative. */

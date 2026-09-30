@@ -4,7 +4,7 @@ import * as S from 'effect/Schema';
 import * as E from 'effect/Effect';
 import * as FC from 'effect/FastCheck';
 import { fromEffect, fromEffectAsync, fromEffectFactory, effectAdapter } from '@mimlet/effect';
-import { createSession, BuilderValidationError } from 'mimlet';
+import { createSession, BuilderValidationError } from '@mimlet/core';
 const session = () =>
   createSession({ seed: 42, fingerprint: 'effect-corpus/v1', provider: 'effect@3.22.2' });
 describe('Effect native adapter', () => {

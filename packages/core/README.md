@@ -2,7 +2,7 @@
 
 A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
 
-The package name is `mimlet`. Alpha releases use the `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
+The package name is `@mimlet/core`. Alpha releases use the `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
 
 ```sh
 pnpm build:core
@@ -14,7 +14,7 @@ The package emits ESM and TypeScript declarations. The core declarations are tes
 ## Existing factories
 
 ```ts
-import { createBuilder } from 'mimlet';
+import { createBuilder } from '@mimlet/core';
 
 interface User {
   id: string;
@@ -42,7 +42,7 @@ const user = await users.buildAsync('user-1');
 
 ```ts
 import { z } from 'zod';
-import { createSchemaBuilder } from 'mimlet';
+import { createSchemaBuilder } from '@mimlet/core';
 
 const Age = z.object({ age: z.string() }).transform(({ age }) => ({
   age: Number(age),

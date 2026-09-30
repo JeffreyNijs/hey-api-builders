@@ -1,6 +1,6 @@
 /** One recipe feeds validation, UI previews, JSON responses and explicit persistence. */
 import { Type } from '@sinclair/typebox';
-import { createScenario } from 'mimlet';
+import { createScenario } from '@mimlet/core';
 import { fakerAdapter, fromFaker } from '@mimlet/faker';
 import { fromTypeBoxFactory } from '@mimlet/typebox-legacy';
 import { fixtureLoader, jsonResponseResolver, persistFixtureBatch } from '@mimlet/consumers';

@@ -4,7 +4,7 @@ import {
   jsonSchemaAdapter,
   type JsonSchema,
 } from '@mimlet/json-schema';
-import type { StandardSchemaV1, StandardJSONSchemaV1, GenerationSession } from 'mimlet';
+import type { StandardSchemaV1, StandardJSONSchemaV1, GenerationSession } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 declare const schema: StandardSchemaV1<{ age: string }, { age: number }> &
   StandardJSONSchemaV1<{ age: string }, { age: number }>;

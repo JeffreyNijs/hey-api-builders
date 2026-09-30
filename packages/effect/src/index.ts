@@ -2,7 +2,7 @@ import * as Schema from 'effect/Schema';
 import * as Arbitrary from 'effect/Arbitrary';
 import * as FastCheck from 'effect/FastCheck';
 import type * as AST from 'effect/SchemaAST';
-import { createSchemaBuilder } from 'mimlet';
+import { createSchemaBuilder } from '@mimlet/core';
 import type {
   GenerationSession,
   SchemaBuilder,
@@ -10,7 +10,7 @@ import type {
   SchemaBuilderConfig,
   SchemaBuilderFor,
   StandardSchemaV1,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export interface EffectOptions extends SchemaBuilderConfig {
   /** Native parse options; default rejects excess object properties. */

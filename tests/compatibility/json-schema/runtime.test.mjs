@@ -7,7 +7,12 @@ import {
   SchemaGenerationError,
   SchemaPreparationError,
 } from '@mimlet/json-schema';
-import { createSession, restoreSession, BuilderValidationError, SessionBudgetError } from 'mimlet';
+import {
+  createSession,
+  restoreSession,
+  BuilderValidationError,
+  SessionBudgetError,
+} from '@mimlet/core';
 
 const object = {
   type: 'object',

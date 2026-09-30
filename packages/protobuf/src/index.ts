@@ -1,5 +1,10 @@
-import type { GenerationSession, SchemaBuilder, StandardSchemaV1, ValidationIssue } from 'mimlet';
-import { createSchemaBuilder, createSession } from 'mimlet';
+import type {
+  GenerationSession,
+  SchemaBuilder,
+  StandardSchemaV1,
+  ValidationIssue,
+} from '@mimlet/core';
+import { createSchemaBuilder, createSession } from '@mimlet/core';
 import type { Namespace, Root } from 'protobufjs';
 import protobuf from 'protobufjs';
 import { createProtobufCodecs } from './codecs.js';

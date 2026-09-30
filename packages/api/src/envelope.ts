@@ -1,11 +1,11 @@
-import { BuilderValidationError, createSchemaBuilder, createSession } from 'mimlet';
+import { BuilderValidationError, createSchemaBuilder, createSession } from '@mimlet/core';
 import type {
   GenerationSession,
   SchemaBuilder,
   SessionKey,
   StandardSchemaV1,
   ValidationIssue,
-} from 'mimlet';
+} from '@mimlet/core';
 import { object, snapshot, type ContractOptions } from './document.js';
 export interface FixturePart {
   readonly group: string;

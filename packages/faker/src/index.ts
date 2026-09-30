@@ -1,6 +1,6 @@
 import { Faker, en } from '@faker-js/faker';
 import type { LocaleDefinition } from '@faker-js/faker';
-import { createBuilder, createSchemaBuilder, createSession } from 'mimlet';
+import { createBuilder, createSchemaBuilder, createSession } from '@mimlet/core';
 import type {
   BuilderFor,
   GenerationSession,
@@ -10,7 +10,7 @@ import type {
   SessionKey,
   SessionOptions,
   StandardSchemaV1,
-} from 'mimlet';
+} from '@mimlet/core';
 
 export interface FakerOptions extends SchemaBuilderConfig {
   /** Version the fixture factory/schema whenever its generation behavior changes. */

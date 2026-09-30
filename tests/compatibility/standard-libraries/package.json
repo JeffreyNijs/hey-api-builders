@@ -14,6 +14,7 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
+    "test-builders-adapter",
     "test-builders-json-schema",
     "test-builders-valibot"
   ],

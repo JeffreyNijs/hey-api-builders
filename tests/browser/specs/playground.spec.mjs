@@ -7,7 +7,8 @@ test.beforeEach(async ({ page }) => {
   const found = [];
   errors.set(page, found);
   page.on('pageerror', (error) => found.push(error.message));
-  await page.goto('/');
+  // Document readiness plus the usable UI is the acceptance boundary, not late load events.
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('button', { name: 'Generate fixtures', exact: true })).toBeEnabled();
 });
 test.afterEach(async ({ page }) => {

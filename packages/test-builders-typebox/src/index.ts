@@ -64,6 +64,7 @@ export function typeBoxAdapter<S extends TSchema, C extends TProperties = Record
       validation: 'native-strict' as const,
     }),
     check,
+    issues,
     decode(value: Input): Output {
       if (!check(value)) {
         throw new BuilderValidationError(issues(value));
@@ -122,4 +123,104 @@ export function fromTypeBoxFactory<
   options: TypeBoxOptions<C> = {}
 ): SchemaBuilderFor<StandardSchemaV1<StaticEncode<S, C>, StaticDecode<S, C>>, F> {
   return createSchemaBuilder(typeBoxAdapter(schema, options).standard, factory, options);
+}
+
+/** Literal indexes of a statically known union; runtime-length unions accept numbers. */
+export type TypeBoxVariantIndex<T extends readonly unknown[]> = number extends T['length']
+  ? number
+  : Extract<keyof T, `${number}`> extends infer K
+    ? K extends `${infer N extends number}`
+      ? N
+      : never
+    : never;
+
+/** Generate one complete branch, while preserving validation and decoding of the original union. */
+export function typeBoxVariantAdapter<
+  S extends TSchema & { readonly anyOf: readonly TSchema[] },
+  const I extends TypeBoxVariantIndex<S['anyOf']>,
+  C extends TProperties = Record<never, never>,
+>(source: S, index: I, options: TypeBoxOptions<C> = {}) {
+  if (
+    !source ||
+    !Array.isArray(source.anyOf) ||
+    !Number.isSafeInteger(index) ||
+    index < 0 ||
+    index >= source.anyOf.length ||
+    !Object.hasOwn(source.anyOf, index)
+  ) {
+    throw new TypeError('Expected an existing TypeBox anyOf variant index');
+  }
+  const variantSource = source.anyOf[index] as S['anyOf'][I];
+  if (!variantSource || typeof variantSource !== 'object') {
+    throw new TypeError('Expected a native TypeBox variant schema');
+  }
+  type Input = StaticEncode<S['anyOf'][I], C>;
+  type Output = StaticDecode<S, C>;
+  const nativeOptions = options;
+  const parent = typeBoxAdapter(source, nativeOptions);
+  const selected = typeBoxAdapter(variantSource, nativeOptions);
+  const check = (value: unknown): value is Input => selected.check(value) && parent.check(value);
+  const issues = (value: unknown): ValidationIssue[] =>
+    selected.check(value) ? parent.issues(value) : selected.issues(value);
+  const standard: StandardSchemaV1<Input, Output> = {
+    '~standard': {
+      version: 1,
+      vendor: 'test-builders/typebox/variant',
+      validate(value, validationOptions) {
+        if (!selected.check(value)) {
+          return { issues: selected.issues(value) };
+        }
+        // Decode the original union, not a branch twice or a different codec pipeline.
+        return parent.standard['~standard'].validate(value, validationOptions);
+      },
+    },
+  };
+  return Object.freeze({
+    source,
+    variantSource,
+    standard,
+    metadata: Object.freeze({ ...parent.metadata, variant: index }),
+    check,
+    issues,
+    decode(value: Input): Output {
+      if (!check(value)) {
+        throw new BuilderValidationError(issues(value));
+      }
+      return parent.decode(value as StaticEncode<S, C>);
+    },
+    encode(value: Output): Input {
+      const encoded: unknown = parent.encode(value);
+      if (!check(encoded)) {
+        throw new BuilderValidationError(issues(encoded));
+      }
+      return encoded;
+    },
+    create(): Input {
+      const value = selected.create();
+      if (!parent.check(value)) {
+        throw new BuilderGenerationError(
+          'The selected variant does not satisfy the enclosing union',
+          new BuilderValidationError(parent.issues(value))
+        );
+      }
+      return value;
+    },
+  });
+}
+
+/** Safe discriminated-union selection: generate the entire branch before applying patches. */
+export function fromTypeBoxVariant<
+  S extends TSchema & { readonly anyOf: readonly TSchema[] },
+  const I extends TypeBoxVariantIndex<S['anyOf']>,
+  C extends TProperties = Record<never, never>,
+>(
+  source: S,
+  index: I,
+  options: TypeBoxOptions<C> = {}
+): SchemaBuilderFor<
+  StandardSchemaV1<StaticEncode<S['anyOf'][I], C>, StaticDecode<S, C>>,
+  () => StaticEncode<S['anyOf'][I], C>
+> {
+  const adapter = typeBoxVariantAdapter(source, index, options);
+  return createSchemaBuilder(adapter.standard, () => adapter.create(), options);
 }

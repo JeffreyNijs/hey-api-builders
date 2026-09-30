@@ -92,3 +92,41 @@ const referenced = fromTypeBoxFactory(Ref, (id: string) => ({ id }), { context }
 referenced.buildValidated('user-1').id.toUpperCase();
 // @ts-expect-error Reference-aware factory input is not an unchecked assertion.
 fromTypeBoxFactory(Ref, () => ({ id: 42 }), { context });
+
+// Explicit native variant selection never manufactures a partial discriminated-union value.
+import { fromTypeBoxVariant, typeBoxVariantAdapter } from '@jeffreynijs/test-builders-typebox';
+import { fromTypeBoxVariant as legacyVariant } from '@jeffreynijs/test-builders-typebox-legacy';
+const dogs = fromTypeBoxVariant(Pet, 1);
+expectType<{ kind: 'dog'; bark: boolean }>(dogs.build());
+dogs.with({ bark: true });
+// @ts-expect-error A selected branch cannot change only its discriminator.
+dogs.with({ kind: 'cat' });
+// @ts-expect-error Fields from another branch are not on the selected input.
+dogs.with({ lives: 3 });
+// @ts-expect-error Literal tuple indexes are bounded.
+fromTypeBoxVariant(Pet, 2);
+// @ts-expect-error An object schema is not an anyOf union.
+fromTypeBoxVariant(Event, 0);
+const wholeCodec = Type.Codec(Pet)
+  .Decode((pet) => ({ pet }))
+  .Encode(({ pet }) => pet);
+const rootCodecDog = fromTypeBoxVariant(wholeCodec, 1);
+expectType<{ kind: 'dog'; bark: boolean }>(rootCodecDog.build());
+expectType<{ pet: { kind: 'cat'; lives: number } | { kind: 'dog'; bark: boolean } }>(
+  rootCodecDog.buildValidated()
+);
+// @ts-expect-error The original union codec is retained on output.
+rootCodecDog.buildValidated().bark;
+expectType<boolean>(typeBoxVariantAdapter(Pet, 1).check({ kind: 'dog', bark: true }));
+const LegacyPet = Legacy.Union([
+  Legacy.Object({ kind: Legacy.Literal('cat'), lives: Legacy.Number() }),
+  Legacy.Object({ kind: Legacy.Literal('dog'), bark: Legacy.Boolean() }),
+]);
+const legacyDogs = legacyVariant(LegacyPet, 1);
+expectType<{ kind: 'dog'; bark: boolean }>(legacyDogs.build());
+// @ts-expect-error Other branch data is rejected by legacy selection too.
+legacyDogs.with({ kind: 'cat' });
+// @ts-expect-error Invalid legacy tuple index.
+legacyVariant(LegacyPet, -1);
+// @ts-expect-error Inputs do not degrade to any/never.
+legacyDogs.build().bark.toFixed();

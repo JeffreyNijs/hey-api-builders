@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-workspace",
+  "name": "mimlet-workspace",
   "version": "0.0.0",
   "private": true,
   "description": "Modular schema-independent test-data toolkit and integrations.",
@@ -22,7 +22,9 @@
       "postcss": "8.5.26",
       "rollup": "4.62.4",
       "vite@7": "7.3.5",
-      "js-yaml@4": "4.3.2"
+      "js-yaml@4": "4.3.2",
+      "vitepress>vite": "6.4.3",
+      "brace-expansion@5": "5.0.12"
     }
   },
   "devDependencies": {
@@ -31,7 +33,7 @@
     "@eslint/js": "10.0.1",
     "@faker-js/faker": "10.5.0",
     "@hey-api/openapi-ts": "0.99.0",
-    "@jeffreynijs/test-builders": "workspace:*",
+    "@resvg/resvg-js": "2.6.2",
     "@sinclair/typebox": "0.34.52",
     "@types/node": "22.20.1",
     "@typescript-eslint/eslint-plugin": "8.66.0",
@@ -44,6 +46,7 @@
     "eslint-plugin-prettier": "5.5.6",
     "fast-check": "4.10.2",
     "hey-api-builders": "workspace:*",
+    "mimlet": "workspace:*",
     "prettier": "3.9.6",
     "publint": "0.3.24",
     "tsup": "8.5.1",
@@ -57,7 +60,7 @@
   "scripts": {
     "preinstall": "node scripts/check-workspace.mjs",
     "build": "turbo run build",
-    "build:core": "tsc -p packages/test-builders/tsconfig.json",
+    "build:core": "tsc -p packages/core/tsconfig.json",
     "watch": "pnpm --filter hey-api-builders watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -65,7 +68,7 @@
     "format:check": "prettier --check . --ignore-unknown",
     "typecheck": "pnpm type-check",
     "test": "pnpm test:unit && pnpm test:core && pnpm test:integration && pnpm test:typebox && pnpm test:optional",
-    "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node scripts/test-core.mjs",
+    "test:core": "tsc -p packages/core/tsconfig.json && tsc -p packages/core/test/tsconfig.json && node scripts/test-core.mjs",
     "test:watch": "vitest --watch --project unit",
     "test:coverage": "pnpm test:unit && pnpm test:core && vitest run --project integration --coverage && pnpm test:typebox && pnpm test:optional",
     "test:typebox": "node scripts/test-typebox.mjs",
@@ -87,6 +90,11 @@
     "type-check": "turbo run type-check && tsc --noEmit",
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "audit:production": "node scripts/audit-production.ts"
+    "audit:production": "node scripts/audit-production.ts",
+    "brand:render": "node scripts/render-brand.ts",
+    "docs:dev": "pnpm --dir apps/docs docs:dev",
+    "docs:build": "pnpm --dir apps/docs docs:build",
+    "docs:preview": "pnpm --dir apps/docs docs:preview",
+    "docs:test": "pnpm --dir apps/docs test"
   }
 }

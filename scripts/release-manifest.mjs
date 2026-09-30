@@ -23,7 +23,7 @@ export function validateReleaseManifest(value, expectedTag) {
   for (const item of value.packages) {
     if (
       !item ||
-      !/^(hey-api-builders|@jeffreynijs\/test-builders(?:-[a-z0-9]+)*)$/.test(item.name ?? '') ||
+      !/^(hey-api-builders|mimlet|@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*)$/.test(item.name ?? '') ||
       !versionPattern.test(item.version ?? '')
     )
       fail('invalid package identity');
@@ -35,14 +35,14 @@ export function validateReleaseManifest(value, expectedTag) {
       !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(item.integrity ?? '')
     )
       fail('missing artifact digest');
-    if (item.name.startsWith('@jeffreynijs/') && item.version !== value.coreVersion)
+    if (item.name !== 'hey-api-builders' && item.version !== value.coreVersion)
       fail('neutral packages must share the release train version');
     if (item.version.includes('-') !== value.coreVersion.includes('-'))
       fail('stable and prerelease packages cannot be mixed');
     names.add(item.name);
     files.add(filename);
   }
-  if (value.packages[0].name !== '@jeffreynijs/test-builders' || !names.has('hey-api-builders'))
+  if (value.packages[0].name !== 'mimlet' || !names.has('hey-api-builders'))
     fail('core must be first and the integration must be included');
   return value;
 }
@@ -78,7 +78,9 @@ export function validateReleasePackageMetadata(manifest, metadata) {
       for (const [name, version] of Object.entries(dependencies)) {
         if (typeof version !== 'string') fail('dependency versions must be strings');
         const internal =
-          name === 'hey-api-builders' || /^@jeffreynijs\/test-builders(?:-[a-z0-9]+)*$/.test(name);
+          name === 'hey-api-builders' ||
+          name === 'mimlet' ||
+          /^@mimlet\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name);
         if (internal && (!entries.has(name) || entries.get(name).version !== version))
           fail(`missing or mismatched internal dependency: ${name}`);
       }

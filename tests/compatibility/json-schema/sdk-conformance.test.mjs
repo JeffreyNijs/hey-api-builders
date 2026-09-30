@@ -1,7 +1,7 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
-import { jsonSchemaAdapter } from '@jeffreynijs/test-builders-json-schema';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
+import { jsonSchemaAdapter } from '@mimlet/json-schema';
 for (const dialect of ['draft-07', 'draft-2019-09', 'draft-2020-12']) {
   it(`${dialect} satisfies the shared adapter contract`, async () => {
     const native = jsonSchemaAdapter({ type: 'integer', minimum: 1 }, { dialect });

@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-codegen-compatibility",
+  "name": "mimlet-codegen-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,13 +12,13 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
-    "test-builders-json-schema",
-    "test-builders-codegen"
+    "json-schema",
+    "codegen"
   ],
   "compilerTypes": [
     "node"
   ],
   "coveragePackages": [
-    "test-builders-codegen"
+    "codegen"
   ]
 }

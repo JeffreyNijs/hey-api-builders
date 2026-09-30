@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-playground-compatibility",
+  "name": "mimlet-playground-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,11 +10,11 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
-    "test-builders-json-schema",
-    "test-builders-playground"
+    "json-schema",
+    "playground"
   ],
   "coveragePackages": [
-    "test-builders-playground"
+    "playground"
   ],
   "compilerTypes": [
     "node"

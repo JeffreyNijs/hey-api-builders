@@ -1,11 +1,6 @@
 import * as S from 'effect/Schema';
-import {
-  fromEffect,
-  fromEffectAsync,
-  fromEffectFactory,
-  effectAdapter,
-} from '@jeffreynijs/test-builders-effect';
-import type { GenerationSession } from '@jeffreynijs/test-builders';
+import { fromEffect, fromEffectAsync, fromEffectFactory, effectAdapter } from '@mimlet/effect';
+import type { GenerationSession } from 'mimlet';
 declare const session: GenerationSession;
 declare function expectType<T>(value: T): void;
 const schema = S.Struct({ age: S.NumberFromString });

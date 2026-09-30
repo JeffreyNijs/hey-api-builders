@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-protobuf-compatibility",
+  "name": "mimlet-protobuf-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,10 +7,10 @@
     "protobufjs": "8.8.0"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-protobuf"
+    "adapter",
+    "protobuf"
   ],
   "coveragePackages": [
-    "test-builders-protobuf"
+    "protobuf"
   ]
 }

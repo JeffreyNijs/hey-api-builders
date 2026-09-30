@@ -4,13 +4,9 @@ import Type from 'typebox';
 import { Type as Legacy, FormatRegistry } from '@sinclair/typebox';
 import * as NativeValue from 'typebox/value';
 import * as LegacyValue from '@sinclair/typebox/value';
-import {
-  createBuilder,
-  BuilderValidationError,
-  BuilderGenerationError,
-} from '@jeffreynijs/test-builders';
-import * as modern from '@jeffreynijs/test-builders-typebox';
-import * as legacy from '@jeffreynijs/test-builders-typebox-legacy';
+import { createBuilder, BuilderValidationError, BuilderGenerationError } from 'mimlet';
+import * as modern from '@mimlet/typebox';
+import * as legacy from '@mimlet/typebox-legacy';
 
 for (const [name, T, api, Value] of [
   ['typebox', Type, modern, NativeValue],

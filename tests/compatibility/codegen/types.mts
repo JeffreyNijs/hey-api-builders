@@ -3,7 +3,7 @@ import {
   emitJsonSchemaBuilders,
   writeGenerated,
   selfContainedRuntime,
-} from '@jeffreynijs/test-builders-codegen';
+} from '@mimlet/codegen';
 const modules = emitBuilders([
   {
     name: 'Users',

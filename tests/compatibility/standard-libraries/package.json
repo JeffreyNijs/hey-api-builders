@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-standard-libraries-compatibility",
+  "name": "mimlet-standard-libraries-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,16 +14,16 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-json-schema",
-    "test-builders-valibot"
+    "adapter",
+    "json-schema",
+    "valibot"
   ],
   "compilerLibs": [
     "ES2022",
     "DOM"
   ],
   "coveragePackages": [
-    "test-builders-valibot"
+    "valibot"
   ],
   "compilerTypes": [
     "node"

@@ -1,14 +1,7 @@
 import assert from 'node:assert/strict';
 import { it } from 'node:test';
-import {
-  defineAdapter,
-  fromAdapter,
-  AdapterDefinitionError,
-} from '@jeffreynijs/test-builders-adapter';
-import {
-  checkAdapterConformance,
-  assertAdapterConformance,
-} from '@jeffreynijs/test-builders-adapter/testing';
+import { defineAdapter, fromAdapter, AdapterDefinitionError } from '@mimlet/adapter';
+import { checkAdapterConformance, assertAdapterConformance } from '@mimlet/adapter/testing';
 const standard = {
   '~standard': {
     version: 1,

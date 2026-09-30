@@ -1,15 +1,11 @@
 import Type from 'typebox';
 import { Type as Legacy } from '@sinclair/typebox';
-import {
-  fromTypeBox,
-  fromTypeBoxFactory,
-  typeBoxAdapter,
-} from '@jeffreynijs/test-builders-typebox';
+import { fromTypeBox, fromTypeBoxFactory, typeBoxAdapter } from '@mimlet/typebox';
 import {
   fromTypeBox as fromLegacy,
   fromTypeBoxFactory as legacyFactory,
   typeBoxAdapter as legacyAdapter,
-} from '@jeffreynijs/test-builders-typebox-legacy';
+} from '@mimlet/typebox-legacy';
 declare function expectType<T>(value: T): void;
 const Timestamp = Type.Codec(Type.Number())
   .Decode((value) => new Date(value))
@@ -94,8 +90,8 @@ referenced.buildValidated('user-1').id.toUpperCase();
 fromTypeBoxFactory(Ref, () => ({ id: 42 }), { context });
 
 // Explicit native variant selection never manufactures a partial discriminated-union value.
-import { fromTypeBoxVariant, typeBoxVariantAdapter } from '@jeffreynijs/test-builders-typebox';
-import { fromTypeBoxVariant as legacyVariant } from '@jeffreynijs/test-builders-typebox-legacy';
+import { fromTypeBoxVariant, typeBoxVariantAdapter } from '@mimlet/typebox';
+import { fromTypeBoxVariant as legacyVariant } from '@mimlet/typebox-legacy';
 const dogs = fromTypeBoxVariant(Pet, 1);
 expectType<{ kind: 'dog'; bark: boolean }>(dogs.build());
 dogs.with({ bark: true });

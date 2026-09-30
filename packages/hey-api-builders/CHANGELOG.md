@@ -4,7 +4,7 @@
 
 - Move the plugin into the neutral toolkit workspace without changing its npm name.
 - Generated builders now import the shared runtime, retain fluent property methods, and use the tested record/async/list contracts.
-- Consumers must install the matching `@jeffreynijs/test-builders` runtime. See `docs/hey-api-migration.md`.
+- Consumers must install the matching `mimlet` runtime. See `docs/hey-api-migration.md`.
 - This version is prepared source, not a publication announcement.
 
 All notable changes to this project are documented in this file.
@@ -76,8 +76,8 @@ model-name normalization for generated builder symbols. That implementation was
 tied to the older Hey API custom-plugin surface and is no longer maintained.
 
 Versions before 1.0 were prerelease iterations of that legacy design. See the
-[Git history](https://github.com/JeffreyNijs/hey-api-builders/tags) for their
+[Git history](https://github.com/JeffreyNijs/mimlet/tags) for their
 individual tags.
 
-[2.0.0]: https://github.com/JeffreyNijs/hey-api-builders/compare/1.0.2...v2.0.0
-[1.0.0 - 1.0.2]: https://github.com/JeffreyNijs/hey-api-builders/compare/1.0.0...1.0.2
+[2.0.0]: https://github.com/JeffreyNijs/mimlet/compare/1.0.2...v2.0.0
+[1.0.0 - 1.0.2]: https://github.com/JeffreyNijs/mimlet/compare/1.0.0...1.0.2

@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-graphql-compatibility",
+  "name": "mimlet-graphql-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,10 +7,10 @@
     "graphql": "17.0.2"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-graphql"
+    "adapter",
+    "graphql"
   ],
   "coveragePackages": [
-    "test-builders-graphql"
+    "graphql"
   ]
 }

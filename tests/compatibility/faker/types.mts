@@ -1,5 +1,5 @@
-import { fromFaker, fromFakerSchema, fakerAdapter } from '@jeffreynijs/test-builders-faker';
-import type { StandardSchemaV1 } from '@jeffreynijs/test-builders';
+import { fromFaker, fromFakerSchema, fakerAdapter } from '@mimlet/faker';
+import type { StandardSchemaV1 } from 'mimlet';
 declare function expectType<T>(value: T): void;
 const options = { fingerprint: 'people/v1' };
 const provider = fakerAdapter(options);

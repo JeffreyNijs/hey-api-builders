@@ -1,6 +1,6 @@
 # hey-api-builders
 
-[![CI](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffreyNijs/hey-api-builders/actions/workflows/ci.yml)
+[![CI](https://github.com/JeffreyNijs/mimlet/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffreyNijs/mimlet/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/hey-api-builders.svg)](https://www.npmjs.com/package/hey-api-builders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 
@@ -480,7 +480,7 @@ tree; they do not mock the plugin API.
 Bug reports should include the OpenAPI fragment, generated builder name, and
 exact versions of Node.js, `@hey-api/openapi-ts`, `@faker-js/faker`, and this
 package. Open an issue or pull request in the
-[GitHub repository](https://github.com/JeffreyNijs/hey-api-builders).
+[GitHub repository](https://github.com/JeffreyNijs/mimlet).
 
 ## Releases
 

@@ -12,7 +12,7 @@ preserved. Scalars retain `undefined`, big integers, NaN, infinities, and negati
 zero. RegExp source, flags, and nonnegative integer lastIndex are retained.
 
 ```ts
-import { captureFixture, restoreFixture, cloneFixture } from '@jeffreynijs/test-builders';
+import { captureFixture, restoreFixture, cloneFixture } from 'mimlet';
 
 const owner = { id: 'customer-1' };
 const fixture = { owner, orders: [{ customer: owner }] };
@@ -45,7 +45,7 @@ failures and unsupported values have separate error codes.
 ## Opt-in builder input cloning
 
 ```ts
-import { createBuilder, cloneFixture } from '@jeffreynijs/test-builders';
+import { createBuilder, cloneFixture } from 'mimlet';
 
 const shared = { tags: ['baseline'] };
 const fixtures = createBuilder(() => shared, { cloneInput: cloneFixture }).transform((value) => {
@@ -68,7 +68,7 @@ Use `fixtureValue(promise)` to distinguish promise-valued data from asynchronous
 execution:
 
 ```ts
-import { createBuilder, fixtureValue } from '@jeffreynijs/test-builders';
+import { createBuilder, fixtureValue } from 'mimlet';
 const promise = Promise.resolve(42);
 const fixtures = createBuilder(() => fixtureValue(promise));
 const data = fixtures.build();

@@ -1,7 +1,7 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
-import { graphqlAdapter } from '@jeffreynijs/test-builders-graphql';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
+import { graphqlAdapter } from '@mimlet/graphql';
 it('GraphQL variables satisfy the shared adapter contract with native defaults', async () => {
   const native = graphqlAdapter(
     'type Query { echo(value: Int!): Int! }',

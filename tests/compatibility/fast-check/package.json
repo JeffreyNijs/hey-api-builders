@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-fast-check-compatibility",
+  "name": "mimlet-fast-check-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,6 +7,6 @@
     "fast-check": "4.10.2"
   },
   "toolkitPackages": [
-    "test-builders-fast-check"
+    "fast-check"
   ]
 }

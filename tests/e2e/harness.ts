@@ -62,9 +62,7 @@ async function compileGeneratedProject(
 
   const compilerOptions: ts.CompilerOptions = {
     paths: {
-      '@jeffreynijs/test-builders': [
-        join(workspaceDirectory, 'packages/test-builders/dist/index.d.ts'),
-      ],
+      mimlet: [join(workspaceDirectory, 'packages/core/dist/index.d.ts')],
     },
     allowSyntheticDefaultImports: true,
     esModuleInterop: true,
@@ -149,12 +147,12 @@ async function createGeneratedModuleLoader(): Promise<
   const [fakerModule, zodModule, builderModule] = await Promise.all([
     import('@faker-js/faker'),
     import('zod'),
-    import('../../packages/test-builders/src/index.js'),
+    import('../../packages/core/src/index.js'),
   ]);
   const externalModules = new Map<string, unknown>([
     ['@faker-js/faker', fakerModule],
     ['zod', zodModule],
-    ['@jeffreynijs/test-builders', builderModule],
+    ['mimlet', builderModule],
   ]);
   const cache = new Map<string, CommonJsModule>();
 

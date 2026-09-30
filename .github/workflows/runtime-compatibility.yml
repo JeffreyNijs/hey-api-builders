@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
   workflow_dispatch:
   workflow_call:
 
@@ -63,8 +62,8 @@ jobs:
         run: npm install --prefix "$RUNNER_TEMP/minimum-ts" --ignore-scripts --no-audit --no-fund typescript@5.8.3
       - name: Compile the core and all its negative declaration tests
         run: |
-          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/test-builders/tsconfig.json --extendedDiagnostics
-          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/test-builders/test/tsconfig.json
+          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/core/tsconfig.json --extendedDiagnostics
+          node "$RUNNER_TEMP/minimum-ts/node_modules/typescript/bin/tsc" -p packages/core/test/tsconfig.json
           node scripts/test-core.mjs
       - name: Exercise packed consumers with the same minimum compiler
         run: |

@@ -1,0 +1,67 @@
+name: Mimlet website
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mimlet-website-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Docs, Markdown and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DOCS_SOURCE_REF: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level high
+      - run: pnpm --dir apps/docs type-check
+      - run: pnpm docs:build
+      - run: pnpm --dir apps/docs exec playwright install --with-deps chromium
+      - run: pnpm docs:test
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: mimlet-website-review
+          path: |
+            apps/docs/.vitepress/dist/
+            apps/docs/test-results/
+          retention-days: 7
+          if-no-files-found: error
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        if: github.event_name != 'pull_request' && github.repository == 'JeffreyNijs/mimlet' && github.ref == 'refs/heads/main'
+        with:
+          path: apps/docs/.vitepress/dist
+
+  deploy:
+    name: Deploy merged Mimlet site
+    needs: build
+    if: github.event_name != 'pull_request' && github.repository == 'JeffreyNijs/mimlet' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        id: deployment

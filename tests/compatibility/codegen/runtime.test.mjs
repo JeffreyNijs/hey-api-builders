@@ -11,12 +11,9 @@ import {
   writeGenerated,
   selfContainedRuntime,
   CodegenError,
-} from '@jeffreynijs/test-builders-codegen';
+} from '@mimlet/codegen';
 const root = process.cwd();
-const cli = join(
-  dirname(fileURLToPath(import.meta.resolve('@jeffreynijs/test-builders-codegen'))),
-  'cli.js'
-);
+const cli = join(dirname(fileURLToPath(import.meta.resolve('@mimlet/codegen'))), 'cli.js');
 const target = {
   name: 'UserBuilder',
   source: { kind: 'factory', module: '../source.js', export: 'makeUser' },
@@ -140,7 +137,7 @@ describe('standalone builder emission', () => {
       await writeFile(
         join(directory, 'source.ts'),
         `
-import { createBuilder } from '@jeffreynijs/test-builders';
+import { createBuilder } from 'mimlet';
 export const makeUser = (id: string) => ({ id, name: '' });
 export const configured = createBuilder(makeUser).with({ name: 'configured' });
 export const Schema = { '~standard': { version: 1 as const, vendor: 'test', types: undefined as undefined | { input: { id: string; name: string }; output: { id: number; name: string } }, validate: (value: unknown) => ({ value: { ...(value as {name:string}), id: Number((value as {id:string}).id) } }) } };

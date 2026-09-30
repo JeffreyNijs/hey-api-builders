@@ -1,6 +1,6 @@
 ---
-'@jeffreynijs/test-builders': patch
-'@jeffreynijs/test-builders-adapter': patch
+'mimlet': patch
+'@mimlet/adapter': patch
 ---
 
 Validation failures now expose a stable `VALIDATION_FAILED` code and a generic

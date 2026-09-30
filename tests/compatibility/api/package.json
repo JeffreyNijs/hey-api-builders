@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-api-compatibility",
+  "name": "mimlet-api-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,10 +9,10 @@
     "json-schema-faker": "0.6.3"
   },
   "toolkitPackages": [
-    "test-builders-json-schema",
-    "test-builders-api"
+    "json-schema",
+    "api"
   ],
   "coveragePackages": [
-    "test-builders-api"
+    "api"
   ]
 }

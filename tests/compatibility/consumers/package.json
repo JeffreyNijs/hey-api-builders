@@ -1,11 +1,11 @@
 {
-  "name": "test-builders-consumers-compatibility",
+  "name": "mimlet-consumers-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "dependencies": {},
   "toolkitPackages": [
-    "test-builders-consumers"
+    "consumers"
   ],
   "compilerLibs": [
     "ES2022",

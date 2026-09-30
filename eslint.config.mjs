@@ -71,6 +71,8 @@ export default [
   {
     ignores: [
       '**/.turbo/**',
+      'apps/docs/.generated/**',
+      'apps/docs/.vitepress/cache/**',
       'coverage/**',
       '**/dist/**',
       '**/node_modules/**',

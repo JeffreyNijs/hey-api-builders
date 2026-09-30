@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-effect-compatibility",
+  "name": "mimlet-effect-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,14 +7,14 @@
     "effect": "3.22.2"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-effect"
+    "adapter",
+    "effect"
   ],
   "compilerLibs": [
     "ES2022",
     "DOM"
   ],
   "coveragePackages": [
-    "test-builders-effect"
+    "effect"
   ]
 }

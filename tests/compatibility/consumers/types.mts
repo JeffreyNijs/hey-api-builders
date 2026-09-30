@@ -1,8 +1,4 @@
-import {
-  fixtureLoader,
-  jsonResponseResolver,
-  persistFixtureBatch,
-} from '@jeffreynijs/test-builders-consumers';
+import { fixtureLoader, jsonResponseResolver, persistFixtureBatch } from '@mimlet/consumers';
 declare function expectType<T>(value: T): void;
 const loader = fixtureLoader('user', (context: { id: string }) => ({ id: context.id, age: 42 }));
 expectType<Promise<{ user: { id: string; age: number } }>>(loader({ id: 'one' }));

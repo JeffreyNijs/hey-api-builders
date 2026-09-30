@@ -3,11 +3,11 @@ import { readFile, readdir, lstat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const repository = 'JeffreyNijs/hey-api-builders';
+export const repository = 'JeffreyNijs/mimlet';
 export const versionPattern =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const internalName = (name) =>
-  name === 'hey-api-builders' || name.startsWith('@jeffreynijs/test-builders');
+  name === 'hey-api-builders' || name === 'mimlet' || name.startsWith('@mimlet/');
 const json = async (path) => JSON.parse(await readFile(path, 'utf8'));
 const fail = (message) => {
   throw new Error(`Workspace: ${message}`);
@@ -21,13 +21,17 @@ export async function readWorkspace(root = resolve(dirname(fileURLToPath(import.
     .sort((a, b) => a.name.localeCompare(b.name));
   const packages = [];
   for (const entry of entries) {
-    if (!/^(?:hey-api-builders|test-builders(?:-[a-z0-9]+)*)$/.test(entry.name))
-      fail('invalid package directory');
+    if (!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(entry.name)) fail('invalid package directory');
     const directory = join(root, 'packages', entry.name);
     const file = join(directory, 'package.json');
     if ((await lstat(file)).isSymbolicLink()) fail('package manifests must not be symbolic links');
     const pkg = await json(file);
-    const expected = entry.name === 'hey-api-builders' ? entry.name : `@jeffreynijs/${entry.name}`;
+    const expected =
+      entry.name === 'hey-api-builders'
+        ? entry.name
+        : entry.name === 'core'
+          ? 'mimlet'
+          : `@mimlet/${entry.name}`;
     if (pkg.name !== expected || packages.some((item) => item.manifest.name === pkg.name))
       fail('package name/directory mismatch');
     if (!versionPattern.test(pkg.version ?? '')) fail(`invalid version for ${pkg.name}`);
@@ -82,7 +86,7 @@ export async function readWorkspace(root = resolve(dirname(fileURLToPath(import.
     packages.push({ directory, manifest: pkg });
   }
   const names = new Map(packages.map((item) => [item.manifest.name, item]));
-  if (!names.has('@jeffreynijs/test-builders') || !names.has('hey-api-builders'))
+  if (!names.has('mimlet') || !names.has('hey-api-builders'))
     fail('core and integration packages are required');
   for (const item of [{ directory: root, manifest }, ...packages]) {
     for (const kind of [
@@ -103,7 +107,7 @@ export async function readWorkspace(root = resolve(dirname(fileURLToPath(import.
       }
     }
   }
-  const core = names.get('@jeffreynijs/test-builders').manifest;
+  const core = names.get('mimlet').manifest;
   if (
     Object.keys(core.dependencies ?? {}).length ||
     Object.keys(core.peerDependencies ?? {}).length

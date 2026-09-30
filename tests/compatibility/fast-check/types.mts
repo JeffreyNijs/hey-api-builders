@@ -1,10 +1,5 @@
 import * as fc from 'fast-check';
-import {
-  createScenario,
-  createSession,
-  createBuilder,
-  type StandardSchemaV1,
-} from '@jeffreynijs/test-builders';
+import { createScenario, createSession, createBuilder, type StandardSchemaV1 } from 'mimlet';
 import {
   fromArbitrary,
   fromSchemaArbitrary,
@@ -14,7 +9,7 @@ import {
   checkFixtureProperty,
   checkFixturePropertyAsync,
   replayFixtureProperty,
-} from '@jeffreynijs/test-builders-fast-check';
+} from '@mimlet/fast-check';
 declare function expectType<T>(value: T): void;
 const identity = { fingerprint: 'fixture/v1', provider: 'test@1' };
 const session = createSession({ ...identity, seed: 1 });

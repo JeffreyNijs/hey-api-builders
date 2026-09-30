@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-faker-compatibility",
+  "name": "mimlet-faker-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,6 +7,6 @@
     "@faker-js/faker": "10.5.0"
   },
   "toolkitPackages": [
-    "test-builders-faker"
+    "faker"
   ]
 }

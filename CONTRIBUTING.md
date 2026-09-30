@@ -12,7 +12,7 @@ For everyday changes, use the typed source suites:
 ```sh
 pnpm test:unit
 pnpm test:watch
-pnpm --filter @jeffreynijs/test-builders-protobuf test:unit
+pnpm --filter @mimlet/protobuf test:unit
 pnpm type-check
 ```
 
@@ -55,7 +55,7 @@ separate checks.
 ## New adapters and providers
 
 Declare the original schema, standards handle, actual capabilities and limitations
-through the [adapter SDK](packages/test-builders-adapter/README.md). A validator is
+through the [adapter SDK](packages/adapter/README.md). A validator is
 not automatically a generator, field inspector or shrinker. Preserve input/output
 codec semantics and native failure causes. Test unsupported conversions explicitly.
 Custom executable providers must be versioned for replay and documented as trusted.
@@ -73,6 +73,14 @@ Schema-sampling budgets do not justify silently dropping constraints. A failing
 property is useful evidence; shrinking must keep fixed overrides and relationships.
 
 ## Documentation and releases
+
+Use `pnpm docs:dev` for the Mimlet site and `pnpm docs:build` / `pnpm docs:preview`
+to review its static output at `http://127.0.0.1:4174/mimlet/`. Edit canonical
+Markdown in `docs/`, package references in their READMEs, and tested examples in
+`examples/recipes/`; the private docs app generates both HTML and clean Markdown.
+Run `pnpm docs:test` for navigation, search, accessibility and download checks.
+The website and its optional agent skill do not add dependencies to published packages.
+See the [website launch guide](docs/mimlet-launch.md) for the after-merge rollout.
 
 Update the root package index, package guide, compatibility contract and relevant
 focused guide when changing public behavior. Local Markdown file links and the

@@ -2,8 +2,8 @@ import { it } from 'node:test';
 import { z } from 'zod';
 import { type } from 'arktype';
 import * as v from 'valibot';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
 
 for (const [vendor, schema] of [
   ['Zod', z.string().transform(Number)],

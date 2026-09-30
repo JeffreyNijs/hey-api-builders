@@ -1,7 +1,7 @@
 # Hey API Builders
 
 Hey API integration for the schema-independent Mimlet toolkit. This
-`3.0.0-alpha.0` line is a major-version migration on the `next` channel.
+`3.0.0-alpha.1` line is a major-version migration on the `next` channel.
 The stable v2 line remains available separately.
 
 The plugin discovers generated model, request and response factories from

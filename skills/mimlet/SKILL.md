@@ -11,6 +11,13 @@ the user's chosen library. The current alpha is
 `@mimlet/*@0.1.0-alpha.1` on npm's `next` channel. Inspect the installed versions
 and use the matching documented APIs.
 
+Treat `fluent()` and `mimlet doctor`/`inspect` as source previews until the installed
+release includes them. Check `docs/fluent-builders.md` and `docs/cli-diagnostics.md`;
+do not suggest these commands for alpha.1. For available JSON diagnostics, check
+the format/version and branch on codes, not human-readable messages. A successful
+dependency check or schema inspection does not prove an app works or a schema has
+valid generated values.
+
 1. Inspect the project's package manifest, schema and nearby tests. Choose the
    smallest relevant package: `@mimlet/core` for the core, `@mimlet/<adapter>` for an
    optional integration, or `hey-api-builders` for its existing generator plugin.

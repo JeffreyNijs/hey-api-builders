@@ -56,8 +56,8 @@ Input patches precede transformations and native validation. Validators may appl
 their own transformations; the builder does not silently repair explicit overrides.
 The pinned Zod Standard Schema entry can probe an async refinement synchronously
 before running it asynchronously. For effectful refinements that must execute
-once, the next-release `@mimlet/zod` package provides `fromZodAsync` and
-`fromZodFactoryAsync`, which use native async parsing directly. Existing releases
+once, the published `@mimlet/zod` package provides `fromZodAsync` and
+`fromZodFactoryAsync`, which use native async parsing directly. Other Standard Schema integrations
 can provide an explicit `safeParseAsync`-based Standard Schema wrapper. Calling
 one standards entry is not a promise about a vendor's internal callback count.
 
@@ -75,3 +75,21 @@ A seed reproduces a supported configuration and provider version, not arbitrary
 future dependency releases. Named-stream isolation applies where a provider uses
 those scopes, not to every field of a third-party generator. Fixture capture is
 available when the actual value must survive dependency changes.
+
+## Version ranges proposed by the stabilization branch
+
+The published alpha.1 keeps its original exact peer pins. The next release widens
+Zod to `>=4.4.3 <=4.6.5` and legacy TypeBox to `>=0.34.48 <=0.34.52`.
+`tests/vendor-versions.json` pins every currently published version in those
+intervals by tarball integrity. `pnpm test:vendors` reuses the full native
+conformance, negative-type and coverage suites for each version in isolated
+installations, including a production dependency audit. Future versions require
+a new reviewed matrix entry.
+
+Modern TypeBox remains exactly `1.3.34`. Probing 1.3.30–1.3.33 found that a
+property named `a/b~c` is reported as `/a/b~c` rather than the unambiguous JSON
+Pointer `/a~1b~0c`. The existing path-preservation regression fails on those
+versions; the adapter does not guess a repair. ArkType remains pinned to 2.2.5.
+
+Zod's provider metadata now records the loaded vendor version, so a range upgrade
+cannot silently reuse a replay identity that describes a different Zod release.

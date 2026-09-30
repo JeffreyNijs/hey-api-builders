@@ -36,7 +36,8 @@ export function effectAdapter<A, I>(
     onExcessProperty: 'error' as const,
     ...options.parseOptions,
   });
-  const standard = Schema.standardSchemaV1(source, parseOptions);
+  // Publish the shared structural contract, not Effect's transitive CJS type intersection.
+  const standard: StandardSchemaV1<I, A> = Schema.standardSchemaV1(source, parseOptions);
   const decode = Schema.decodeUnknownSync(source, parseOptions);
   const decodeAsync = Schema.decodeUnknownPromise(source, parseOptions);
   const encode = Schema.encodeSync(source, parseOptions);

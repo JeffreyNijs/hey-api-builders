@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
   <DefaultTheme.Layout>
     <template #doc-before>
       <div v-if="frontmatter.layout !== 'page'" class="reading-tools">
-        <span>Source preview · prepared alpha</span>
+        <span>Published alpha · next channel</span>
         <a :href="markdown">Read as Markdown <span aria-hidden="true">↗</span></a>
       </div>
     </template>

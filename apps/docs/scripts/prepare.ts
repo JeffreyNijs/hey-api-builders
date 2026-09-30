@@ -127,7 +127,7 @@ export async function prepare(): Promise<void> {
     `---\nlayout: page\nsidebar: false\ntitle: ${identity.name} — ${identity.tagline}\ndescription: ${identity.description}\n---\n\n<MimletHome />\n`
   );
   const overview =
-    `# ${identity.name}\n\n${identity.tagline}\n\n${identity.description}\n\n${identity.introduction}\n\nStatus: source preview, prepared alpha ${version}. New npm names are unpublished.\n\n[Get started](${base}guide/getting-started.md) · [Choose an adapter](${base}guide/adapters.md)\n\n` +
+    `# ${identity.name}\n\n${identity.tagline}\n\n${identity.description}\n\n${identity.introduction}\n\nStatus: published alpha ${identity.releaseVersion}, available on npm’s next channel.\n\n[Get started](${base}guide/getting-started.md) · [Choose an adapter](${base}guide/adapters.md)\n\n` +
     stories
       .map(
         (story) =>
@@ -139,7 +139,11 @@ export async function prepare(): Promise<void> {
     `\n\n[Agent guide](${base}guide/agents.md)\n\n## A working example\n\n\`\`\`ts\n${hero}\n\`\`\`\n`;
   await writeChanged(resolve(generated, 'public/index.md'), overview);
   const guides = [
-    ['Getting started', 'getting-started', 'Source-preview setup and an executable first fixture'],
+    [
+      'Getting started',
+      'getting-started',
+      'Install the alpha and build an executable first fixture',
+    ],
     [
       'Adapter selection',
       'adapters',
@@ -161,7 +165,7 @@ export async function prepare(): Promise<void> {
   ];
   await writeChanged(
     resolve(generated, 'public/llms.txt'),
-    `# Mimlet\n\n> ${identity.description} A modular schema-aware test-data toolkit with a dependency-free core.\n\nSource preview: prepared ${version}; new npm names are not published. Use the source setup in Getting started. Generation is capability-specific; arbitrary validators may require a factory.\n\n## Guides\n\n` +
+    `# Mimlet\n\n> ${identity.description} A modular schema-aware test-data toolkit with a dependency-free core.\n\nPublished alpha: ${identity.releaseVersion}, available on npm’s next channel. Install @mimlet/core and only the adapters you need; see Getting started for matching versions. Generation is capability-specific; arbitrary validators may require a factory.\n\n## Guides\n\n` +
       guides
         .map(
           ([title, slug, description]) => `- [${title}](${base}guide/${slug}.md): ${description}`

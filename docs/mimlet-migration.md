@@ -1,9 +1,9 @@
 # From Test Builders to Mimlet
 
 Mimlet is the same schema-independent toolkit under a new product identity.
-The core is `@mimlet/core`; the optional packages use `@mimlet/*`. These names describe
-the prepared, unpublished alpha. Package ownership and publication are separate
-launch steps; an install command is not evidence that a package is available.
+The core is `@mimlet/core`; the optional packages use `@mimlet/*`. The first alpha is published as
+`@mimlet/*@0.1.0-alpha.0` and `hey-api-builders@3.0.0-alpha.0` on npm's `next` channel.
+Use matching versions when updating imports and generated clients.
 
 The earlier source preview used the unscoped `mimlet` package name. npm rejected
 its first publication as too similar to existing package names, so the core now
@@ -21,7 +21,7 @@ from `@mimlet/codegen`. The product, repository and website remain Mimlet.
 
 Update source imports and dependencies together. Regenerate builders with the
 renamed CLI or Hey API plugin so emitted imports point to `@mimlet/core` and `@mimlet/*`.
-The Hey API plugin name, generated filename, configuration API and prepared
+The Hey API plugin name, generated filename, configuration API and alpha
 `3.0.0-alpha.0` version remain unchanged. Its default external runtime import is
 now `@mimlet/core`. Existing published Hey API v2 users should follow the separate
 [Hey API migration guide](hey-api-migration.md).

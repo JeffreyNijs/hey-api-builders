@@ -22,7 +22,7 @@ playground, package-aware release tooling and cross-runtime acceptance.
 Complete TypeBox union selection now constructs a branch before applying patches
 while retaining the original union's codecs and validation. The original emitter
 has been migrated to the shared runtime. Neither change alters already-published
-Hey API v2 packages. New source versions are unpublished alpha versions.
+Hey API v2 packages. The first coordinated alpha is published on npm’s `next` channel.
 
 The [acceptance record](acceptance.md) maps each workstream to implementation and
 evidence. [Compatibility](compatibility.md) states exact version/capability boundaries;

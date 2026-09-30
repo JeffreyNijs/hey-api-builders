@@ -3,7 +3,7 @@
 The toolkit completion and branding PRs (#21 and #22) have merged. The repository
 is now `JeffreyNijs/mimlet`, and the public site is live at
 <https://jeffreynijs.github.io/mimlet/>. The project controls the `@mimlet` npm
-organization. Initial package publication is still pending; the core uses
+organization. The first alpha is published on npm's `next` channel; the core uses
 `@mimlet/core` after npm rejected the unscoped `mimlet` name.
 
 ## Review without publishing
@@ -49,9 +49,9 @@ repository move:
 5. Verify the homepage, a deep documentation URL, search, dark/mobile layouts,
    `llms.txt`, a Markdown alternate, favicon and social image at
    `https://jeffreynijs.github.io/mimlet/`. Update the repository homepage to that URL.
-6. Update the source-preview clone command to the renamed repository's `main`
-   branch. Keep the unpublished-package notice and local-tarball workflow until
-   actual npm ownership, trusted publishing and publication are verified.
+6. Keep installation examples tied to a verified published version. The source
+   workflow remains available for contributors; package metadata alone is not
+   evidence that a future release has reached npm.
 
 The checked-in GitHub links use `JeffreyNijs/mimlet` and default to `main`.
 `DOCS_SOURCE_REF` can select the reviewed source revision. Pages project URLs

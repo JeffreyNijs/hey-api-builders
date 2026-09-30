@@ -1,0 +1,56 @@
+/** Loopback-only static preview. VitePress 1.6 preview ignores --host and caches the file inventory. */
+import { createServer } from 'node:http';
+import { readFile, realpath } from 'node:fs/promises';
+import { extname, isAbsolute, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { base } from '../content.ts';
+
+const directory = await realpath(fileURLToPath(new URL('../.vitepress/dist/', import.meta.url)));
+const types: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json',
+  '.md': 'text/markdown; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.woff2': 'font/woff2',
+  '.xml': 'application/xml; charset=utf-8',
+};
+const server = createServer(async (request, response) => {
+  response.setHeader('Cache-Control', 'no-store');
+  response.setHeader('X-Content-Type-Options', 'nosniff');
+  if (!['GET', 'HEAD'].includes(request.method ?? '')) {
+    response.writeHead(405, { Allow: 'GET, HEAD' }).end();
+    return;
+  }
+  try {
+    const pathname = new URL(request.url ?? '/', 'http://127.0.0.1').pathname;
+    if (pathname === '/' || pathname === base.slice(0, -1)) {
+      response.writeHead(302, { Location: base }).end();
+      return;
+    }
+    if (!pathname.startsWith(base)) {
+      throw new Error('Outside site');
+    }
+    const route = decodeURIComponent(pathname.slice(base.length)) || 'index.html';
+    if (route.includes('\\') || route.includes('\0') || route.split('/').includes('..')) {
+      throw new Error('Invalid path');
+    }
+    const file = await realpath(resolve(directory, route));
+    const inside = relative(directory, file);
+    if (isAbsolute(inside) || inside.startsWith('..')) {
+      throw new Error('Outside site');
+    }
+    const body = await readFile(file);
+    response.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' });
+    response.end(request.method === 'HEAD' ? undefined : body);
+  } catch {
+    response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
+  }
+});
+server.listen(4174, '127.0.0.1', () => console.log(`Mimlet preview: http://127.0.0.1:4174${base}`));
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.once(signal, () => server.close());
+}

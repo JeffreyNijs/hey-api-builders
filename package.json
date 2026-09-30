@@ -22,7 +22,9 @@
       "postcss": "8.5.26",
       "rollup": "4.62.4",
       "vite@7": "7.3.5",
-      "js-yaml@4": "4.3.2"
+      "js-yaml@4": "4.3.2",
+      "vitepress>vite": "6.4.3",
+      "brace-expansion@5": "5.0.12"
     }
   },
   "devDependencies": {
@@ -89,6 +91,10 @@
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "audit:production": "node scripts/audit-production.ts",
-    "brand:render": "node scripts/render-brand.ts"
+    "brand:render": "node scripts/render-brand.ts",
+    "docs:dev": "pnpm --dir apps/docs docs:dev",
+    "docs:build": "pnpm --dir apps/docs docs:build",
+    "docs:preview": "pnpm --dir apps/docs docs:preview",
+    "docs:test": "pnpm --dir apps/docs test"
   }
 }

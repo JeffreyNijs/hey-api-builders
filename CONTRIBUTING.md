@@ -74,6 +74,14 @@ property is useful evidence; shrinking must keep fixed overrides and relationshi
 
 ## Documentation and releases
 
+Use `pnpm docs:dev` for the Mimlet site and `pnpm docs:build` / `pnpm docs:preview`
+to review its static output at `http://127.0.0.1:4174/mimlet/`. Edit canonical
+Markdown in `docs/`, package references in their READMEs, and tested examples in
+`examples/recipes/`; the private docs app generates both HTML and clean Markdown.
+Run `pnpm docs:test` for navigation, search, accessibility and download checks.
+The website and its optional agent skill do not add dependencies to published packages.
+See the [website launch guide](docs/mimlet-launch.md) for the after-merge rollout.
+
 Update the root package index, package guide, compatibility contract and relevant
 focused guide when changing public behavior. Local Markdown file links and the
 package index are checked automatically. Anchor validation and external-link health

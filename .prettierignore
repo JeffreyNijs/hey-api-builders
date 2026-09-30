@@ -6,3 +6,7 @@ test-results
 .idea
 
 .turbo
+
+# Generated documentation
+apps/docs/.generated/
+apps/docs/.vitepress/cache/

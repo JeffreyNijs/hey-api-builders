@@ -25,6 +25,11 @@ An optional [Mimlet skill](../skills/mimlet/SKILL.md) packages this workflow. In
 it only when the user requests it; it does not change project dependencies or install
 global tools automatically.
 
+The next-release source includes dedicated [Zod and ArkType recipes](zod-and-arktype.md).
+Use their typed factory helpers when input cannot be generated from JSON metadata;
+choose the explicit Zod async helpers for async refinements. These two packages
+are source previews, so check availability before adding a registry dependency.
+
 ## Build a fixture with native validation
 
 <!-- recipe:hero -->

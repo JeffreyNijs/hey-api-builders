@@ -35,6 +35,11 @@ In a Mimlet source checkout, read `docs/adapters.md`, `docs/agents.md`, and the
 matching package README. `examples/recipes/` contains the actual typed examples;
 `pnpm test:examples` compiles and executes them against isolated tarballs.
 
+The next-release Zod/ArkType adapters are documented in `docs/zod-and-arktype.md`.
+Check their publication status before installing them. Zod schemas with async
+refinements require `fromZodAsync` or `fromZodFactoryAsync`; an async factory alone
+does not select the native async validator.
+
 Use [the agent guide](https://jeffreynijs.github.io/mimlet/guide/agents.md)
 or the [documentation index](https://jeffreynijs.github.io/mimlet/llms.txt). If the
 site is not live or does not match the installed version, use the source checkout

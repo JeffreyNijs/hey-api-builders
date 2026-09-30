@@ -1,6 +1,6 @@
 # Implementation and acceptance record
 
-This records the prepared alpha's implementation boundaries. It supplements the
+This records the alpha's implementation boundaries. It supplements the
 original [product plan](product-roadmap.md); it does not redefine every schema or
 vendor version as supported, claim a stable release, or substitute old CI evidence
 for verification of a new commit. The authoritative result for a PR is the workflow

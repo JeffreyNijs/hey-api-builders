@@ -1,9 +1,11 @@
 # Releases and recovery
 
 Preparing the repository, merging a PR and publishing packages are separate
-operations. This source prepares toolkit `0.1.0-alpha.0` and Hey API integration
-`3.0.0-alpha.0`; neither the version fields nor a green test run prove npm
-publication, ownership or trusted-publisher configuration.
+operations. The first published train is toolkit `0.1.0-alpha.0` and Hey API integration
+`3.0.0-alpha.0`, available on npm's `next` channel. The
+[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.0)
+records its source commit and original package artifacts. For later trains,
+version fields and green tests alone do not prove registry publication.
 
 ## Release train
 
@@ -95,12 +97,10 @@ that the release commit belongs to `main`, runs acceptance, audits dependencies,
 prepares the verified artifacts and compares the tag/prerelease flag to the manifest.
 The scoped train and Hey API integration must use the same prerelease/stable channel.
 
-Before the first actual publication, the maintainer must establish ownership of
-each npm name, configure the matching trusted publisher and the intended
-`npm-publish` environment approvals, and confirm organizational release policy.
-These are external account controls, not repository files, and this implementation
-has not performed or verified those account changes. Do not add long-lived npm
-credentials to source or generated artifacts to avoid the setup.
+Before each publication, confirm ownership of each npm name, the matching trusted
+publisher, the intended `npm-publish` environment policy and the release source.
+These external account controls can drift independently of the repository.
+Keep long-lived npm credentials out of source and generated artifacts.
 
 The publish job receives the verified artifact inventory rather than rebuilding
 source with publishing credentials. It verifies archive/file identities, sizes,
@@ -129,6 +129,6 @@ may deprecate a bad version and adjust distribution tags through their normal
 reviewed npm process. Do not automatically unpublish packages or rewrite Git
 history as a rollback. Never mix a generated v3 client with an incompatible core.
 
-This guide describes the implemented release process. It does not report a release,
-claim that package names have been reserved, or authorize publishing unreviewed
-artifacts. See [acceptance](acceptance.md) and [security](../SECURITY.md).
+This guide describes the release process; the linked release and registry metadata
+provide publication evidence. A published alpha does not authorize releasing
+unreviewed future artifacts. See [acceptance](acceptance.md) and [security](../SECURITY.md).

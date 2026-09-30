@@ -2,7 +2,8 @@ export const identity = {
   name: 'Mimlet',
   tagline: 'Test data, with character.',
   description: 'Typed fixtures. Coherent scenarios. Failures you can replay.',
-  releaseStatus: 'Source preview',
+  releaseStatus: 'Published alpha',
+  releaseVersion: '0.1.0-alpha.0',
   introduction:
     'Give your tests a little life. Build fixtures that fit your schemas, keep related data connected, and bring a failing case back on cue.',
 };

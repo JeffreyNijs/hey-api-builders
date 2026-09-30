@@ -96,7 +96,7 @@ test('every documentation route and its Markdown alternate resolve below /mimlet
   const index = await request.get('llms.txt');
   expect(index.status()).toBe(200);
   const text = await index.text();
-  expect(text).toContain('new npm names are not published');
+  expect(text).toContain('Published alpha: 0.1.0-alpha.0');
   for (const name of manifest.packages) {
     expect(text).toContain(`[${name}]`);
   }
@@ -117,7 +117,7 @@ test('desktop, mobile and dark layouts remain usable and accessible', async ({ p
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
     await page.goto('./');
     await expect(page.getByRole('heading', { name: 'Test data, with character.' })).toBeVisible();
-    await expect(page.getByText('New npm packages are not published yet.')).toBeVisible();
+    await expect(page.getByText('Available on npm’s next channel.')).toBeVisible();
     expect(
       await page.evaluate(
         () => globalThis.document.documentElement.scrollWidth <= globalThis.innerWidth

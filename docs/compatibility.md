@@ -1,6 +1,6 @@
 # Compatibility contract
 
-This describes the prepared alpha source. A supported interface, a native parser,
+This describes the first published alpha and its tested source contracts. A supported interface, a native parser,
 an automatic generator and a shrinker are different capabilities. Native package
 versions below are the **exact conformance targets**, not inferred ranges. Fixture
 manifests and lockfiles under `tests/compatibility` are the executable source of truth.

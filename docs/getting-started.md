@@ -7,26 +7,22 @@ Mimlet's core has no runtime dependencies. Schema adapters, generation engines,
 protocols, code generation and the local playground are independently installable
 packages. [Choose an adapter](adapters.md) for the capabilities you need.
 
-## Source preview
+## Install the alpha
 
-The source prepares `@mimlet/core` and `@mimlet/*` at `0.1.0-alpha.0`, alongside
-`hey-api-builders@3.0.0-alpha.0`. The new packages are **not published yet**. The project controls the `@mimlet`
-organization; package publication is still pending.
+The coordinated alpha is available on npm's `next` channel: `@mimlet/*` packages
+at `0.1.0-alpha.0`, alongside `hey-api-builders@3.0.0-alpha.0`. Pin matching versions
+when reproducing fixtures or generated clients. The existing Hey API `latest` tag
+remains on v2.
 
-During review, use Node **22.18 or newer** and the repository's pinned pnpm:
+For the TypeBox example below, use Node **22.18 or newer** and install:
 
 ```sh
-git clone https://github.com/JeffreyNijs/mimlet.git
-cd mimlet
-corepack pnpm install --frozen-lockfile
-corepack pnpm build
-corepack pnpm test:examples
-corepack pnpm docs:dev
+npm install --save-dev @mimlet/core@0.1.0-alpha.0 @mimlet/typebox@0.1.0-alpha.0 typebox@1.3.34
 ```
 
-The example test command installs actual toolkit tarballs in a temporary consumer,
-compiles the recipes, and runs them. It does not publish anything. If Corepack is
-not available in your Node installation, use pnpm **10.34.5** directly.
+For a plain factory, only `@mimlet/core` is needed. The `mimlet` executable comes
+from `@mimlet/codegen`; the core package does not install a CLI. See
+[compatibility](compatibility.md) for tested runtime and schema-library versions.
 
 ## Your first fixture
 
@@ -40,7 +36,23 @@ schema input; `.buildValidated()` validates that input and returns decoded outpu
 Those types can differ when your schema has a codec or transform. Use the async
 methods when validation or the factory is asynchronous.
 
-## Try an isolated consumer
+## Build from source
+
+Use the repository's pinned pnpm toolchain:
+
+```sh
+git clone https://github.com/JeffreyNijs/mimlet.git
+cd mimlet
+corepack pnpm install --frozen-lockfile
+corepack pnpm build
+corepack pnpm test:examples
+corepack pnpm docs:dev
+```
+
+The example command installs toolkit tarballs in a temporary consumer, compiles
+the recipes, and runs them. If Corepack is unavailable, use pnpm **10.34.5** directly.
+
+## Try an isolated source consumer
 
 From a clean, committed Mimlet checkout, `pnpm release:prepare` creates the verified
 tarballs and their digest manifest in `release/`. The command requires a clean
@@ -55,8 +67,7 @@ npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.0.tgz /ab
 ```
 
 Replace the absolute paths with the checkout you built. Add only the adapters you
-need, using the matching release train. This local workflow works before registry
-publication; public install instructions will change only after a verified release.
+need, using the matching release train. This local workflow lets you test source changes before publishing a new version.
 
 ## When generation needs your help
 

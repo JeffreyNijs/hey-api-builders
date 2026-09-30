@@ -132,3 +132,13 @@ The Hey API emitter and standalone generated classes now use this runtime. Sessi
 ## Verification
 
 Run `pnpm test:core` for compilation, negative type tests, runtime tests, and core-specific coverage thresholds. `pnpm validate` additionally runs formatting, lint, the real Zod and Hey API integration suites, TypeBox tarball consumer checks, and package checks.
+
+### Validation diagnostics
+
+`BuilderValidationError` has the stable code `VALIDATION_FAILED` and the generic
+message `Schema validation failed`. Native messages may include private fixture
+values, so they are not copied into the error message, stack or enumerable fields.
+The original issue objects and paths remain available through the non-enumerable
+`error.issues` property for deliberate inspection. Applications displaying native
+diagnostics should use that property explicitly. Exceptions thrown directly by
+trusted factories or validator callbacks retain their original behavior.

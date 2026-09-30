@@ -253,7 +253,8 @@ describe('Standard Schema validation', () => {
       () => base.buildValidated(),
       (error) => {
         assert.equal(error.name, 'BuilderValidationError');
-        assert.equal(error.message, 'invalid age');
+        assert.equal(error.message, 'Schema validation failed');
+        assert.equal(error.code, 'VALIDATION_FAILED');
         assert.equal(error.issues, issues);
         return true;
       }
@@ -368,3 +369,26 @@ describe('Standard Schema validation', () => {
     assert.throws(() => createSchemaBuilder(validator, () => 1), /Standard Schema v1/);
   });
 });
+
+// A validator may echo private input in native diagnostics. Default error surfaces
+// remain safe while deliberate issue inspection retains the original objects.
+for (const asynchronous of [false, true]) {
+  it(`keeps native fixture diagnostics opt-in (${asynchronous ? 'async' : 'sync'})`, async () => {
+    const marker = 'PRIVATE_FIXTURE_SENTINEL';
+    const issues = [{ message: marker, path: ['value'], input: marker }];
+    const validator = schema(() => (asynchronous ? Promise.resolve({ issues }) : { issues }));
+    const builder = createSchemaBuilder(validator, () => marker);
+    const check = (error) => {
+      assert.ok(error instanceof BuilderValidationError);
+      assert.equal(error.code, 'VALIDATION_FAILED');
+      assert.equal(error.issues, issues);
+      assert.equal(String(error).includes(marker), false);
+      assert.equal(error.stack.includes(marker), false);
+      assert.equal(JSON.stringify(error).includes(marker), false);
+      assert.equal(Object.keys(error).includes('issues'), false);
+      return true;
+    };
+    if (asynchronous) await assert.rejects(builder.buildValidatedAsync(), check);
+    else assert.throws(() => builder.buildValidated(), check);
+  });
+}

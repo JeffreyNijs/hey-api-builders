@@ -12,9 +12,8 @@ export interface ConformanceCase {
 }
 export interface ConformanceSubject {
   readonly standard: StandardSchemaV1;
-  readonly operations: {
-    readonly checkInput?: (value: unknown) => boolean;
-  };
+  /** Other capabilities are opaque; adapters need not implement a pure input check. */
+  readonly operations: object;
   inspect(): AdapterInspection;
 }
 export interface ConformanceResult {
@@ -31,6 +30,7 @@ export async function checkAdapterConformance(
   subject: ConformanceSubject,
   cases: readonly ConformanceCase[]
 ): Promise<ConformanceResult> {
+  const operations = subject.operations as { readonly checkInput?: (value: unknown) => boolean };
   if (!Array.isArray(cases) || !cases.length || cases.length > 10_000) {
     throw new TypeError('Conformance needs 1 to 10000 cases');
   }
@@ -54,10 +54,7 @@ export async function checkAdapterConformance(
   for (const item of cases) {
     let reason: string | undefined;
     try {
-      if (
-        subject.operations.checkInput &&
-        subject.operations.checkInput(item.input()) !== item.valid
-      ) {
+      if (operations.checkInput && operations.checkInput(item.input()) !== item.valid) {
         reason = 'Native input check disagrees with the expected validity';
       } else {
         let calls = 0;

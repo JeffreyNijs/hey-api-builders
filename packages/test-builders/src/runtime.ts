@@ -7,11 +7,14 @@ import type {
 } from './types.js';
 
 export class BuilderValidationError extends Error {
-  readonly issues: ReadonlyArray<ValidationIssue>;
+  readonly code = 'VALIDATION_FAILED';
+  declare readonly issues: ReadonlyArray<ValidationIssue>;
   constructor(issues: ReadonlyArray<ValidationIssue>) {
-    super(issues.map((issue) => issue.message).join('; ') || 'Schema validation failed');
+    // Native issue messages and extension fields can contain the fixture itself.
+    // Preserve the original issues for deliberate inspection, not default logging.
+    super('Schema validation failed');
     this.name = 'BuilderValidationError';
-    this.issues = issues;
+    Object.defineProperty(this, 'issues', { value: issues, enumerable: false });
   }
 }
 export class BuilderGenerationError extends Error {

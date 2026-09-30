@@ -36,3 +36,15 @@ fromAdapter(validationOnly);
 defineAdapter({ id: 'wrong', version: '1', standard, operations: { create: () => ({ age: 1 }) } });
 // @ts-expect-error Encoding receives decoded output.
 adapter.operations.encode({ age: '42' });
+
+// A generative adapter without checkInput still satisfies the common suite.
+import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
+const generatorOnly = defineAdapter({
+  id: 'generator-only',
+  version: '1',
+  standard,
+  operations: { create: () => ({ age: '42' }) },
+});
+void assertAdapterConformance(generatorOnly, [
+  { name: 'valid', input: () => ({ age: '42' }), valid: true },
+]);

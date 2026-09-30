@@ -1,4 +1,4 @@
-# Adapter SDK and conformance (unreleased)
+# Adapter SDK and conformance (alpha)
 
 Declare an integration's actual operations while retaining its native schema and
 Standard Schema input/output types. The core and this SDK do not import or

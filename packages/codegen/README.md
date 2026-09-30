@@ -1,4 +1,4 @@
-# Standalone code generation (unreleased)
+# Standalone code generation (alpha)
 
 Emit deterministic named builder classes from typed factory modules, configured
 builder modules, Standard Schema plus a factory, Standard JSON Schema, TypeBox

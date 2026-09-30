@@ -1,4 +1,4 @@
-# Native Protobuf fixtures (unreleased)
+# Native Protobuf fixtures (alpha)
 
 `protobufAdapter(protoTextOrReflectionJSON, messageName, options)` creates fixtures
 and binary codecs using the pinned `protobufjs@8.8.0`. `fromProtobuf` returns the

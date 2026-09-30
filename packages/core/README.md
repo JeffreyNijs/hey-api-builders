@@ -1,12 +1,12 @@
-# Test builders (unreleased)
+# Mimlet core (alpha)
 
 A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
 
-The package name is `mimlet`. Its prepared alpha is unpublished. Build and pack locally rather than installing it from npm:
+The package name is `mimlet`. Alpha releases use the `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
 
 ```sh
 pnpm build:core
-npm pack ./packages/mimlet --ignore-scripts
+npm pack ./packages/core --ignore-scripts
 ```
 
 The package emits ESM and TypeScript declarations. The core declarations are tested with TypeScript 5.8.3 and 6.0.3; individual adapters can require newer compiler versions. Canonical Standard Typed, Standard Schema, and Standard JSON Schema v1 interfaces are vendored as type-only code with MIT attribution in `THIRD_PARTY_NOTICES.md`. There is no reduced private validation protocol.

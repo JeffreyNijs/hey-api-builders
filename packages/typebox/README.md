@@ -1,6 +1,6 @@
-# Native TypeBox builders (unreleased)
+# Native TypeBox builders (alpha)
 
-`@mimlet/typebox` accepts native `typebox` schemas. The prepared alpha is unpublished. Its current compatibility target is exactly `typebox@1.3.34`; broader ranges require additional matrix testing.
+`@mimlet/typebox` accepts native `typebox` schemas. Alpha releases use the `next` tag. Its current compatibility target is exactly `typebox@1.3.34`; broader ranges require additional matrix testing.
 
 ```ts
 import Type from 'typebox';

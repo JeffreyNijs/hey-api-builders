@@ -1,4 +1,4 @@
-# Local schema playground (unreleased)
+# Local schema playground (alpha)
 
 A loopback-only browser application for JSON Schema fixture generation, with a
 reusable interruptible worker API. The package is optional; the core never starts
@@ -29,7 +29,7 @@ await server.close();
 
 The CLI is `mimlet-playground [--port 0..65535]`; `--help` describes it.
 During development, build the packages and run the compiled `dist/cli.js` from
-this directory. These packages have not been published yet.
+this directory. Check the website for current registry availability; alpha releases use `next`.
 
 The UI accepts schema documents and an in-memory reference dictionary. It offers
 minimal, seeded variation, boundary-focused, defaults and examples profiles;

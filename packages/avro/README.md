@@ -1,4 +1,4 @@
-# Native Avro fixtures (unreleased)
+# Native Avro fixtures (alpha)
 
 `avroAdapter(schema, options)` prepares a bounded in-memory Avro schema using
 `avsc@5.7.9`. `fromAvro` provides the shared immutable builder. Nothing is loaded

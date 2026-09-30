@@ -1,8 +1,8 @@
 # Hey API Builders
 
 Hey API integration for the schema-independent Mimlet toolkit. This
-prepared `3.0.0-alpha.0` source is a major-version migration and is not published
-by this change. Existing published v2 packages are unchanged.
+`3.0.0-alpha.0` line is a major-version migration on the `next` channel.
+The stable v2 line remains available separately.
 
 The plugin discovers generated model, request and response factories from
 `@hey-api/openapi-ts`, then emits named fluent classes backed by the shared
@@ -11,9 +11,9 @@ the neutral runtime itself.
 
 ## Installation and generation
 
-Build from the workspace and install the resulting plugin and core tarballs.
-Published installation commands are intentionally not shown for an unpublished
-version. The generated client requires the matching core runtime plus Faker.
+Use matching plugin and core versions. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html)
+for current registry availability, or build and install the workspace tarballs.
+The generated client requires the matching core runtime plus Faker.
 The verified generation toolchain is Hey API 0.99.0, Faker 10.5.0 and TypeScript
 6.0.3. Runtime Node support starts at 22.18.0.
 

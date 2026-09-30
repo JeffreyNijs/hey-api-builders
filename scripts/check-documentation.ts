@@ -72,6 +72,21 @@ export function checkPackageIndex(markdown: string, directories: readonly string
   }
 }
 
+export function checkWorkspacePackageCommands(
+  markdown: string,
+  directories: readonly string[]
+): void {
+  for (const fence of markdown.matchAll(/^```(?:sh|bash|shell)\n([\s\S]*?)^```/gm)) {
+    for (const path of (fence[1] ?? '').matchAll(
+      /(?:\.\/)?packages\/([a-z0-9][a-z0-9-]*)(?=[/\s'"`]|$)/g
+    )) {
+      if (!directories.includes(path[1] ?? '')) {
+        throw new Error(`Documentation command refers to missing workspace package: ${path[1]}`);
+      }
+    }
+  }
+}
+
 export async function checkDocumentation(
   root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 ) {
@@ -91,6 +106,9 @@ export async function checkDocumentation(
     files.push(`packages/${name}/README.md`);
   }
   checkPackageIndex(await readFile(join(root, 'README.md'), 'utf8'), packages);
+  for (const file of files) {
+    checkWorkspacePackageCommands(await readFile(join(root, file), 'utf8'), packages);
+  }
   const links = await checkFileLinks(root, files);
   return { documents: files.length, packages: packages.length, links };
 }

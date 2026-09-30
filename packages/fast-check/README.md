@@ -1,8 +1,7 @@
-# Shrink-aware property fixtures (unreleased)
+# Shrink-aware property fixtures (alpha)
 
 This optional package targets exactly `fast-check@4.10.2` and the accompanying
-unreleased builder core. Its public package metadata is prepared, but it has not
-been released to npm.
+version-matched Mimlet core. Alpha releases use the `next` tag.
 The core itself does not depend on fast-check.
 
 ## Native arbitraries and ordinary builders

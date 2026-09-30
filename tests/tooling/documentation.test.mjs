@@ -7,6 +7,7 @@ import {
   markdownFileLinks,
   checkFileLinks,
   checkPackageIndex,
+  checkWorkspacePackageCommands,
   checkDocumentation,
 } from '../../scripts/check-documentation.ts';
 
@@ -57,4 +58,16 @@ it('does not let a new public package disappear from the root package index', ()
     () => checkPackageIndex('[core](packages/core/README.md)', ['core', 'new-adapter']),
     /missing: new-adapter/
   );
+});
+
+it('checks literal workspace directories in shell examples after package renames', () => {
+  checkWorkspacePackageCommands('```sh\nnpm pack ./packages/core --ignore-scripts\n```', ['core']);
+  assert.throws(
+    () =>
+      checkWorkspacePackageCommands('```sh\nnpm pack ./packages/mimlet --ignore-scripts\n```', [
+        'core',
+      ]),
+    /missing workspace package: mimlet/
+  );
+  checkWorkspacePackageCommands('```ts\nconst example = "packages/not-a-command";\n```', ['core']);
 });

@@ -1,6 +1,6 @@
-# Legacy TypeBox builders (unreleased)
+# Legacy TypeBox builders (alpha)
 
-`@mimlet/typebox-legacy` is the native adapter for `@sinclair/typebox`. Its prepared alpha is unpublished. The current compatibility target is exactly `@sinclair/typebox@0.34.52`; this does not claim compatibility with every 0.x release.
+`@mimlet/typebox-legacy` is the native adapter for `@sinclair/typebox`. Alpha releases use the `next` tag. The current compatibility target is exactly `@sinclair/typebox@0.34.52`; this does not claim compatibility with every 0.x release.
 
 ```ts
 import { Type } from '@sinclair/typebox';

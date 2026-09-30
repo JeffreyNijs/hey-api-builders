@@ -1,4 +1,4 @@
-# Native Effect fixtures (unreleased)
+# Native Effect fixtures (alpha)
 
 This package targets `effect@3.22.2`. Effect 4 has a different native Arbitrary API
 and is not silently treated as compatible. Native Effect 3 schema generation and

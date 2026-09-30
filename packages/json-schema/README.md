@@ -1,4 +1,4 @@
-# JSON Schema builders (unreleased)
+# JSON Schema builders (alpha)
 
 Offline schema-to-fixture generation, with independent Ajv validation, reproducible
 sessions, and the same immutable builder pipeline as the native adapters.

@@ -1,4 +1,4 @@
-# Native GraphQL fixtures (unreleased)
+# Native GraphQL fixtures (alpha)
 
 `graphqlAdapter(schemaSDL, operationText, options)` prepares GraphQL variable and
 response fixtures with the pinned `graphql@17.0.2` reference implementation. The

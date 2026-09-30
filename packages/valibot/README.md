@@ -1,4 +1,4 @@
-# Native Valibot generation (unreleased)
+# Native Valibot generation (alpha)
 
 `fromValibot(schema, options)` adds automatic input generation to `valibot@1.5.0`
 through the pinned `@valibot/to-json-schema@1.8.0` converter. The original native

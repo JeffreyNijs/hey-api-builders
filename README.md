@@ -1,5 +1,13 @@
 # Mimlet
 
+![Mimlet: Test data, with character.](assets/brand/readme-banner.svg)
+
+Typed fixtures. Coherent scenarios. Failures you can replay.
+
+Mimlet is the schema-aware toolkit behind `mimlet`, `@mimlet/*`, and the
+`hey-api-builders` integration. The new package names are a **source preview**;
+npm publication and the public site launch are separate steps.
+
 A modular TypeScript toolkit for reproducible test data: immutable builders,
 schema-driven generation, native validation and codecs, related fixtures,
 property-based testing, and generated fluent classes. **Hey API is one integration,

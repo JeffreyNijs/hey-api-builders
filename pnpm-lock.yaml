@@ -33,9 +33,9 @@ importers:
       '@hey-api/openapi-ts':
         specifier: 0.99.0
         version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
-      'mimlet':
-        specifier: workspace:*
-        version: link:packages/core
+      '@resvg/resvg-js':
+        specifier: 2.6.2
+        version: 2.6.2
       '@sinclair/typebox':
         specifier: 0.34.52
         version: 0.34.52
@@ -72,6 +72,9 @@ importers:
       hey-api-builders:
         specifier: workspace:*
         version: link:packages/hey-api-builders
+      mimlet:
+        specifier: workspace:*
+        version: link:packages/core
       prettier:
         specifier: 3.9.6
         version: 3.9.6
@@ -100,68 +103,53 @@ importers:
         specifier: 4.4.3
         version: 4.4.3
 
-  packages/hey-api-builders:
-    devDependencies:
-      '@faker-js/faker':
-        specifier: 10.5.0
-        version: 10.5.0
-      '@hey-api/openapi-ts':
-        specifier: 0.99.0
-        version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
-      'mimlet':
-        specifier: workspace:*
-        version: link:../core
-      typescript:
-        specifier: 6.0.3
-        version: 6.0.3
-
-  packages/core: {}
-
   packages/adapter:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
 
   packages/api:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
 
   packages/avro:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       avsc:
         specifier: 5.7.9
         version: 5.7.9
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
 
   packages/codegen:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
       json-schema-to-typescript:
         specifier: 16.0.0
         version: 16.0.0
-
-  packages/consumers:
-    dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
 
+  packages/consumers:
+    dependencies:
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
+
+  packages/core: {}
+
   packages/effect:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -171,7 +159,7 @@ importers:
 
   packages/faker:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -181,7 +169,7 @@ importers:
 
   packages/fast-check:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -191,18 +179,30 @@ importers:
 
   packages/graphql:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       graphql:
         specifier: 17.0.2
         version: 17.0.2
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
+
+  packages/hey-api-builders:
+    devDependencies:
+      '@faker-js/faker':
+        specifier: 10.5.0
+        version: 10.5.0
+      '@hey-api/openapi-ts':
+        specifier: 0.99.0
+        version: 0.99.0(magicast@0.5.4)(typescript@6.0.3)
+      mimlet:
+        specifier: workspace:*
+        version: link:../core
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
 
   packages/json-schema:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       ajv:
         specifier: 8.20.0
         version: 8.20.0
@@ -212,19 +212,22 @@ importers:
       json-schema-faker:
         specifier: 0.6.3
         version: 0.6.3
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
 
   packages/playground:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
 
   packages/protobuf:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
       protobufjs:
@@ -233,7 +236,7 @@ importers:
 
   packages/typebox:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -243,7 +246,7 @@ importers:
 
   packages/typebox-legacy:
     dependencies:
-      'mimlet':
+      mimlet:
         specifier: 0.1.0-alpha.0
         version: link:../core
     devDependencies:
@@ -253,15 +256,15 @@ importers:
 
   packages/valibot:
     dependencies:
-      'mimlet':
-        specifier: 0.1.0-alpha.0
-        version: link:../core
       '@mimlet/json-schema':
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
       '@valibot/to-json-schema':
         specifier: 1.8.0
         version: 1.8.0(valibot@1.5.0(typescript@6.0.3))
+      mimlet:
+        specifier: 0.1.0-alpha.0
+        version: link:../core
     devDependencies:
       valibot:
         specifier: 1.5.0
@@ -687,6 +690,86 @@ packages:
   '@publint/pack@0.1.7':
     resolution: {integrity: sha512-4EDEmvxWtgsCnnVeBvtFIFZtUhPPt1+bA9JrSwU4Sa//6oKtzCSlGGXYJr44OD9aGISymbieJ4mCKHUygUDU+g==}
     engines: {node: '>=18'}
+
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    resolution: {integrity: sha512-FrJibrAk6v29eabIPgcTUMPXiEz8ssrAk7TXxsiZzww9UTQ1Z5KAbFJs+Z0Ez+VZTYgnE5IQJqBcoSiMebtPHA==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [android]
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    resolution: {integrity: sha512-VcOKezEhm2VqzXpcIJoITuvUS/fcjIw5NA/w3tjzWyzmvoCdd+QXIqy3FBGulWdClvp4g+IfUemigrkLThSjAQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    resolution: {integrity: sha512-nmok2LnAd6nLUKI16aEB9ydMC6Lidiiq2m1nEBDR1LaaP7FGs4AJ90qDraxX+CWlVuRlvNjyYJTNv8qFjtL9+A==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    resolution: {integrity: sha512-GInyZLjgWDfsVT6+SHxQVRwNzV0AuA1uqGsOAW+0th56J7Nh6bHHKXHBWzUrihxMetcFDmQMAX1tZ1fZDYSRsw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    resolution: {integrity: sha512-YIV3u/R9zJbpqTTNwTZM5/ocWetDKGsro0SWp70eGEM9eV2MerWyBRZnQIgzU3YBnSBQ1RcxRZvY/UxwESfZIw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    resolution: {integrity: sha512-zc2BlJSim7YR4FZDQ8OUoJg5holYzdiYMeobb9pJuGDidGL9KZUv7SbiD4E8oZogtYY42UZEap7dqkkYuA91pg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    resolution: {integrity: sha512-3h3dLPWNgSsD4lQBJPb4f+kvdOSJHa5PjTYVsWHxLUzH4IFTJUAnmuWpw4KqyQ3NA5QCyhw4TWgxk3jRkQxEKg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    resolution: {integrity: sha512-IVUe+ckIerA7xMZ50duAZzwf1U7khQe2E0QpUxu5MBJNao5RqC0zwV/Zm965vw6D3gGFUl7j4m+oJjubBVoftw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    resolution: {integrity: sha512-UOf83vqTzoYQO9SZ0fPl2ZIFtNIz/Rr/y+7X8XRX1ZnBYsQ/tTb+cj9TE+KHOdmlTFBxhYzVkP2lRByCzqi4jQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    resolution: {integrity: sha512-7C/RSgCa+7vqZ7qAbItfiaAWhyRSoD4l4BQAbVDqRRsRgY+S+hgS3in0Rxr7IorKUpGE69X48q6/nOAuTJQxeQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    resolution: {integrity: sha512-har4aPAlvjnLcil40AC77YDIk6loMawuJwFINEM7n0pZviwMkMvjb2W5ZirsNOZY4aDbo5tLx0wNMREp5Brk+w==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    resolution: {integrity: sha512-ZXtYhtUr5SSaBrUDq7DiyjOFJqBVL/dOBN7N/qmi/pO0IgiWW/f/ue3nbvu9joWE5aAKDoIzy/CxsY0suwGosQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@resvg/resvg-js@2.6.2':
+    resolution: {integrity: sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==}
+    engines: {node: '>= 10'}
 
   '@rollup/rollup-android-arm-eabi@4.62.4':
     resolution: {integrity: sha512-RrPokAb7dmbxFoeO3TloqHyOjgye8RkBhSqmp4aJMIex4c9r46ZstPnleDQOq1t46VOVjwIuwNogIqbodV1Vvg==}
@@ -2481,6 +2564,57 @@ snapshots:
   '@publint/pack@0.1.7':
     dependencies:
       tinyexec: 1.3.0
+
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js@2.6.2':
+    optionalDependencies:
+      '@resvg/resvg-js-android-arm-eabi': 2.6.2
+      '@resvg/resvg-js-android-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-x64': 2.6.2
+      '@resvg/resvg-js-linux-arm-gnueabihf': 2.6.2
+      '@resvg/resvg-js-linux-arm64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-arm64-musl': 2.6.2
+      '@resvg/resvg-js-linux-x64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-x64-musl': 2.6.2
+      '@resvg/resvg-js-win32-arm64-msvc': 2.6.2
+      '@resvg/resvg-js-win32-ia32-msvc': 2.6.2
+      '@resvg/resvg-js-win32-x64-msvc': 2.6.2
 
   '@rollup/rollup-android-arm-eabi@4.62.4':
     optional: true

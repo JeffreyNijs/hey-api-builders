@@ -25,7 +25,7 @@
       <form id="controls" class="toolbar">
         <label
           >Profile
-          <select id="profile" name="profile">
+          <select id="profile" name="profile" aria-label="Profile">
             <option value="minimal">Minimal valid</option>
             <option value="random">Seeded variation</option>
             <option value="boundary">Boundary-focused</option>
@@ -35,7 +35,7 @@
         </label>
         <label
           >Dialect
-          <select id="dialect" name="dialect">
+          <select id="dialect" name="dialect" aria-label="Dialect">
             <option value="">Detect from schema</option>
             <option value="draft-07">Draft 07</option>
             <option value="draft-2019-09">2019-09</option>
@@ -64,7 +64,7 @@
             <h2 id="schema-heading">JSON Schema</h2>
             <label class="example-label"
               >Example
-              <select id="example">
+              <select id="example" aria-label="Example">
                 <option value="user">Customer</option>
                 <option value="union">Event variants</option>
                 <option value="reference">Offline reference</option>

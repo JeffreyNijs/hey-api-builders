@@ -110,7 +110,7 @@ test('shows actionable errors without executing schema text and supports keyboar
   const response = page.waitForResponse((response) => response.url().endsWith('/generate'));
   await page.getByLabel('Schema document', { exact: true }).press('Control+Enter');
   expect((await response).status()).toBe(200);
-  await expect(page.locator('#output')).toContainText(text);
+  await expect.poll(() => values(page)).toEqual([text, text, text]);
   expect(await page.locator('#output img, #output script').count()).toBe(0);
   expect(await page.evaluate(() => globalThis.injected)).toBeUndefined();
 });

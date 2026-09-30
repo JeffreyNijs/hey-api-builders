@@ -1,6 +1,7 @@
 /* global document, innerWidth */
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { URL } from 'node:url';
 
 const errors = new WeakMap();
 test.beforeEach(async ({ page, browserName, baseURL }, info) => {

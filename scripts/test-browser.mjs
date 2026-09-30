@@ -5,11 +5,9 @@ import { dirname, join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { withPackedConsumer } from './packed-consumer.mjs';
+import { browserOptions } from './browser-options.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const args = process.argv.slice(2);
-if (args.some((arg) => !['--install', '--list'].includes(arg))) {
-  throw new Error('Usage: node scripts/test-browser.mjs [--install] [--list]');
-}
+const options = browserOptions(process.argv.slice(2));
 const fixture = join(root, 'tests/browser');
 await withPackedConsumer(fixture, async ({ temporary }) => {
   for (const file of await readdir(fixture)) {
@@ -27,7 +25,7 @@ await withPackedConsumer(fixture, async ({ temporary }) => {
   }
   const cli = join(temporary, 'node_modules/@playwright/test/cli.js');
   try {
-    if (args.includes('--install')) {
+    if (options.install) {
       execFileSync(
         process.execPath,
         [cli, 'install', '--with-deps', 'chromium', 'firefox', 'webkit'],
@@ -38,11 +36,22 @@ await withPackedConsumer(fixture, async ({ temporary }) => {
         }
       );
     }
-    execFileSync(process.execPath, [cli, 'test', ...(args.includes('--list') ? ['--list'] : [])], {
-      cwd: temporary,
-      stdio: 'inherit',
-      timeout: 900_000,
-    });
+    execFileSync(
+      process.execPath,
+      [
+        cli,
+        'test',
+        ...(options.list ? ['--list'] : []),
+        ...(options.project ? ['--project', options.project] : []),
+        '--repeat-each',
+        String(options.repeat),
+      ],
+      {
+        cwd: temporary,
+        stdio: 'inherit',
+        timeout: 900_000,
+      }
+    );
   } finally {
     const result = join(root, 'test-results/browser');
     await mkdir(result, { recursive: true });

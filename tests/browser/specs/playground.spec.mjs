@@ -3,10 +3,34 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 const errors = new WeakMap();
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, info) => {
   const found = [];
   errors.set(page, found);
   page.on('pageerror', (error) => found.push(error.message));
+  const navigation = {
+    requested: false,
+    status: null,
+    domLoaded: false,
+    load: false,
+    observedLoad: false,
+  };
+  page.on('request', (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame())
+      navigation.requested = true;
+  });
+  page.on('response', (response) => {
+    if (response.request().isNavigationRequest() && response.frame() === page.mainFrame())
+      navigation.status = response.status();
+  });
+  page.on('domcontentloaded', () => {
+    navigation.domLoaded = true;
+  });
+  page.on('load', () => {
+    navigation.load = true;
+  });
+  page.on('console', (message) => {
+    if (message.text() === 'toolkit-document-loaded') navigation.observedLoad = true;
+  });
   // Playwright's COOP regression tests install a load observer for Firefox's missing
   // protocol event (tests/page/page-request-continue.spec.ts). Keep browser security intact.
   await page.addInitScript(() => {
@@ -14,9 +38,21 @@ test.beforeEach(async ({ page }) => {
       once: true,
     });
   });
-  const response = await page.goto('/', { waitUntil: 'commit' });
-  expect(response.status()).toBe(200);
-  await expect(page.getByRole('button', { name: 'Generate fixtures', exact: true })).toBeEnabled();
+  try {
+    const response = await page.goto('/', { waitUntil: 'commit' });
+    expect(response.status()).toBe(200);
+    await expect(
+      page.getByRole('button', { name: 'Generate fixtures', exact: true })
+    ).toBeEnabled();
+  } catch (error) {
+    // Node-side observations remain available when the test deadline prevents
+    // further browser calls. Do not swallow the failure or print fixture values.
+    await info.attach('navigation-state', {
+      body: JSON.stringify({ ...navigation, pageErrors: found.length }),
+      contentType: 'application/json',
+    });
+    throw error;
+  }
 });
 test.afterEach(async ({ page }) => {
   expect(errors.get(page)).toEqual([]);

@@ -15,6 +15,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  native-versions:
+    name: Native version range / ${{ matrix.adapter }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        adapter: [zod, typebox, typebox-legacy]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/test-vendor-versions.mjs ${{ matrix.adapter }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: native-version-report-${{ matrix.adapter }}
+          path: test-results/vendor-versions-${{ matrix.adapter }}.json
+          if-no-files-found: error
+          retention-days: 7
+
   portable:
     name: Packed core / ${{ matrix.runtime }}
     runs-on: ubuntu-latest
@@ -89,9 +115,12 @@ jobs:
       - run: pnpm build
       - run: node scripts/test-examples.mjs
       - run: node scripts/benchmark.ts
+      - run: node scripts/benchmark-types.ts
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: performance-report
-          path: test-results/performance.json
+          path: |
+            test-results/performance.json
+            test-results/typescript-performance.json
           if-no-files-found: error
           retention-days: 7

@@ -19,7 +19,9 @@
       "@mimlet/protobuf",
       "@mimlet/typebox",
       "@mimlet/typebox-legacy",
-      "@mimlet/valibot"
+      "@mimlet/valibot",
+      "@mimlet/zod",
+      "@mimlet/arktype"
     ]
   ],
   "linked": [],

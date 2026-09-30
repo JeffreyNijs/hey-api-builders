@@ -144,6 +144,19 @@ importers:
         specifier: 0.1.0-alpha.0
         version: link:../json-schema
 
+  packages/arktype:
+    dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
+      '@mimlet/json-schema':
+        specifier: 0.1.0-alpha.0
+        version: link:../json-schema
+    devDependencies:
+      arktype:
+        specifier: 2.2.5
+        version: 2.2.5
+
   packages/avro:
     dependencies:
       '@mimlet/core':
@@ -295,6 +308,19 @@ importers:
       valibot:
         specifier: 1.5.0
         version: 1.5.0(typescript@6.0.3)
+
+  packages/zod:
+    dependencies:
+      '@mimlet/core':
+        specifier: 0.1.0-alpha.0
+        version: link:../core
+      '@mimlet/json-schema':
+        specifier: 0.1.0-alpha.0
+        version: link:../json-schema
+    devDependencies:
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
 packages:
 

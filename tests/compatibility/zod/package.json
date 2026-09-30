@@ -1,0 +1,28 @@
+{
+  "name": "mimlet-zod-compatibility",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "zod": "4.4.3",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "json-schema-faker": "0.6.3",
+    "@types/node": "26.6.3"
+  },
+  "toolkitPackages": [
+    "adapter",
+    "json-schema",
+    "zod"
+  ],
+  "coveragePackages": [
+    "zod"
+  ],
+  "compilerLibs": [
+    "ES2022",
+    "DOM"
+  ],
+  "compilerTypes": [
+    "node"
+  ]
+}

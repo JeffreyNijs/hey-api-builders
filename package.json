@@ -22,7 +22,7 @@
       "postcss": "8.5.26",
       "rollup": "4.62.4",
       "vite@7": "7.3.5",
-      "js-yaml@4": "4.3.1"
+      "js-yaml@4": "4.3.2"
     }
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "preinstall": "node scripts/check-workspace.mjs",
     "build": "turbo run build",
     "build:core": "tsc -p packages/test-builders/tsconfig.json",
-    "watch": "pnpm test:watch",
+    "watch": "pnpm --filter hey-api-builders watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write . --ignore-unknown",
@@ -86,6 +86,7 @@
     "check:docs": "node scripts/check-documentation.ts",
     "type-check": "turbo run type-check && tsc --noEmit",
     "test:unit": "vitest run --project unit",
-    "test:integration": "vitest run --project integration"
+    "test:integration": "vitest run --project integration",
+    "audit:production": "node scripts/audit-production.ts"
   }
 }

@@ -33,7 +33,7 @@ jobs:
           mkdir -p test-results/audit
           pnpm list -r --prod --depth Infinity --json > test-results/audit/dependencies.json
       - name: Audit production dependencies without ignoring advisory failures
-        run: pnpm audit --prod --audit-level=high --json | tee test-results/audit/advisories.json
+        run: pnpm audit:production
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:

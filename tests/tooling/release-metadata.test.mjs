@@ -69,5 +69,5 @@ test('publication uses the exact canonical tested guard, not an untested handwri
   );
   assert.match(workflow, /needs: \[prepare, portable\]/);
   assert.match(workflow, /git merge-base --is-ancestor HEAD refs\/remotes\/origin\/main/);
-  assert.match(workflow, /pnpm audit --prod --audit-level=high/);
+  assert.match(workflow, /pnpm audit:production/);
 });

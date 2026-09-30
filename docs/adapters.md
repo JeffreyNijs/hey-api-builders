@@ -9,8 +9,8 @@ generation and native library integrations are opt-in.
 | Modern `typebox`                               | [@mimlet/typebox](../packages/typebox/README.md)               | Native creation, checking and codecs; explicit factory escape hatch.                                      |
 | `@sinclair/typebox`                            | [@mimlet/typebox-legacy](../packages/typebox-legacy/README.md) | Native legacy TypeBox and Transform semantics.                                                            |
 | JSON Schema or Standard JSON Schema conversion | [@mimlet/json-schema](../packages/json-schema/README.md)       | Supported draft validation, profiles and bounded generation; inspect unsupported capabilities.            |
-| Zod 4 / Zod Mini                               | [@mimlet/zod](../packages/zod/README.md)                       | Native parsing/codecs, explicit async validation, input generation and factories; next-release preview.   |
-| ArkType                                        | [@mimlet/arktype](../packages/arktype/README.md)               | Native morphs/scopes, input checks, input generation and factories; next-release preview.                 |
+| Zod 4 / Zod Mini                               | [@mimlet/zod](../packages/zod/README.md)                       | Native parsing/codecs, explicit async validation, input generation and factories.                         |
+| ArkType                                        | [@mimlet/arktype](../packages/arktype/README.md)               | Native morphs/scopes, input checks, input generation and factories.                                       |
 | Valibot                                        | [@mimlet/valibot](../packages/valibot/README.md)               | Input conversion plus native parsing; factories for unsupported refinements.                              |
 | Effect 3                                       | [@mimlet/effect](../packages/effect/README.md)                 | Native schemas, codecs, arbitraries and shrinking.                                                        |
 | Realistic values                               | [@mimlet/faker](../packages/faker/README.md)                   | Explicit session-scoped randomness, locale and reference date.                                            |
@@ -25,7 +25,9 @@ generation and native library integrations are opt-in.
 | UI previews, HTTP mocks, test persistence      | [@mimlet/consumers](../packages/consumers/README.md)           | Explicit loaders, response resolvers and caller-owned persistence.                                        |
 | Hey API generation                             | [hey-api-builders](../packages/hey-api-builders/README.md)     | The established plugin, now backed by the neutral core.                                                   |
 
-The dedicated Zod and ArkType packages are [next-release source previews](zod-and-arktype.md). Existing published releases can use the core and Standard JSON Schema path.
+The dedicated Zod and ArkType adapters are included in `0.1.0-alpha.1`. Follow the
+[tested recipes](zod-and-arktype.md), or retain the core and Standard JSON Schema path
+when those interfaces already meet your needs.
 
 ## Validation, conversion and generation are different
 

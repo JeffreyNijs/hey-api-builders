@@ -3,13 +3,13 @@ export const identity = {
   tagline: 'Test data, with character.',
   description: 'Typed fixtures. Coherent scenarios. Failures you can replay.',
   releaseStatus: 'Published alpha',
-  releaseVersion: '0.1.0-alpha.0',
+  releaseVersion: '0.1.0-alpha.1',
   introduction:
     'Give your tests a little life. Build fixtures that fit your schemas, keep related data connected, and bring a failing case back on cue.',
 };
 
 /** Implemented in source, but excluded from the currently published release train. */
-export const previewPackages: readonly string[] = ['@mimlet/zod', '@mimlet/arktype'];
+export const previewPackages: readonly string[] = [];
 
 export const stories = [
   {

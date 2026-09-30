@@ -1,10 +1,16 @@
 # Zod and ArkType builders
 
-**Next-release source preview:** the dedicated `@mimlet/zod` and
-`@mimlet/arktype` packages are not part of the existing `0.1.0-alpha.0` release.
-Build this checkout and use its verified tarballs while these additions are being
-prepared for the next coordinated release. Existing Standard Schema and Standard
-JSON Schema entry points remain supported.
+The dedicated `@mimlet/zod` and `@mimlet/arktype` packages are published in
+`0.1.0-alpha.1` on npm's `next` channel. Existing Standard Schema and Standard JSON
+Schema entry points remain supported. Install the adapter you use, with its tested peer:
+
+```sh
+# Zod, including Zod Mini
+npm install --save-dev @mimlet/zod@0.1.0-alpha.1 zod@4.4.3
+
+# ArkType
+npm install --save-dev @mimlet/arktype@0.1.0-alpha.1 arktype@2.2.5
+```
 
 ## Zod: typed input, native output
 

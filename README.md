@@ -5,19 +5,19 @@
 Typed fixtures. Coherent scenarios. Failures you can replay.
 
 Mimlet is the schema-aware toolkit behind `@mimlet/core`, `@mimlet/*`, and the
-`hey-api-builders` integration. The first coordinated **alpha is published on npm’s `next` channel**. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
+`hey-api-builders` integration. The coordinated **alpha is published on npm’s `next` channel**. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
 
 A modular TypeScript toolkit for reproducible test data: immutable builders,
 schema-driven generation, native validation and codecs, related fixtures,
 property-based testing, and generated fluent classes. **Hey API is one integration,
 not a prerequisite.** The schema-free core has no runtime or peer dependencies.
 
-The published alpha is **0.1.0-alpha.0** for the toolkit and **3.0.0-alpha.0** for
+The published alpha is **0.1.0-alpha.1** for the toolkit and **3.0.0-alpha.1** for
 the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`
 remains on v2; opt into the alpha explicitly.
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.0
+npm install --save-dev @mimlet/core@0.1.0-alpha.1
 ```
 
 Add only the adapters you need. [Getting started](docs/getting-started.md) includes
@@ -116,8 +116,8 @@ capabilities you use; schema vendors and generation backends do not enter the co
 | [@mimlet/typebox](packages/typebox/README.md)               | Modern native TypeBox, encoded/decoded types, complete union variants.                                           |
 | [@mimlet/typebox-legacy](packages/typebox-legacy/README.md) | Maintained legacy TypeBox and Transform support.                                                                 |
 | [@mimlet/json-schema](packages/json-schema/README.md)       | Draft-07, 2019-09 and 2020-12 generation; standards conversion; profiles, extensions and checked negative cases. |
-| [@mimlet/zod](packages/zod/README.md)                       | Zod 4/Mini builders, native codecs, explicit async validation and typed factories (next-release preview).        |
-| [@mimlet/arktype](packages/arktype/README.md)               | Native ArkType morphs, scoped Types, input checks and typed factories (next-release preview).                    |
+| [@mimlet/zod](packages/zod/README.md)                       | Zod 4/Mini builders, native codecs, explicit async validation and typed factories.                               |
+| [@mimlet/arktype](packages/arktype/README.md)               | Native ArkType morphs, scoped Types, input checks and typed factories.                                           |
 | [@mimlet/valibot](packages/valibot/README.md)               | Native Valibot input conversion and parsing.                                                                     |
 | [@mimlet/effect](packages/effect/README.md)                 | Native Effect 3 generation, codecs, and arbitraries/shrinkers.                                                   |
 | [@mimlet/faker](packages/faker/README.md)                   | Realistic data with session-scoped random streams, locales and reference dates.                                  |

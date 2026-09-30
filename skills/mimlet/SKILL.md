@@ -7,8 +7,8 @@ description: Use Mimlet to create typed test fixtures, native-schema builders, c
 
 Mimlet is a modular schema-aware test-data toolkit. This is an optional product
 skill, not permission to install dependencies, change unrelated code, or replace
-the user's chosen library. The first alpha is
-`@mimlet/*@0.1.0-alpha.0` on npm's `next` channel. Inspect the installed versions
+the user's chosen library. The current alpha is
+`@mimlet/*@0.1.0-alpha.1` on npm's `next` channel. Inspect the installed versions
 and use the matching documented APIs.
 
 1. Inspect the project's package manifest, schema and nearby tests. Choose the
@@ -36,8 +36,8 @@ In a Mimlet source checkout, read `docs/adapters.md`, `docs/agents.md`, and the
 matching package README. `examples/recipes/` contains the actual typed examples;
 `pnpm test:examples` compiles and executes them against isolated tarballs.
 
-The next-release Zod/ArkType adapters are documented in `docs/zod-and-arktype.md`.
-Check their publication status before installing them. Zod schemas with async
+The Zod/ArkType adapters are documented in `docs/zod-and-arktype.md` and included
+from `0.1.0-alpha.1`. Match the installed toolkit train. Zod schemas with async
 refinements require `fromZodAsync` or `fromZodFactoryAsync`; an async factory alone
 does not select the native async validator.
 

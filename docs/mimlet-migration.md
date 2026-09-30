@@ -1,8 +1,9 @@
 # From Test Builders to Mimlet
 
 Mimlet is the same schema-independent toolkit under a new product identity.
-The core is `@mimlet/core`; the optional packages use `@mimlet/*`. The first alpha is published as
-`@mimlet/*@0.1.0-alpha.0` and `hey-api-builders@3.0.0-alpha.0` on npm's `next` channel.
+The core is `@mimlet/core`; the optional packages use `@mimlet/*`. The current alpha is
+`@mimlet/*@0.1.0-alpha.1` and `hey-api-builders@3.0.0-alpha.1` on npm's `next` channel.
+The Zod and ArkType packages first appear in this train.
 Use matching versions when updating imports and generated clients.
 
 The earlier source preview used the unscoped `mimlet` package name. npm rejected
@@ -21,13 +22,13 @@ from `@mimlet/codegen`. The product, repository and website remain Mimlet.
 
 Update source imports and dependencies together. Regenerate builders with the
 renamed CLI or Hey API plugin so emitted imports point to `@mimlet/core` and `@mimlet/*`.
-The Hey API plugin name, generated filename, configuration API and alpha
-`3.0.0-alpha.0` version remain unchanged. Its default external runtime import is
+The rename retained the Hey API plugin name, generated filename, configuration API
+and initial `3.0.0-alpha.0` version. Its default external runtime import is
 now `@mimlet/core`. Existing published Hey API v2 users should follow the separate
 [Hey API migration guide](hey-api-migration.md).
 
-Public functions, fluent methods, package boundaries and toolkit
-`0.1.0-alpha.0` versions are preserved. No compatibility shim packages are
+The rename preserved public functions, fluent methods, package boundaries and initial
+toolkit `0.1.0-alpha.0` versions. Subsequent coordinated releases advance versions together. No compatibility shim packages are
 published for the previous unpublished neutral names. This rename does not
 alter native schema behavior or turn unsupported generation into a supported capability.
 

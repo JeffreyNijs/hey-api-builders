@@ -62,8 +62,8 @@ a global minimum.
 - Pass the complete source, coverage, negative-type, emitted-code, tarball,
   browser, platform, runtime, vendor-range, example and website checks at the
   release commit. Preserve first-attempt browser failures and their traces.
-- Complete adoption trials in Molenheide and Linio against their real application
-  contracts. Record their exact base commits and dependency/compiler versions.
+- Complete adoption trials in a native-schema application and a Hey API application
+  against their real contracts. Record their exact base commits and dependency/compiler versions.
   Trial tests are evidence of integration, not production rollout or user adoption.
 - Publish a **new** release-candidate version through GitHub's trusted npm
   publisher. A successful workflow that skips previously uploaded versions does

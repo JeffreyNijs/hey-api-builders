@@ -9,7 +9,21 @@ import {
   readBootstrapRelease,
   validateBootstrapContext,
   validateBootstrapStatement,
+  bootstrapFailureMessage,
 } from '../../scripts/bootstrap-release.mjs';
+
+test('publication errors retain the registry reason without leaking response credentials', () => {
+  const error = Object.assign(new Error('403 Forbidden: package name rejected'), {
+    headers: { 'set-cookie': 'private-session-value' },
+    body: { token: 'private-token-value' },
+    cause: new Error('private-cause-value'),
+  });
+  assert.equal(bootstrapFailureMessage(error), '403 Forbidden: package name rejected');
+  assert.equal(
+    bootstrapFailureMessage({ token: 'private-token-value' }),
+    'Bootstrap release failed'
+  );
+});
 
 const commit = 'a'.repeat(40);
 test('first-publication signing is restricted to the exact main workflow and commit', () => {

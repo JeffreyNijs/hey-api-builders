@@ -46,3 +46,44 @@ export function validateReleaseManifest(value, expectedTag) {
     fail('core must be first and the integration must be included');
   return value;
 }
+
+/** Verify the entire packed dependency graph before the first package is published. */
+export function validateReleasePackageMetadata(manifest, metadata) {
+  const fail = (message) => {
+    throw new Error(`Release metadata: ${message}`);
+  };
+  if (
+    !manifest ||
+    !Array.isArray(manifest.packages) ||
+    !Array.isArray(metadata) ||
+    metadata.length !== manifest.packages.length
+  )
+    fail('incomplete package inventory');
+  const entries = new Map(manifest.packages.map((entry) => [entry.name, entry]));
+  const seen = new Set();
+  for (const pkg of metadata) {
+    const expected = entries.get(pkg?.name);
+    if (
+      !expected ||
+      seen.has(pkg.name) ||
+      pkg.version !== expected.version ||
+      pkg.private !== false
+    )
+      fail('packed package identity differs from the verified manifest');
+    seen.add(pkg.name);
+    for (const group of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
+      const dependencies = pkg[group] ?? {};
+      if (typeof dependencies !== 'object' || dependencies === null || Array.isArray(dependencies))
+        fail('invalid dependency metadata');
+      for (const [name, version] of Object.entries(dependencies)) {
+        if (typeof version !== 'string') fail('dependency versions must be strings');
+        const internal =
+          name === 'hey-api-builders' || /^@jeffreynijs\/test-builders(?:-[a-z0-9]+)*$/.test(name);
+        if (internal && (!entries.has(name) || entries.get(name).version !== version))
+          fail(`missing or mismatched internal dependency: ${name}`);
+      }
+    }
+  }
+  if (seen.size !== entries.size) fail('missing or duplicate package metadata');
+  return metadata;
+}

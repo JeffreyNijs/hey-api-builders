@@ -28,7 +28,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm validate
       - run: pnpm pack:check
-      - run: pnpm audit --prod --audit-level=high
+      - name: Record the installed production dependency graph
+        run: |
+          mkdir -p test-results/audit
+          pnpm list -r --prod --depth Infinity --json > test-results/audit/dependencies.json
+      - name: Audit production dependencies without ignoring advisory failures
+        run: pnpm audit --prod --audit-level=high --json | tee test-results/audit/advisories.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: production-dependency-audit
+          path: test-results/audit/
+          if-no-files-found: ignore
+          retention-days: 7
 
   compatibility:
     name: ${{ matrix.os }} / Node ${{ matrix.node }}

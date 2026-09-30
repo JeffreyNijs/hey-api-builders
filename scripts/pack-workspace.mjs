@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readWorkspace } from './check-workspace.mjs';
-import { validateReleaseManifest } from './release-manifest.mjs';
+import { validateReleaseManifest, validateReleasePackageMetadata } from './release-manifest.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const check = process.argv.slice(2);
@@ -106,6 +106,7 @@ try {
     distTag: workspace.coreVersion.includes('-') ? 'next' : 'latest',
     packages,
   });
+  const packedMetadata = [];
   // Verify the exact files after every package has been packed, without relying on mutable workspace paths.
   for (const pkg of manifest.packages) {
     const path = join(temporary, pkg.filename);
@@ -127,16 +128,9 @@ try {
       metadata.private !== false
     )
       throw new Error('Packed metadata mismatch');
-    const seen = new Set(manifest.packages.map((entry) => entry.name));
-    for (const group of ['dependencies', 'peerDependencies', 'optionalDependencies'])
-      for (const [name, version] of Object.entries(metadata[group] ?? {})) {
-        if (
-          seen.has(name) &&
-          !manifest.packages.some((entry) => entry.name === name && entry.version === version)
-        )
-          throw new Error('Packed internal dependency mismatch');
-      }
+    packedMetadata.push(metadata);
   }
+  validateReleasePackageMetadata(manifest, packedMetadata);
   if ((await readdir(temporary)).length !== packages.length)
     throw new Error('Unexpected artifact set');
   await writeFile(join(temporary, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);

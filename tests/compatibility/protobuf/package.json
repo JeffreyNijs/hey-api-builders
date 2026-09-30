@@ -7,6 +7,10 @@
     "protobufjs": "8.8.0"
   },
   "toolkitPackages": [
+    "test-builders-adapter",
+    "test-builders-protobuf"
+  ],
+  "coveragePackages": [
     "test-builders-protobuf"
   ]
 }

@@ -7,10 +7,14 @@
     "effect": "3.22.2"
   },
   "toolkitPackages": [
+    "test-builders-adapter",
     "test-builders-effect"
   ],
   "compilerLibs": [
     "ES2022",
     "DOM"
+  ],
+  "coveragePackages": [
+    "test-builders-effect"
   ]
 }

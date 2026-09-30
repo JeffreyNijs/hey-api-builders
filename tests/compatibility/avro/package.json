@@ -8,6 +8,7 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
+    "test-builders-adapter",
     "test-builders-avro"
   ],
   "compilerTypes": [
@@ -16,5 +17,8 @@
   "compilerLibs": [
     "ES2022",
     "DOM"
+  ],
+  "coveragePackages": [
+    "test-builders-avro"
   ]
 }

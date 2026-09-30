@@ -13,7 +13,10 @@ export interface ConformanceCase {
 export interface ConformanceSubject {
   readonly standard: StandardSchemaV1;
   /** Other capabilities are opaque; adapters need not implement a pure input check. */
-  readonly operations: object;
+  readonly operations: {
+    readonly checkInput?: (value: unknown) => boolean;
+    readonly [capability: string]: unknown;
+  };
   inspect(): AdapterInspection;
 }
 export interface ConformanceResult {
@@ -30,7 +33,7 @@ export async function checkAdapterConformance(
   subject: ConformanceSubject,
   cases: readonly ConformanceCase[]
 ): Promise<ConformanceResult> {
-  const operations = subject.operations as { readonly checkInput?: (value: unknown) => boolean };
+  const operations = subject.operations;
   if (!Array.isArray(cases) || !cases.length || cases.length > 10_000) {
     throw new TypeError('Conformance needs 1 to 10000 cases');
   }

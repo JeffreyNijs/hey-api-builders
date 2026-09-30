@@ -9,6 +9,10 @@
     "json-schema-faker": "0.6.3"
   },
   "toolkitPackages": [
+    "test-builders-adapter",
+    "test-builders-json-schema"
+  ],
+  "coveragePackages": [
     "test-builders-json-schema"
   ]
 }

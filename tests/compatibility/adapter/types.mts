@@ -48,3 +48,15 @@ const generatorOnly = defineAdapter({
 void assertAdapterConformance(generatorOnly, [
   { name: 'valid', input: () => ({ age: '42' }), valid: true },
 ]);
+
+// Unrelated capabilities are allowed, but an advertised input checker stays typed.
+void assertAdapterConformance(
+  {
+    ...generatorOnly,
+    operations: {
+      // @ts-expect-error Pure input checkers must be functions.
+      checkInput: true,
+    },
+  },
+  [{ name: 'valid', input: () => ({ age: '42' }), valid: true }]
+);

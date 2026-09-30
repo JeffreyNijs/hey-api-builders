@@ -10,14 +10,14 @@ packages. [Choose an adapter](adapters.md) for the capabilities you need.
 ## Install the alpha
 
 The coordinated alpha is available on npm's `next` channel: `@mimlet/*` packages
-at `0.1.0-alpha.0`, alongside `hey-api-builders@3.0.0-alpha.0`. Pin matching versions
+at `0.1.0-alpha.1`, alongside `hey-api-builders@3.0.0-alpha.1`. Pin matching versions
 when reproducing fixtures or generated clients. The existing Hey API `latest` tag
 remains on v2.
 
 For the TypeBox example below, use Node **22.18 or newer** and install:
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.0 @mimlet/typebox@0.1.0-alpha.0 typebox@1.3.34
+npm install --save-dev @mimlet/core@0.1.0-alpha.1 @mimlet/typebox@0.1.0-alpha.1 typebox@1.3.34
 ```
 
 For a plain factory, only `@mimlet/core` is needed. The `mimlet` executable comes
@@ -35,6 +35,13 @@ The original builder remains unchanged when you call `.with()`. `.build()` creat
 schema input; `.buildValidated()` validates that input and returns decoded output.
 Those types can differ when your schema has a codec or transform. Use the async
 methods when validation or the factory is asynchronous.
+
+## Named fluent helpers
+
+Direct builders use `.with({ name: 'Ada' })`. Named methods such as `.withName()`
+come from [generated builders](../packages/codegen/README.md), the Hey API plugin,
+or a [custom builder class](generated-facades-and-paths.md). They are additional
+fluent helpers; direct schema adapters do not add them automatically.
 
 ## Build from source
 
@@ -63,7 +70,7 @@ In a separate test project, install the core and TypeBox adapter tarballs togeth
 ```sh
 npm init -y
 npm pkg set type=module
-npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.0.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.0.tgz typebox@1.3.34
+npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.1.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.1.tgz typebox@1.3.34
 ```
 
 Replace the absolute paths with the checkout you built. Add only the adapters you

@@ -1,10 +1,13 @@
 # Releases and recovery
 
 Preparing the repository, merging a PR and publishing packages are separate
-operations. The first published train is toolkit `0.1.0-alpha.0` and Hey API integration
-`3.0.0-alpha.0`, available on npm's `next` channel. The
-[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.0)
-records its source commit and original package artifacts. For later trains,
+operations. The current published train is toolkit `0.1.0-alpha.1` and Hey API integration
+`3.0.0-alpha.1`, available on npm's `next` channel. It includes all nineteen packages,
+with native Zod and ArkType adapters. The
+[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.1)
+records its source commit and original package artifacts. The first seventeen-package
+[alpha.0 release](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.0)
+remains unchanged. For later trains,
 version fields and green tests alone do not prove registry publication.
 
 ## Release train

@@ -1,6 +1,6 @@
 # Compatibility contract
 
-This describes the first published alpha and its tested source contracts. A supported interface, a native parser,
+This describes the published `0.1.0-alpha.1` train and its tested source contracts. A supported interface, a native parser,
 an automatic generator and a shrinker are different capabilities. Native package
 versions below are the **exact conformance targets**, not inferred ranges. Fixture
 manifests and lockfiles under `tests/compatibility` are the executable source of truth.
@@ -12,9 +12,9 @@ manifests and lockfiles under `tests/compatibility` are the executable source of
 | Standard JSON Schema | v1 interface                | Input conversion plus generation; input/output types retained.                      | Must also supply Standard Schema to validate native output; opaque refinements can reject generated input.            |
 | TypeBox              | `typebox` 1.3.34            | Native minimal/default creation, complete anyOf-branch selection, custom factories. | Strict checking, root/field Codec handling, named contexts; no lossy JSON conversion.                                 |
 | Legacy TypeBox       | `@sinclair/typebox` 0.34.52 | Separate native minimal/default creation and anyOf selection.                       | Native Transform, references, recursion, Date and format cases. Native version semantics are not rewritten.           |
-| Zod                  | 4.4.3                       | Dedicated Zod/Mini builders, input JSON generation and typed factories.             | Native parsing/codecs; explicit async path avoids the Standard entry probe; next-release preview.                     |
+| Zod                  | 4.4.3                       | Dedicated Zod/Mini builders, input JSON generation and typed factories.             | Native parsing/codecs; explicit async path avoids the Standard entry probe.                                           |
 | Valibot              | 1.5.0; converter 1.8.0      | Native adapter converts synchronous schema input.                                   | Original parsing/transformations. Async/native-only schemas use a factory with Standard Schema.                       |
-| ArkType              | 2.2.5                       | Dedicated builders, input JSON generation and native typed factories.               | Native morphs/scopes and input checks retained; no private AST dependency; next-release preview.                      |
+| ArkType              | 2.2.5                       | Dedicated builders, input JSON generation and native typed factories.               | Native morphs/scopes and input checks retained; no private AST dependency.                                            |
 | Effect               | 3.22.2                      | Native decoded arbitrary re-encoded as input; sync/async factory escape hatches.    | Native input/output arbitraries, codecs and fast-check 3 shrinking. Effect 4 is not represented as compatible.        |
 | JSON Schema          | Draft-07, 2019-09, 2020-12  | `json-schema-faker` 0.6.3; explicit versioned alternative providers.                | Separate Ajv 8.20.0 validators and ajv-formats 3.0.1; checked output, offline references and bounded attempts.        |
 | Faker                | 10.5.0                      | Explicit factories, locale fallback and stable named session streams.               | Native schemas can validate results; fixed reference dates and versioned replay.                                      |

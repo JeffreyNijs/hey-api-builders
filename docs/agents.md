@@ -5,8 +5,8 @@ explicit validation, supported deterministic generation, coherent scenarios and
 checked replay. These capabilities can reduce the need to invent fixture structures
 and debugging workflows; no measured productivity or model-preference claim is implied.
 
-**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.0` and
-`hey-api-builders@3.0.0-alpha.0`, available on npm's `next` channel. Follow
+**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.1` and
+`hey-api-builders@3.0.0-alpha.1`, available on npm's `next` channel. Follow
 [Getting started](getting-started.md) for matching install commands or source
 development. Check the project's installed versions before applying an example.
 
@@ -25,10 +25,9 @@ An optional [Mimlet skill](../skills/mimlet/SKILL.md) packages this workflow. In
 it only when the user requests it; it does not change project dependencies or install
 global tools automatically.
 
-The next-release source includes dedicated [Zod and ArkType recipes](zod-and-arktype.md).
+The alpha includes dedicated [Zod and ArkType recipes](zod-and-arktype.md).
 Use their typed factory helpers when input cannot be generated from JSON metadata;
-choose the explicit Zod async helpers for async refinements. These two packages
-are source previews, so check availability before adding a registry dependency.
+choose the explicit Zod async helpers for async refinements.
 
 ## Build a fixture with native validation
 

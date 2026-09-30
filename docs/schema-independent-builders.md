@@ -3,12 +3,10 @@
 ## Repository and package boundaries
 
 The repository is a private pnpm workspace containing nineteen independently
-packable packages. Neutral packages share version `0.1.0-alpha.0`; the unscoped
-Hey API integration uses `3.0.0-alpha.0`. Individual package manifests are marked
-publishable for the verified release process, but no publication is implied by
-these source versions or by this implementation PR. The existing published
-Hey API v2 package is unchanged. The two new Zod/ArkType packages are prepared
-for the next release and are not in the existing seventeen-package alpha train.
+packable packages. The published scoped train is `0.1.0-alpha.1`; the unscoped
+Hey API integration is `3.0.0-alpha.1`. Both use npm's `next` channel. The train
+includes the dedicated Zod and ArkType adapters. The existing Hey API `latest`
+tag remains on v2. Later source versions require their own publication evidence.
 
 The core has no runtime or peer dependencies. Native vendors, JSON Schema
 providers, Faker, property testing, compiler tools, protocol codecs and the local

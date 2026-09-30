@@ -152,6 +152,11 @@ export async function prepare(): Promise<void> {
     ],
     ['Scenarios', 'correlated-scenarios', 'Shared identities and recomputed dependent values'],
     [
+      'Zod and ArkType',
+      'zod-and-arktype',
+      'Dedicated native builders and factories; next-release source preview',
+    ],
+    [
       'Replay',
       'sessions-and-replay',
       'Explicit seeds, compatibility identities and bounded sessions',

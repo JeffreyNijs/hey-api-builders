@@ -78,7 +78,19 @@ test('every documentation route and its Markdown alternate resolve below /mimlet
   const manifest = JSON.parse(
     await readFile(new URL('../.generated/site-manifest.json', import.meta.url), 'utf8')
   ) as { pages: string[]; packages: string[] };
-  expect(manifest.packages).toHaveLength(17);
+  const packageRoot = new URL('../../../packages/', import.meta.url);
+  const packageDirectories = (await readdir(packageRoot, { withFileTypes: true })).filter((entry) =>
+    entry.isDirectory()
+  );
+  const expectedPackages = await Promise.all(
+    packageDirectories.map(async (entry) => {
+      const source = JSON.parse(
+        await readFile(new URL(`${entry.name}/package.json`, packageRoot), 'utf8')
+      ) as { name: string };
+      return source.name;
+    })
+  );
+  expect([...manifest.packages].sort()).toEqual(expectedPackages.sort());
   for (const path of manifest.pages) {
     const response = await request.get(path.replace(/\.md$/, '.html'));
     expect(response.status(), path).toBe(200);

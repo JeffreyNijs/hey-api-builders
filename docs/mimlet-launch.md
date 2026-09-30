@@ -20,7 +20,7 @@ pnpm audit:production
 `pnpm docs:dev` watches the canonical Markdown, package READMEs, recipe sources and
 brand assets. `pnpm docs:preview` serves the built site on loopback port 4174 under
 `/mimlet/`. HTML, Markdown alternates and `llms.txt` are built from the same sources.
-The documentation application is private and is never part of the 17-package release.
+The documentation application is private and is never part of the package release.
 
 Website CI builds an artifact for review on pull requests, including stacked PRs.
 Deployment is restricted to `main` in `JeffreyNijs/mimlet`; feature branches

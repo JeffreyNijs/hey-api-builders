@@ -110,7 +110,9 @@ capabilities you use; schema vendors and generation backends do not enter the co
 | [@mimlet/typebox](packages/typebox/README.md)               | Modern native TypeBox, encoded/decoded types, complete union variants.                                           |
 | [@mimlet/typebox-legacy](packages/typebox-legacy/README.md) | Maintained legacy TypeBox and Transform support.                                                                 |
 | [@mimlet/json-schema](packages/json-schema/README.md)       | Draft-07, 2019-09 and 2020-12 generation; standards conversion; profiles, extensions and checked negative cases. |
-| [@mimlet/valibot](packages/valibot/README.md)               | Native Valibot input conversion and parsing. Zod and ArkType use the standards path directly.                    |
+| [@mimlet/zod](packages/zod/README.md)                       | Zod 4/Mini builders, native codecs, explicit async validation and typed factories (next-release preview).        |
+| [@mimlet/arktype](packages/arktype/README.md)               | Native ArkType morphs, scoped Types, input checks and typed factories (next-release preview).                    |
+| [@mimlet/valibot](packages/valibot/README.md)               | Native Valibot input conversion and parsing.                                                                     |
 | [@mimlet/effect](packages/effect/README.md)                 | Native Effect 3 generation, codecs, and arbitraries/shrinkers.                                                   |
 | [@mimlet/faker](packages/faker/README.md)                   | Realistic data with session-scoped random streams, locales and reference dates.                                  |
 | [@mimlet/fast-check](packages/fast-check/README.md)         | Shrink-aware fixtures, properties, coherent scenarios and failure replay.                                        |

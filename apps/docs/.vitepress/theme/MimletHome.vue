@@ -106,10 +106,11 @@ const { theme } = useData();
       </div>
       <div class="package-shelf" aria-label="Toolkit packages">
         <span class="package-core">@mimlet/core <small>the core</small></span
-        ><span>@mimlet/typebox</span><span>@mimlet/fast-check</span><span>@mimlet/graphql</span
-        ><span>@mimlet/codegen</span><span>hey-api-builders</span
+        ><span>@mimlet/typebox</span><span>@mimlet/zod</span><span>@mimlet/arktype</span
+        ><span>@mimlet/fast-check</span><span>@mimlet/graphql</span><span>@mimlet/codegen</span
+        ><span>hey-api-builders</span
         ><a :href="withBase('/guide/adapters.html')"
-          >Explore all 17 packages <span aria-hidden="true">↗</span></a
+          >Explore all 19 packages <span aria-hidden="true">↗</span></a
         >
       </div>
     </section>

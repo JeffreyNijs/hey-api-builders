@@ -8,6 +8,18 @@ import { shop } from './compiled/scenario.js';
 import { first, again } from './compiled/replay.js';
 import { report } from './compiled/shrinking.js';
 import { files } from './compiled/codegen.js';
+import { input as zodInput, user as zodUser } from './compiled/zod.js';
+import { input as arkInput, user as arkUser } from './compiled/arktype.js';
+
+test('dedicated Zod and ArkType recipes preserve encoded and decoded values', () => {
+  for (const [input, output] of [
+    [zodInput, zodUser],
+    [arkInput, arkUser],
+  ]) {
+    assert.deepEqual(input, { name: 'Ada', age: '42' });
+    assert.deepEqual(output, { name: 'Ada', age: 42 });
+  }
+});
 
 test('the landing-page example builds the advertised validated fixture', () => {
   assert.deepEqual(admin, { id: 'user-1', role: 'admin' });

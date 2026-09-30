@@ -3,13 +3,8 @@ import { describe, it } from 'node:test';
 import * as S from 'effect/Schema';
 import * as E from 'effect/Effect';
 import * as FC from 'effect/FastCheck';
-import {
-  fromEffect,
-  fromEffectAsync,
-  fromEffectFactory,
-  effectAdapter,
-} from '@jeffreynijs/test-builders-effect';
-import { createSession, BuilderValidationError } from '@jeffreynijs/test-builders';
+import { fromEffect, fromEffectAsync, fromEffectFactory, effectAdapter } from '@mimlet/effect';
+import { createSession, BuilderValidationError } from 'mimlet';
 const session = () =>
   createSession({ seed: 42, fingerprint: 'effect-corpus/v1', provider: 'effect@3.22.2' });
 describe('Effect native adapter', () => {

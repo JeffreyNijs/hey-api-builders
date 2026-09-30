@@ -1,8 +1,8 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
 import * as S from 'effect/Schema';
-import { effectAdapter } from '@jeffreynijs/test-builders-effect';
+import { effectAdapter } from '@mimlet/effect';
 it('native Effect decoding satisfies the shared adapter contract', async () => {
   const native = effectAdapter(S.NumberFromString);
   await assertAdapterConformance(

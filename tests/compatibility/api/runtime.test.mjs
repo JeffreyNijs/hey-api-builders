@@ -10,8 +10,8 @@ import {
   headerValue,
   openApi,
   serializeParameter,
-} from '@jeffreynijs/test-builders-api';
-import { BuilderValidationError, restoreSession } from '@jeffreynijs/test-builders';
+} from '@mimlet/api';
+import { BuilderValidationError, restoreSession } from 'mimlet';
 const content = (schema, type = 'application/json') => ({ content: { [type]: { schema } } });
 const parameter = (name, location = 'query', schema = { type: 'string' }, extra = {}) => ({
   name,

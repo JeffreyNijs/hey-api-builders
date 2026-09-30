@@ -6,8 +6,8 @@ import {
   fromGraphQLVariables,
   fromGraphQLResponse,
   GraphQLFixtureError,
-} from '@jeffreynijs/test-builders-graphql';
-import { BuilderValidationError, restoreSession } from '@jeffreynijs/test-builders';
+} from '@mimlet/graphql';
+import { BuilderValidationError, restoreSession } from 'mimlet';
 const failure = (run) => assert.throws(run, GraphQLFixtureError);
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const schema = `

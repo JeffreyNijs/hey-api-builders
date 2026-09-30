@@ -4,7 +4,7 @@ import {
   fromJsonSchema,
   fromStandardJsonSchema,
   SchemaPreparationError,
-} from '@jeffreynijs/test-builders-json-schema';
+} from '@mimlet/json-schema';
 it('accepts known non-enumerable standard metadata only at the conversion boundary', () => {
   const document = { const: 'ok' };
   Object.defineProperty(document, '~standard', {

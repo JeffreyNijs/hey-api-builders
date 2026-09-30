@@ -52,13 +52,9 @@ it('reports broken links, traversal, malformed encodings and executable schemes'
     );
 });
 it('does not let a new public package disappear from the root package index', () => {
-  checkPackageIndex('[core](packages/test-builders/README.md)', ['test-builders']);
+  checkPackageIndex('[core](packages/core/README.md)', ['core']);
   assert.throws(
-    () =>
-      checkPackageIndex('[core](packages/test-builders/README.md)', [
-        'test-builders',
-        'test-builders-new',
-      ]),
-    /missing: test-builders-new/
+    () => checkPackageIndex('[core](packages/core/README.md)', ['core', 'new-adapter']),
+    /missing: new-adapter/
   );
 });

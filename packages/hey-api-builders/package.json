@@ -44,22 +44,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JeffreyNijs/hey-api-builders.git",
+    "url": "git+https://github.com/JeffreyNijs/mimlet.git",
     "directory": "packages/hey-api-builders"
   },
-  "homepage": "https://github.com/JeffreyNijs/hey-api-builders/tree/main/packages/hey-api-builders#readme",
+  "homepage": "https://jeffreynijs.github.io/mimlet/packages/hey-api-builders",
   "bugs": {
-    "url": "https://github.com/JeffreyNijs/hey-api-builders/issues"
+    "url": "https://github.com/JeffreyNijs/mimlet/issues"
   },
   "peerDependencies": {
     "@faker-js/faker": "^10.0.0",
     "@hey-api/openapi-ts": "^0.99.0",
     "typescript": "^6.0.0",
-    "@jeffreynijs/test-builders": "0.1.0-alpha.0"
+    "mimlet": "0.1.0-alpha.0"
   },
   "private": false,
   "devDependencies": {
-    "@jeffreynijs/test-builders": "workspace:*",
+    "mimlet": "workspace:*",
     "@hey-api/openapi-ts": "0.99.0",
     "@faker-js/faker": "10.5.0",
     "typescript": "6.0.3"

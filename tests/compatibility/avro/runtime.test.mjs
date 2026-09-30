@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import avro from 'avsc';
-import { avroAdapter, fromAvro, AvroFixtureError } from '@jeffreynijs/test-builders-avro';
-import { BuilderValidationError, restoreSession } from '@jeffreynijs/test-builders';
+import { avroAdapter, fromAvro, AvroFixtureError } from '@mimlet/avro';
+import { BuilderValidationError, restoreSession } from 'mimlet';
 
 const scalar = (type) => avroAdapter(type);
 const Event = {

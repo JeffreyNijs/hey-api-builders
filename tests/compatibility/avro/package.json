@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-avro-compatibility",
+  "name": "mimlet-avro-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -8,8 +8,8 @@
     "@types/node": "26.6.3"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-avro"
+    "adapter",
+    "avro"
   ],
   "compilerTypes": [
     "node"
@@ -19,6 +19,6 @@
     "DOM"
   ],
   "coveragePackages": [
-    "test-builders-avro"
+    "avro"
   ]
 }

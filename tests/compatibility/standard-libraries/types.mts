@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { type } from 'arktype';
 import * as v from 'valibot';
-import { fromStandardJsonSchema } from '@jeffreynijs/test-builders-json-schema';
-import { fromValibot } from '@jeffreynijs/test-builders-valibot';
-import { createSchemaBuilder } from '@jeffreynijs/test-builders';
+import { fromStandardJsonSchema } from '@mimlet/json-schema';
+import { fromValibot } from '@mimlet/valibot';
+import { createSchemaBuilder } from 'mimlet';
 declare function expectType<T>(value: T): void;
 const zb = fromStandardJsonSchema(
   z.object({ age: z.string() }).transform(({ age }) => ({ age: Number(age) }))

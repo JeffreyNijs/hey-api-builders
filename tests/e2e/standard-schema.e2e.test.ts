@@ -1,10 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 
-import {
-  BuilderValidationError,
-  createSchemaBuilder,
-} from '../../packages/test-builders/src/index.js';
+import { BuilderValidationError, createSchemaBuilder } from '../../packages/core/src/index.js';
 
 describe('real Zod Standard Schema interoperability', () => {
   it('infers input patches and transformed output without inspecting Zod internals', () => {

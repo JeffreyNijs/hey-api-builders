@@ -11,9 +11,9 @@ import {
   captureFixture,
   restoreFixture,
   createScenario,
-} from '../packages/test-builders/dist/index.js';
-import { jsonSchemaAdapter } from '../packages/test-builders-json-schema/dist/index.js';
-import { emitBuilders } from '../packages/test-builders-codegen/dist/index.js';
+} from '../packages/core/dist/index.js';
+import { jsonSchemaAdapter } from '../packages/json-schema/dist/index.js';
+import { emitBuilders } from '../packages/codegen/dist/index.js';
 const measurements: {
   name: string;
   operationsPerSample: number;

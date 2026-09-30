@@ -10,7 +10,7 @@ import {
   captureFixture,
   restoreFixture,
   BuilderValidationError,
-} from '@jeffreynijs/test-builders';
+} from 'mimlet';
 import {
   fromArbitrary,
   fromSchemaArbitrary,
@@ -25,7 +25,7 @@ import {
   FixturePropertyError,
   assertFixtureProperty,
   assertFixturePropertyAsync,
-} from '@jeffreynijs/test-builders-fast-check';
+} from '@mimlet/fast-check';
 const identity = { fingerprint: 'fixture/v1', provider: 'tests@1', configuration: 'default' };
 const options = { identity, seed: 12345, numRuns: 100 };
 const session = () => createSession({ ...identity, seed: 42 });

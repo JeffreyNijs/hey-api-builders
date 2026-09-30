@@ -57,7 +57,7 @@ await withPackedConsumer(fixture, async ({ temporary, compiler, run }) => {
     [
       '--experimental-test-coverage',
       ...coveragePackages.map(
-        (name) => `--test-coverage-include=**/node_modules/@jeffreynijs/${name}/dist/*.js`
+        (name) => `--test-coverage-include=**/node_modules/@mimlet/${name}/dist/*.js`
       ),
       '--test-coverage-lines=90',
       '--test-coverage-branches=85',

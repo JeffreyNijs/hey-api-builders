@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { provider, users, checkout, loadStory, respondOrder, persistOrders } from './shop.mjs';
-import { restoreSession, captureFixture, restoreFixture } from '@jeffreynijs/test-builders';
+import { restoreSession, captureFixture, restoreFixture } from 'mimlet';
 
 test('native codecs and realistic correlated fixtures reproduce a saved batch', () => {
   const session = provider.session(42),

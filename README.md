@@ -1,4 +1,4 @@
-# Test Builders
+# Mimlet
 
 A modular TypeScript toolkit for reproducible test data: immutable builders,
 schema-driven generation, native validation and codecs, related fixtures,
@@ -15,7 +15,7 @@ packable. The existing published Hey API v2 package is unchanged.
 ### An existing factory
 
 ```ts
-import { createBuilder } from '@jeffreynijs/test-builders';
+import { createBuilder } from 'mimlet';
 
 interface User {
   id: string;
@@ -37,7 +37,7 @@ and opt-in cloning avoid accidentally shared nested fixture data.
 
 ```ts
 import Type from 'typebox';
-import { fromTypeBox, fromTypeBoxVariant } from '@jeffreynijs/test-builders-typebox';
+import { fromTypeBox, fromTypeBoxVariant } from '@mimlet/typebox';
 
 const Timestamp = Type.Codec(Type.Number())
   .Decode((value) => new Date(value))
@@ -63,7 +63,7 @@ produces checked defaults/minimal examples, not universal random generation.
 
 ```ts
 import { z } from 'zod';
-import { fromStandardJsonSchema } from '@jeffreynijs/test-builders-json-schema';
+import { fromStandardJsonSchema } from '@mimlet/json-schema';
 
 const Person = z.object({ name: z.string().min(1), age: z.number().int().min(18).max(99) });
 const people = fromStandardJsonSchema(Person);
@@ -79,7 +79,7 @@ patches. Raw runtime JSON returns `unknown`; it does not invent application type
 Use a prepared `jsonSchemaAdapter` and its explicit session for replayable lists:
 
 ```ts
-import { jsonSchemaAdapter } from '@jeffreynijs/test-builders-json-schema';
+import { jsonSchemaAdapter } from '@mimlet/json-schema';
 
 const provider = jsonSchemaAdapter(
   { type: 'integer', minimum: 1, maximum: 100 },
@@ -93,28 +93,28 @@ const value = provider.create(session);
 
 ## Packages
 
-All neutral package names below use the `@jeffreynijs/` scope. Install only the
+The core is `mimlet`; optional toolkit packages use the `@mimlet/` scope. Install only the
 capabilities you use; schema vendors and generation backends do not enter the core.
 
-| Package                                                                         | Purpose                                                                                                          |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [test-builders](packages/test-builders/README.md)                               | Immutable runtime, Standard Schema, sessions, capture, scenarios, class facades and typed paths.                 |
-| [test-builders-typebox](packages/test-builders-typebox/README.md)               | Modern native TypeBox, encoded/decoded types, complete union variants.                                           |
-| [test-builders-typebox-legacy](packages/test-builders-typebox-legacy/README.md) | Maintained legacy TypeBox and Transform support.                                                                 |
-| [test-builders-json-schema](packages/test-builders-json-schema/README.md)       | Draft-07, 2019-09 and 2020-12 generation; standards conversion; profiles, extensions and checked negative cases. |
-| [test-builders-valibot](packages/test-builders-valibot/README.md)               | Native Valibot input conversion and parsing. Zod and ArkType use the standards path directly.                    |
-| [test-builders-effect](packages/test-builders-effect/README.md)                 | Native Effect 3 generation, codecs, and arbitraries/shrinkers.                                                   |
-| [test-builders-faker](packages/test-builders-faker/README.md)                   | Realistic data with session-scoped random streams, locales and reference dates.                                  |
-| [test-builders-fast-check](packages/test-builders-fast-check/README.md)         | Shrink-aware fixtures, properties, coherent scenarios and failure replay.                                        |
-| [test-builders-api](packages/test-builders-api/README.md)                       | OpenAPI operations and AsyncAPI messages, offline references and explicit serialization.                         |
-| [test-builders-graphql](packages/test-builders-graphql/README.md)               | Native GraphQL input and selection-aware response fixtures.                                                      |
-| [test-builders-protobuf](packages/test-builders-protobuf/README.md)             | Lossless Protobuf values, offline imports and binary codecs.                                                     |
-| [test-builders-avro](packages/test-builders-avro/README.md)                     | Native Avro values, explicit unions, 64-bit integers and binary codecs.                                          |
-| [test-builders-codegen](packages/test-builders-codegen/README.md)               | Standalone classes/CLI, deterministic output, non-mutating checks and canonical self-contained runtime.          |
-| [test-builders-playground](packages/test-builders-playground/README.md)         | Local-only schema editor with replay, import/export and interruptible workers.                                   |
-| [test-builders-adapter](packages/test-builders-adapter/README.md)               | Capability-based adapter SDK, inspection and reusable conformance checks.                                        |
-| [test-builders-consumers](packages/test-builders-consumers/README.md)           | Preview loaders, HTTP response resolvers and explicit persistence handoff.                                       |
-| [hey-api-builders](packages/hey-api-builders/README.md)                         | Existing unscoped plugin identity, now emitting wrappers around the shared core.                                 |
+| Package                                                     | Purpose                                                                                                          |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [mimlet](packages/core/README.md)                           | Immutable runtime, Standard Schema, sessions, capture, scenarios, class facades and typed paths.                 |
+| [@mimlet/typebox](packages/typebox/README.md)               | Modern native TypeBox, encoded/decoded types, complete union variants.                                           |
+| [@mimlet/typebox-legacy](packages/typebox-legacy/README.md) | Maintained legacy TypeBox and Transform support.                                                                 |
+| [@mimlet/json-schema](packages/json-schema/README.md)       | Draft-07, 2019-09 and 2020-12 generation; standards conversion; profiles, extensions and checked negative cases. |
+| [@mimlet/valibot](packages/valibot/README.md)               | Native Valibot input conversion and parsing. Zod and ArkType use the standards path directly.                    |
+| [@mimlet/effect](packages/effect/README.md)                 | Native Effect 3 generation, codecs, and arbitraries/shrinkers.                                                   |
+| [@mimlet/faker](packages/faker/README.md)                   | Realistic data with session-scoped random streams, locales and reference dates.                                  |
+| [@mimlet/fast-check](packages/fast-check/README.md)         | Shrink-aware fixtures, properties, coherent scenarios and failure replay.                                        |
+| [@mimlet/api](packages/api/README.md)                       | OpenAPI operations and AsyncAPI messages, offline references and explicit serialization.                         |
+| [@mimlet/graphql](packages/graphql/README.md)               | Native GraphQL input and selection-aware response fixtures.                                                      |
+| [@mimlet/protobuf](packages/protobuf/README.md)             | Lossless Protobuf values, offline imports and binary codecs.                                                     |
+| [@mimlet/avro](packages/avro/README.md)                     | Native Avro values, explicit unions, 64-bit integers and binary codecs.                                          |
+| [@mimlet/codegen](packages/codegen/README.md)               | Standalone classes/CLI, deterministic output, non-mutating checks and canonical self-contained runtime.          |
+| [@mimlet/playground](packages/playground/README.md)         | Local-only schema editor with replay, import/export and interruptible workers.                                   |
+| [@mimlet/adapter](packages/adapter/README.md)               | Capability-based adapter SDK, inspection and reusable conformance checks.                                        |
+| [@mimlet/consumers](packages/consumers/README.md)           | Preview loaders, HTTP response resolvers and explicit persistence handoff.                                       |
+| [hey-api-builders](packages/hey-api-builders/README.md)     | Existing unscoped plugin identity, now emitting wrappers around the shared core.                                 |
 
 [Compatibility](docs/compatibility.md) separates tested package versions, generation,
 validation, codecs, shrinking and execution environments. It is not a blanket
@@ -137,7 +137,7 @@ and install its tarball plus its declared internal dependencies in your consumer
 tree. It does not publish. See [release operations](docs/releases.md).
 
 Run the local playground with
-`node packages/test-builders-playground/dist/cli.js`. It binds only to loopback;
+`node packages/playground/dist/cli.js`. It binds only to loopback;
 closing it leaves no saved user schema on the server. Do not expose its port publicly.
 
 ## Workflows and contracts

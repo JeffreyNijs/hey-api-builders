@@ -2,13 +2,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import Type from 'typebox';
 import { Type as Legacy } from '@sinclair/typebox';
-import * as modern from '@jeffreynijs/test-builders-typebox';
-import * as legacy from '@jeffreynijs/test-builders-typebox-legacy';
-import {
-  BuilderGenerationError,
-  BuilderValidationError,
-  createSchemaBuilder,
-} from '@jeffreynijs/test-builders';
+import * as modern from '@mimlet/typebox';
+import * as legacy from '@mimlet/typebox-legacy';
+import { BuilderGenerationError, BuilderValidationError, createSchemaBuilder } from 'mimlet';
 
 for (const [name, T, api] of [
   ['modern', Type, modern],

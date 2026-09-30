@@ -3,12 +3,8 @@ import {
   fromStandardJsonSchema,
   jsonSchemaAdapter,
   type JsonSchema,
-} from '@jeffreynijs/test-builders-json-schema';
-import type {
-  StandardSchemaV1,
-  StandardJSONSchemaV1,
-  GenerationSession,
-} from '@jeffreynijs/test-builders';
+} from '@mimlet/json-schema';
+import type { StandardSchemaV1, StandardJSONSchemaV1, GenerationSession } from 'mimlet';
 declare function expectType<T>(value: T): void;
 declare const schema: StandardSchemaV1<{ age: string }, { age: number }> &
   StandardJSONSchemaV1<{ age: string }, { age: number }>;

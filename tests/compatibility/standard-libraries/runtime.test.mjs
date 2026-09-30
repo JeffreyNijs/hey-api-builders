@@ -3,13 +3,9 @@ import { describe, it } from 'node:test';
 import { z } from 'zod';
 import { type } from 'arktype';
 import * as v from 'valibot';
-import { fromStandardJsonSchema } from '@jeffreynijs/test-builders-json-schema';
-import { fromValibot, valibotAdapter } from '@jeffreynijs/test-builders-valibot';
-import {
-  createSchemaBuilder,
-  createSession,
-  BuilderValidationError,
-} from '@jeffreynijs/test-builders';
+import { fromStandardJsonSchema } from '@mimlet/json-schema';
+import { fromValibot, valibotAdapter } from '@mimlet/valibot';
+import { createSchemaBuilder, createSession, BuilderValidationError } from 'mimlet';
 const session = () =>
   createSession({ seed: 42, fingerprint: 'library-corpus/v1', provider: 'test' });
 

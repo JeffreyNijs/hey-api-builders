@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-executable-examples",
+  "name": "mimlet-executable-examples",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -8,8 +8,8 @@
     "@sinclair/typebox": "0.34.52"
   },
   "toolkitPackages": [
-    "test-builders-faker",
-    "test-builders-typebox-legacy",
-    "test-builders-consumers"
+    "faker",
+    "typebox-legacy",
+    "consumers"
   ]
 }

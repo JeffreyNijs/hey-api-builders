@@ -1,7 +1,7 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
-import { avroAdapter } from '@jeffreynijs/test-builders-avro';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
+import { avroAdapter } from '@mimlet/avro';
 it('Avro native records satisfy the shared adapter contract', async () => {
   const native = avroAdapter({
     type: 'record',

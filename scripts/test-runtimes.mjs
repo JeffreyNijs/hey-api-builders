@@ -22,7 +22,7 @@ try {
       [
         npm,
         'pack',
-        join(root, 'packages/test-builders'),
+        join(root, 'packages/core'),
         '--ignore-scripts',
         '--json',
         '--pack-destination',

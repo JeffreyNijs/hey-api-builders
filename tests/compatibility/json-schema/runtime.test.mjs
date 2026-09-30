@@ -6,13 +6,8 @@ import {
   jsonSchemaAdapter,
   SchemaGenerationError,
   SchemaPreparationError,
-} from '@jeffreynijs/test-builders-json-schema';
-import {
-  createSession,
-  restoreSession,
-  BuilderValidationError,
-  SessionBudgetError,
-} from '@jeffreynijs/test-builders';
+} from '@mimlet/json-schema';
+import { createSession, restoreSession, BuilderValidationError, SessionBudgetError } from 'mimlet';
 
 const object = {
   type: 'object',

@@ -1,7 +1,7 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
-import { protobufAdapter } from '@jeffreynijs/test-builders-protobuf';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
+import { protobufAdapter } from '@mimlet/protobuf';
 it('Protobuf bigint inputs satisfy the shared adapter contract', async () => {
   const native = protobufAdapter('syntax="proto2"; message Item { required int64 id=1; }', 'Item');
   await assertAdapterConformance(

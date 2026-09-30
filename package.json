@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-workspace",
+  "name": "mimlet-workspace",
   "version": "0.0.0",
   "private": true,
   "description": "Modular schema-independent test-data toolkit and integrations.",
@@ -31,7 +31,7 @@
     "@eslint/js": "10.0.1",
     "@faker-js/faker": "10.5.0",
     "@hey-api/openapi-ts": "0.99.0",
-    "@jeffreynijs/test-builders": "workspace:*",
+    "mimlet": "workspace:*",
     "@sinclair/typebox": "0.34.52",
     "@types/node": "22.20.1",
     "@typescript-eslint/eslint-plugin": "8.66.0",
@@ -57,7 +57,7 @@
   "scripts": {
     "preinstall": "node scripts/check-workspace.mjs",
     "build": "turbo run build",
-    "build:core": "tsc -p packages/test-builders/tsconfig.json",
+    "build:core": "tsc -p packages/core/tsconfig.json",
     "watch": "pnpm --filter hey-api-builders watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -65,7 +65,7 @@
     "format:check": "prettier --check . --ignore-unknown",
     "typecheck": "pnpm type-check",
     "test": "pnpm test:unit && pnpm test:core && pnpm test:integration && pnpm test:typebox && pnpm test:optional",
-    "test:core": "tsc -p packages/test-builders/tsconfig.json && tsc -p packages/test-builders/test/tsconfig.json && node scripts/test-core.mjs",
+    "test:core": "tsc -p packages/core/tsconfig.json && tsc -p packages/core/test/tsconfig.json && node scripts/test-core.mjs",
     "test:watch": "vitest --watch --project unit",
     "test:coverage": "pnpm test:unit && pnpm test:core && vitest run --project integration --coverage && pnpm test:typebox && pnpm test:optional",
     "test:typebox": "node scripts/test-typebox.mjs",

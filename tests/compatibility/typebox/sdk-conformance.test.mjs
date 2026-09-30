@@ -1,10 +1,10 @@
 import { it } from 'node:test';
-import { defineAdapter } from '@jeffreynijs/test-builders-adapter';
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
+import { defineAdapter } from '@mimlet/adapter';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
 import Type from 'typebox';
 import { Type as Legacy } from '@sinclair/typebox';
-import { typeBoxAdapter as modern } from '@jeffreynijs/test-builders-typebox';
-import { typeBoxAdapter as legacy } from '@jeffreynijs/test-builders-typebox-legacy';
+import { typeBoxAdapter as modern } from '@mimlet/typebox';
+import { typeBoxAdapter as legacy } from '@mimlet/typebox-legacy';
 for (const [id, T, adapt] of [
   ['typebox', Type, modern],
   ['legacy-typebox', Legacy, legacy],

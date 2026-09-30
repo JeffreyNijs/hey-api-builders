@@ -12,7 +12,7 @@ For everyday changes, use the typed source suites:
 ```sh
 pnpm test:unit
 pnpm test:watch
-pnpm --filter @jeffreynijs/test-builders-protobuf test:unit
+pnpm --filter @mimlet/protobuf test:unit
 pnpm type-check
 ```
 
@@ -55,7 +55,7 @@ separate checks.
 ## New adapters and providers
 
 Declare the original schema, standards handle, actual capabilities and limitations
-through the [adapter SDK](packages/test-builders-adapter/README.md). A validator is
+through the [adapter SDK](packages/adapter/README.md). A validator is
 not automatically a generator, field inspector or shrinker. Preserve input/output
 codec semantics and native failure causes. Test unsupported conversions explicitly.
 Custom executable providers must be versioned for replay and documented as trusted.

@@ -33,7 +33,7 @@ it('recognizes the complete workspace and orders internal dependencies first', (
   fixture(async ({ root }) => {
     const workspace = await readWorkspace(root);
     const names = workspace.packages.map((item) => item.manifest.name);
-    assert.equal(names[0], '@jeffreynijs/test-builders');
+    assert.equal(names[0], 'mimlet');
     for (const item of workspace.packages)
       for (const dependency of Object.keys(item.manifest.dependencies ?? {})) {
         if (names.includes(dependency))
@@ -42,13 +42,13 @@ it('recognizes the complete workspace and orders internal dependencies first', (
   }));
 it('rejects missing/mismatched internal packages before installation falls back to npm', () =>
   fixture(async ({ root, change }) => {
-    const path = 'packages/test-builders-adapter/package.json';
+    const path = 'packages/adapter/package.json';
     await change(path, (pkg) => {
-      pkg.dependencies['@jeffreynijs/test-builders'] = '99.0.0';
+      pkg.dependencies['mimlet'] = '99.0.0';
     });
     await assert.rejects(readWorkspace(root), /must match/);
     await change(path, (pkg) => {
-      pkg.dependencies = { '@jeffreynijs/test-builders-missing': '0.1.0' };
+      pkg.dependencies = { '@mimlet/missing': '0.1.0' };
     });
     await assert.rejects(readWorkspace(root), /missing internal/);
   }));
@@ -62,84 +62,84 @@ it('rejects accidental root publication, package metadata drift, cycles and runt
       /root must be private/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.private = true;
       },
       /publishing boundary/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.version = '../bad';
       },
       /invalid version/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.name = '@other/core';
       },
       /mismatch/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.publishConfig.tag = 'latest';
       },
       /distribution tag/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.publishConfig.provenance = false;
       },
       /provenance/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.repository.directory = '.';
       },
       /repository metadata/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.files.push('src');
       },
       /file selection/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.exports['.'] = './dist/../secret.js';
       },
       /traversal/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.exports['.'] = './src/index.ts';
       },
       /unsafe export/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.bin = { demo: '../secret' };
       },
       /executable target/,
     ],
     [
-      'packages/test-builders/package.json',
+      'packages/core/package.json',
       (pkg) => {
         pkg.dependencies = { faker: '1' };
       },
       /core must not require/,
     ],
     [
-      'packages/test-builders-adapter/package.json',
+      'packages/adapter/package.json',
       (pkg) => {
         pkg.dependencies[pkg.name] = pkg.version;
       },
@@ -154,7 +154,7 @@ it('rejects accidental root publication, package metadata drift, cycles and runt
 });
 it('does not follow symbolic package manifests', () =>
   fixture(async ({ root }) => {
-    const path = join(root, 'packages/test-builders/package.json');
+    const path = join(root, 'packages/core/package.json');
     const value = await readFile(path);
     await rm(path);
     await writeFile(join(root, 'other.json'), value);

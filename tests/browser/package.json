@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-browser-acceptance",
+  "name": "mimlet-browser-acceptance",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "@playwright/test": "1.63.0"
   },
   "toolkitPackages": [
-    "test-builders-json-schema",
-    "test-builders-playground"
+    "json-schema",
+    "playground"
   ]
 }

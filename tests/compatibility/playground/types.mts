@@ -3,8 +3,8 @@ import {
   startPlayground,
   type GenerationRequest,
   PlaygroundError,
-} from '@jeffreynijs/test-builders-playground';
-import type { SessionSnapshot } from '@jeffreynijs/test-builders';
+} from '@mimlet/playground';
+import type { SessionSnapshot } from 'mimlet';
 declare function expectType<T>(value: T): void;
 const request = {
   schema: { type: 'integer' },

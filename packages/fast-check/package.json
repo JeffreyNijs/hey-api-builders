@@ -1,0 +1,63 @@
+{
+  "name": "@mimlet/fast-check",
+  "version": "0.1.0-alpha.0",
+  "private": false,
+  "description": "Shrink-aware fixture mapping, correlated scenarios, and replay with fast-check.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "fast-check": "4.10.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JeffreyNijs/mimlet.git",
+    "directory": "packages/fast-check"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "typecheck": "pnpm type-check",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "test:unit": "vitest run --root ../.. --project unit tests/unit/mimlet-fast-check.test.ts"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "bugs": {
+    "url": "https://github.com/JeffreyNijs/mimlet/issues"
+  },
+  "homepage": "https://jeffreynijs.github.io/mimlet/packages/fast-check",
+  "keywords": [
+    "test-data",
+    "fixtures",
+    "builders",
+    "standard-schema"
+  ],
+  "devDependencies": {
+    "fast-check": "4.10.2"
+  },
+  "dependencies": {
+    "mimlet": "0.1.0-alpha.0"
+  }
+}

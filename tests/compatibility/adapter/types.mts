@@ -1,5 +1,5 @@
-import { defineAdapter, fromAdapter } from '@jeffreynijs/test-builders-adapter';
-import type { StandardSchemaV1 } from '@jeffreynijs/test-builders';
+import { defineAdapter, fromAdapter } from '@mimlet/adapter';
+import type { StandardSchemaV1 } from 'mimlet';
 declare function expectType<T>(value: T): void;
 declare const standard: StandardSchemaV1<{ age: string }, { age: number }>;
 const adapter = defineAdapter({
@@ -38,7 +38,7 @@ defineAdapter({ id: 'wrong', version: '1', standard, operations: { create: () =>
 adapter.operations.encode({ age: '42' });
 
 // A generative adapter without checkInput still satisfies the common suite.
-import { assertAdapterConformance } from '@jeffreynijs/test-builders-adapter/testing';
+import { assertAdapterConformance } from '@mimlet/adapter/testing';
 const generatorOnly = defineAdapter({
   id: 'generator-only',
   version: '1',

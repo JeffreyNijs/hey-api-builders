@@ -6,11 +6,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { performance } from 'node:perf_hooks';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath, URL } from 'node:url';
-import {
-  generateIsolated,
-  startPlayground,
-  PlaygroundError,
-} from '@jeffreynijs/test-builders-playground';
+import { generateIsolated, startPlayground, PlaygroundError } from '@mimlet/playground';
 
 const simple = {
   schema: { type: 'integer', minimum: 1, maximum: 10000 },
@@ -418,7 +414,7 @@ it('releases a disconnected body reader rather than leaking a generation slot', 
 });
 it('ships a usable CLI with help, argument checks, startup and graceful shutdown', async () => {
   const cli = fileURLToPath(
-    new URL('./node_modules/@jeffreynijs/test-builders-playground/dist/cli.js', import.meta.url)
+    new URL('./node_modules/@mimlet/playground/dist/cli.js', import.meta.url)
   );
   assert.match(execFileSync(process.execPath, [cli, '--help'], { encoding: 'utf8' }), /Usage:/);
   for (const args of [
@@ -456,7 +452,7 @@ it('ships a usable CLI with help, argument checks, startup and graceful shutdown
 
 it('measures the same execution implementation used inside workers, including bounded failures', async () => {
   const { executeGeneration } = await import(
-    new URL('./execution.js', import.meta.resolve('@jeffreynijs/test-builders-playground'))
+    new URL('./execution.js', import.meta.resolve('@mimlet/playground'))
   );
   for (const profile of ['minimal', 'random', 'boundary', 'defaults', 'examples']) {
     const result = JSON.parse(

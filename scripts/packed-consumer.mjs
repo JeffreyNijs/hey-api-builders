@@ -14,7 +14,7 @@ export async function withPackedConsumer(fixture, callback) {
   const packages = manifest.toolkitPackages;
   if (
     !Array.isArray(packages) ||
-    packages.some((name) => !/^test-builders-[a-z0-9-]+$/.test(name))
+    packages.some((name) => !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(name) || name === 'core')
   ) {
     throw new Error('The fixture must declare its tested toolkit packages');
   }
@@ -25,7 +25,7 @@ export async function withPackedConsumer(fixture, callback) {
     resolve(dirname(process.execPath), '../lib/node_modules/npm/bin/npm-cli.js'),
   ].find(existsSync);
   if (!npmCli) throw new Error('Cannot locate npm for the active Node installation');
-  const temporary = await mkdtemp(join(tmpdir(), `test-builders-${name}-`));
+  const temporary = await mkdtemp(join(tmpdir(), `mimlet-${name}-`));
   const artifacts = join(temporary, 'artifacts');
   const offline = process.env.TOOLKIT_OFFLINE_MODULES;
   const run = (file, args, cwd = temporary, capture = false) =>
@@ -103,8 +103,8 @@ export async function withPackedConsumer(fixture, callback) {
     } else {
       npm(['ci', '--ignore-scripts', '--no-audit', '--no-fund']);
     }
-    run(compiler, ['-p', join(root, 'packages/test-builders/tsconfig.json')], root);
-    const core = await pack(join(root, 'packages/test-builders'));
+    run(compiler, ['-p', join(root, 'packages/core/tsconfig.json')], root);
+    const core = await pack(join(root, 'packages/core'));
     install([core]);
     const tarballs = [];
     for (const name of packages) {

@@ -4,8 +4,8 @@ import {
   openApi,
   serializeParameter,
   type HttpRequestFixture,
-} from '@jeffreynijs/test-builders-api';
-import type { SchemaBuilder, GenerationSession } from '@jeffreynijs/test-builders';
+} from '@mimlet/api';
+import type { SchemaBuilder, GenerationSession } from 'mimlet';
 declare const document: unknown;
 declare function expectType<T>(value: T): void;
 const request = fromOpenApiRequest(document, { operationId: 'users' });
@@ -26,7 +26,7 @@ expectType<string>(openApi(document).request({}).serialize({}).url);
 serializeParameter({ name: 'id', in: 'body' }, 1);
 void user;
 
-import { asyncApi, fromAsyncApiMessage, type MessageFixture } from '@jeffreynijs/test-builders-api';
+import { asyncApi, fromAsyncApiMessage, type MessageFixture } from '@mimlet/api';
 const messages = fromAsyncApiMessage(document, { action: 'receive' });
 expectType<MessageFixture>(messages.buildValidated());
 expectType<string>(asyncApi(document).message().serialize({}).address);

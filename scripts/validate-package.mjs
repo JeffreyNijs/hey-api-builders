@@ -51,7 +51,7 @@ try {
       npm,
       [
         'pack',
-        join(packageRoot, 'packages/test-builders'),
+        join(packageRoot, 'packages/core'),
         '--json',
         '--ignore-scripts',
         '--pack-destination',

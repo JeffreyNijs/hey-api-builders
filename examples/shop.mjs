@@ -1,13 +1,9 @@
 /** One recipe feeds validation, UI previews, JSON responses and explicit persistence. */
 import { Type } from '@sinclair/typebox';
-import { createScenario } from '@jeffreynijs/test-builders';
-import { fakerAdapter, fromFaker } from '@jeffreynijs/test-builders-faker';
-import { fromTypeBoxFactory } from '@jeffreynijs/test-builders-typebox-legacy';
-import {
-  fixtureLoader,
-  jsonResponseResolver,
-  persistFixtureBatch,
-} from '@jeffreynijs/test-builders-consumers';
+import { createScenario } from 'mimlet';
+import { fakerAdapter, fromFaker } from '@mimlet/faker';
+import { fromTypeBoxFactory } from '@mimlet/typebox-legacy';
+import { fixtureLoader, jsonResponseResolver, persistFixtureBatch } from '@mimlet/consumers';
 
 const options = { fingerprint: 'shop-example/v1', configuration: 'EUR-cents' };
 export const provider = fakerAdapter(options);

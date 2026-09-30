@@ -7,10 +7,8 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 // edits immediately. Integration/packed tests deliberately keep real exports.
 const aliases = [
   {
-    find: '@jeffreynijs/test-builders-adapter/testing',
-    replacement: fileURLToPath(
-      new URL('./packages/test-builders-adapter/src/testing.ts', import.meta.url)
-    ),
+    find: '@mimlet/adapter/testing',
+    replacement: fileURLToPath(new URL('./packages/adapter/src/testing.ts', import.meta.url)),
   },
   ...readdirSync(new URL('./packages', import.meta.url)).map((directory) => {
     const manifest = JSON.parse(
@@ -57,7 +55,7 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/index.ts',
-        'packages/test-builders/**',
+        'packages/core/**',
       ],
       include: ['packages/hey-api-builders/src/**/*.ts'],
       thresholds: {

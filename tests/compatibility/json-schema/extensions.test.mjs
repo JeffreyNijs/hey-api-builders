@@ -6,8 +6,8 @@ import {
   fromJsonSchema,
   NegativeCaseError,
   SchemaGenerationError,
-} from '@jeffreynijs/test-builders-json-schema';
-import { BuilderValidationError, restoreSession } from '@jeffreynijs/test-builders';
+} from '@mimlet/json-schema';
+import { BuilderValidationError, restoreSession } from 'mimlet';
 
 describe('generation capabilities', () => {
   it('uses the 2019-09 validator while adapting tuple and definition sampling', () => {

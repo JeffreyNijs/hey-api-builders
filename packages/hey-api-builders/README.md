@@ -1,12 +1,12 @@
 # Hey API Builders
 
-Hey API integration for the schema-independent Test Builders toolkit. This
+Hey API integration for the schema-independent Mimlet toolkit. This
 prepared `3.0.0-alpha.0` source is a major-version migration and is not published
 by this change. Existing published v2 packages are unchanged.
 
 The plugin discovers generated model, request and response factories from
 `@hey-api/openapi-ts`, then emits named fluent classes backed by the shared
-`@jeffreynijs/test-builders` runtime. Hey API and Faker are not dependencies of
+`mimlet` runtime. Hey API and Faker are not dependencies of
 the neutral runtime itself.
 
 ## Installation and generation
@@ -51,7 +51,7 @@ implementation or fetch that module during emission.
 
 ## Migration from v2
 
-Generated clients must install the matching `@jeffreynijs/test-builders` runtime.
+Generated clients must install the matching `mimlet` runtime.
 Regenerate clients with the upgraded plugin and keep that generated diff in the
 consumer migration. Do not silently release these changes as a v2 patch.
 

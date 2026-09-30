@@ -1,10 +1,10 @@
 /** Test-only server exposes a fixed set of packed core ESM files for browser conformance. */
-import { startPlayground } from '@jeffreynijs/test-builders-playground';
+import { startPlayground } from '@mimlet/playground';
 import { createServer } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
 import { fileURLToPath, URL } from 'node:url';
 const playground = await startPlayground({ port: 4179 });
-const directory = fileURLToPath(new URL('.', import.meta.resolve('@jeffreynijs/test-builders')));
+const directory = fileURLToPath(new URL('.', import.meta.resolve('mimlet')));
 const modules = new Map();
 for (const name of await readdir(directory)) {
   if (/^[a-zA-Z0-9_-]+\.js$/.test(name)) {

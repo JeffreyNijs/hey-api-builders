@@ -1,17 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { en, nl, faker as globalFaker } from '@faker-js/faker';
-import {
-  fakerAdapter,
-  fromFaker,
-  fromFakerSchema,
-  FakerSessionError,
-} from '@jeffreynijs/test-builders-faker';
-import {
-  restoreSession,
-  SessionBudgetError,
-  BuilderValidationError,
-} from '@jeffreynijs/test-builders';
+import { fakerAdapter, fromFaker, fromFakerSchema, FakerSessionError } from '@mimlet/faker';
+import { restoreSession, SessionBudgetError, BuilderValidationError } from 'mimlet';
 const options = { fingerprint: 'person/v1' };
 const schema = (validate) => ({ '~standard': { version: 1, vendor: 'test', validate } });
 

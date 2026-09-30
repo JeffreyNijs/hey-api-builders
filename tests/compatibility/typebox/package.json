@@ -1,5 +1,5 @@
 {
-  "name": "test-builders-typebox-compatibility",
+  "name": "mimlet-typebox-compatibility",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -8,12 +8,12 @@
     "typebox": "1.3.34"
   },
   "toolkitPackages": [
-    "test-builders-adapter",
-    "test-builders-typebox",
-    "test-builders-typebox-legacy"
+    "adapter",
+    "typebox",
+    "typebox-legacy"
   ],
   "coveragePackages": [
-    "test-builders-typebox",
-    "test-builders-typebox-legacy"
+    "typebox",
+    "typebox-legacy"
   ]
 }

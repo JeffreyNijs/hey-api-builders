@@ -4,8 +4,8 @@ import {
   fromGraphQLResponse,
   type GraphQLFixtureResult,
   type GraphQLScalarFixture,
-} from '@jeffreynijs/test-builders-graphql';
-import type { SchemaBuilder, GenerationSession } from '@jeffreynijs/test-builders';
+} from '@mimlet/graphql';
+import type { SchemaBuilder, GenerationSession } from 'mimlet';
 declare function expectType<T>(value: T): void;
 const variables = fromGraphQLVariables('type Query{x:Int}', '{x}');
 expectType<

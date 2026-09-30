@@ -8,7 +8,7 @@ The same function is exported by the modern and legacy adapter packages.
 
 ```ts
 import Type from 'typebox';
-import { fromTypeBoxVariant } from '@jeffreynijs/test-builders-typebox';
+import { fromTypeBoxVariant } from '@mimlet/typebox';
 
 const Pet = Type.Union([
   Type.Object({ kind: Type.Literal('cat'), lives: Type.Integer({ default: 9 }) }),

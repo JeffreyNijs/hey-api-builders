@@ -19,7 +19,7 @@ run at its exact head SHA.
 
 The [stable release contract](stability.md) adds real application trials and a new-version
 trusted-publisher release candidate before promotion. Named setters and CLI diagnostics
-are source previews until their first publication.
+are included in alpha.2.
 
 ## Checks that must pass on the final head
 

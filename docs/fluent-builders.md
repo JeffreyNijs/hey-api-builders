@@ -1,8 +1,7 @@
 # Named setters on direct builders
 
-**Source preview:** `fluent()` is introduced by the stabilization branch. It is
-not part of the published `0.1.0-alpha.1` packages. Build matching source tarballs
-or use the next verified release that includes this change.
+Available since `0.1.0-alpha.2`. Use [matching published packages](getting-started.md)
+and declare a builder beside your test; no builder file or code generation is required.
 
 Generated ordinary-record builders already have named methods such as
 `withName()`. For direct builders, opt into the fields you want:

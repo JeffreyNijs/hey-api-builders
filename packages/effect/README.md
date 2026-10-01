@@ -5,6 +5,15 @@ and is not silently treated as compatible. Native Effect 3 schema generation and
 shrinking use its own fast-check 3 dependency, not an unverified conversion to the
 separately tested fast-check 4 adapter.
 
+Install the alpha from npm's `next` tag. Pin exact versions when you need to
+reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/core@next @mimlet/effect@next effect@3.22.2
+```
+
+Pin `effect@3.22.2`: a plain `effect` install now resolves to Effect 4, which this package does not support.
+
 ```ts
 import * as S from 'effect/Schema';
 import { createSession } from '@mimlet/core';

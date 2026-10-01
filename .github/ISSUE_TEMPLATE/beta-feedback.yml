@@ -1,0 +1,140 @@
+name: Beta feedback
+description: Tell us how trying Mimlet went, including what was confusing or blocked you.
+title: 'Beta feedback: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying Mimlet. It is still **alpha**, so rough edges are expected and worth reporting.
+        Successful runs are useful too. Please open one issue per distinct problem.
+
+        The [beta feedback kit](https://jeffreynijs.github.io/mimlet/guide/beta-feedback.html) has two short tasks if you want a starting point.
+
+        Use synthetic data only. Do not paste credentials, customer data, private schemas, internal URLs or production fixtures.
+        Replay records and error output can contain application details, so check them first.
+        Report security problems privately as described in [SECURITY.md](https://github.com/JeffreyNijs/mimlet/blob/main/SECURITY.md#reporting-a-vulnerability).
+
+  - type: dropdown
+    id: starting-point
+    attributes:
+      label: Starting point
+      description: Which guide or task were you following?
+      options:
+        - 'Feedback kit task 1: build and validate a Zod fixture'
+        - 'Feedback kit task 2: find and replay a failing property'
+        - Homepage or README quickstart
+        - Checkout example
+        - My own schema or project
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried
+      description: Your goal and the steps you took. Link the docs page you followed, if any.
+      placeholder: I wanted fixtures for my Zod user schema, so I followed the getting started guide and...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: packages
+    attributes:
+      label: Packages and adapters
+      description: Select every package you used.
+      multiple: true
+      options:
+        - '@mimlet/core'
+        - '@mimlet/zod'
+        - '@mimlet/arktype'
+        - '@mimlet/valibot'
+        - '@mimlet/typebox'
+        - '@mimlet/typebox-legacy'
+        - '@mimlet/effect'
+        - '@mimlet/json-schema'
+        - '@mimlet/fast-check'
+        - '@mimlet/faker'
+        - '@mimlet/adapter'
+        - '@mimlet/api'
+        - '@mimlet/graphql'
+        - '@mimlet/protobuf'
+        - '@mimlet/avro'
+        - '@mimlet/consumers'
+        - '@mimlet/codegen'
+        - '@mimlet/playground'
+        - hey-api-builders
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - Completed without help
+        - Completed with help or a workaround
+        - Blocked
+    validations:
+      required: true
+
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What was confusing
+      description: The first step where you hesitated, guessed or needed help. Unclear docs or error messages count, even if you got there in the end.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected and actual result
+      description: What you expected to happen, and what happened instead.
+    validations:
+      required: false
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: Exact versions from your lockfile, not floating tags such as `next`.
+      placeholder: |
+        Mimlet packages: @mimlet/core 0.1.0-alpha.2, @mimlet/zod 0.1.0-alpha.2
+        Schema library: zod 4.6.5
+        Other peers: fast-check 4.10.2
+        Node: 22.18.0
+        OS: macOS 15
+        Package manager: npm 11
+        TypeScript (if used): 6.0.3
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The smallest synthetic code and the command you ran, plus the error code and trimmed output.
+        For replay problems, include the replay record and the identity you passed. Wrap code in triple backticks.
+        Needed for bugs; optional for "completed without help" reports.
+    validations:
+      required: false
+
+  - type: textarea
+    id: fit
+    attributes:
+      label: Fit
+      description: Would Mimlet replace anything in your tests? What still makes it harder than your current approach?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Data check
+      options:
+        - label: This report uses synthetic data and contains no credentials, customer data, private schemas or internal URLs.
+          required: true

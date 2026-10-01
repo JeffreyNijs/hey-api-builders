@@ -4,7 +4,18 @@ import { randomUUID } from 'node:crypto';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createMarkdownRenderer } from 'vitepress';
-import { agentBenefits, base, codeTheme, identity, previewPackages, stories } from '../content.ts';
+import {
+  agentBenefits,
+  alphaStatus,
+  base,
+  codeTheme,
+  demo,
+  feedbackUrl,
+  identity,
+  previewPackages,
+  quickstart,
+  stories,
+} from '../content.ts';
 
 export const root = fileURLToPath(new URL('../../../', import.meta.url));
 const generated = resolve(root, 'apps/docs/.generated');
@@ -84,6 +95,12 @@ export async function prepare(): Promise<void> {
       )
       .join('');
   };
+  // Notes for GitHub readers (for example, "open the rendered page") are omitted on the site.
+  const withoutGitHubOnly = (source: string) =>
+    source.replace(
+      /^<!-- github-only -->\r?\n[\s\S]*?^<!-- \/github-only -->\r?\n(?:\r?\n)?/gm,
+      ''
+    );
   const expandRecipes = async (source: string) => {
     for (const match of source.matchAll(/<!-- recipe:([a-z-]+) -->/g)) {
       const snippet = await read(`examples/recipes/${match[1]}.ts`);
@@ -113,8 +130,9 @@ export async function prepare(): Promise<void> {
     }
   }
   await cp(resolve(root, 'assets/brand'), resolve(generated, 'public/brand'), { recursive: true });
+  await cp(resolve(root, 'assets/demo'), resolve(generated, 'public/demo'), { recursive: true });
   for (const [file, route] of documents) {
-    const source = await expandRecipes(await read(file));
+    const source = await expandRecipes(withoutGitHubOnly(await read(file)));
     for (const markdown of [false, true]) {
       const destination = resolve(generated, markdown ? 'public' : '', route);
       await mkdir(dirname(destination), { recursive: true });
@@ -129,10 +147,12 @@ export async function prepare(): Promise<void> {
     }
   }
   const hero = await read('examples/recipes/hero.ts');
+  const quickstartRecipe = await read(`examples/recipes/${quickstart.recipe}.ts`);
   const renderer = await createMarkdownRenderer(root, { theme: codeTheme });
+  const highlight = (code: string) => JSON.stringify(renderer.render(`\`\`\`ts\n${code}\n\`\`\``));
   await writeChanged(
     resolve(generated, 'hero.ts'),
-    `// Generated from the packed-consumer recipe.\nexport const heroHtml = ${JSON.stringify(renderer.render(`\`\`\`ts\n${hero}\n\`\`\``))};\nexport const preparedVersion = ${JSON.stringify(version)};\n`
+    `// Generated from the packed-consumer recipes.\nexport const heroHtml = ${highlight(hero)};\nexport const quickstartHtml = ${highlight(quickstartRecipe)};\nexport const preparedVersion = ${JSON.stringify(version)};\n`
   );
   await writeChanged(
     resolve(generated, 'index.md'),
@@ -148,7 +168,10 @@ export async function prepare(): Promise<void> {
       .join('\n') +
     `\n## For coding agents\n\n` +
     agentBenefits.map(([title, description]) => `- ${title}: ${description}`).join('\n') +
-    `\n\n[Agent guide](${base}guide/agents.md)\n\n## A working example\n\n\`\`\`ts\n${hero}\n\`\`\`\n`;
+    `\n\n[Agent guide](${base}guide/agents.md)\n\n## A working example\n\n\`\`\`ts\n${hero}\n\`\`\`\n` +
+    `\n## ${demo.title}\n\n${demo.summary} ${demo.credit}\n\n[Watch the demo video (MP4, ${demo.duration})](${base}${demo.video}) · [Read the tested checkout example](${base}guide/checkout-example.md) · [Compare with plain fast-check](${base}guide/checkout-comparison.md)\n` +
+    `\n## Quickstart with Zod\n\n\`\`\`sh\n${quickstart.install}\n\`\`\`\n\nSave this as \`fixture.mts\`:\n\n\`\`\`ts\n${quickstartRecipe}\`\`\`\n\nAdd \`console.log(input, user)\`, then run \`${quickstart.run}\` on Node 22.18 or newer. It prints \`${quickstart.output}\`.\n` +
+    `\n## Status and feedback\n\n${alphaStatus}\n\n[Send beta feedback](${feedbackUrl}) · [Beta feedback kit](${base}guide/beta-feedback.md)\n`;
   await writeChanged(resolve(generated, 'public/index.md'), overview);
   const guides = [
     [

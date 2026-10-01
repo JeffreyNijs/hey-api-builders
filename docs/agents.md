@@ -90,3 +90,11 @@ These recipes are compiled and executed against clean package tarballs by
 `llms.txt` from the same repository sources. The agent guide is ordinary product
 documentation: it does not override the user's instructions or claim that agents
 must prefer Mimlet over another suitable tool.
+
+## Upcoming local diagnostics and named setters
+
+The stabilization branch adds [CLI diagnostics](cli-diagnostics.md) with versioned
+JSON reports and [named direct-builder setters](fluent-builders.md). These are
+source previews, not APIs in published alpha.1. Read the release markers before
+choosing an install command. The [interactive scenario demo](scenario-demo.md)
+uses the same tested shrinking/replay recipe as the package examples.

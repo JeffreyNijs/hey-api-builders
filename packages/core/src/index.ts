@@ -40,4 +40,6 @@ export * from './scenario.js';
 
 export * from './facade.js';
 
+export * from './fluent.js';
+
 export * from './path.js';

@@ -33,7 +33,7 @@ explicit budgets where controlled by the toolkit. Sampling exhaustion is not a
 proof of impossibility. Third-party regex or native code can exceed the useful
 work implied by a schema size; in-process checks are not a complete memory limit.
 
-The optional playground runs each job in a fresh bounded worker with a wall-clock
+The optional playground runs each job in a fresh bounded child process with a wall-clock
 budget, cancellation, no inherited Node flags and an empty environment. It limits
 request bodies and concurrent work and terminates workers on cancellation or
 shutdown. **Workers are not an OS sandbox:** native/ArrayBuffer allocations and

@@ -37,6 +37,14 @@ jobs:
       - run: pnpm audit:production
       - run: pnpm test:examples
       - run: node scripts/test-browser.mjs --install
+      - name: Retain browser diagnostics, including failed startup
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bootstrap-browser-diagnostics
+          path: test-results/browser/
+          retention-days: 7
+          if-no-files-found: warn
       - run: pnpm docs:build
       - run: pnpm docs:test
       - run: pnpm release:prepare

@@ -1,22 +1,84 @@
 /* global document, innerWidth */
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { URL } from 'node:url';
 
 const errors = new WeakMap();
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, browserName, baseURL }, info) => {
   const found = [];
   errors.set(page, found);
   page.on('pageerror', (error) => found.push(error.message));
-  // Playwright's COOP regression tests install a load observer for Firefox's missing
-  // protocol event (tests/page/page-request-continue.spec.ts). Keep browser security intact.
+  const navigation = {
+    requested: false,
+    status: null,
+    domLoaded: false,
+    load: false,
+    observedLoad: false,
+  };
+  page.on('request', (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame())
+      navigation.requested = true;
+  });
+  page.on('response', (response) => {
+    if (response.request().isNavigationRequest() && response.frame() === page.mainFrame())
+      navigation.status = response.status();
+  });
+  page.on('domcontentloaded', () => {
+    navigation.domLoaded = true;
+  });
+  page.on('load', () => {
+    navigation.load = true;
+  });
+  page.on('console', (message) => {
+    if (message.text() === 'toolkit-document-loaded') navigation.observedLoad = true;
+  });
+  // Record the document's own load signal without changing the served page or headers.
   await page.addInitScript(() => {
     globalThis.addEventListener('load', () => console.debug('toolkit-document-loaded'), {
       once: true,
     });
   });
-  const response = await page.goto('/', { waitUntil: 'commit' });
-  expect(response.status()).toBe(200);
-  await expect(page.getByRole('button', { name: 'Generate fixtures', exact: true })).toBeEnabled();
+  try {
+    let response;
+    if (browserName === 'firefox') {
+      // Repeated runs captured HTTP 200 + all load events while the driver-issued
+      // goto promise stayed pending. Browser-initiated navigation has no expected
+      // navigation id to become stuck. Observe the actual response and ready UI.
+      const destination = new URL('/', baseURL).href;
+      [response] = await Promise.all([
+        page.waitForResponse(
+          (result) =>
+            result.url() === destination &&
+            result.request().isNavigationRequest() &&
+            result.frame() === page.mainFrame()
+        ),
+        page.evaluate((url) => {
+          globalThis.location.assign(url);
+        }, destination),
+      ]);
+      await expect.poll(() => page.url()).toBe(destination);
+    } else {
+      response = await page.goto('/', { waitUntil: 'commit' });
+    }
+    expect(response.status()).toBe(200);
+    expect(response.headers()['cross-origin-opener-policy']).toBe('same-origin');
+    expect(response.headers()['content-security-policy']).toBeTruthy();
+    await expect(
+      page.getByRole('button', { name: 'Generate fixtures', exact: true })
+    ).toBeEnabled();
+  } catch (error) {
+    // Node-side observations remain available when the test deadline prevents
+    // further browser calls. Do not swallow the failure or print fixture values.
+    await info
+      .attach('navigation-state', {
+        body: JSON.stringify({ ...navigation, pageErrors: found.length }),
+        contentType: 'application/json',
+      })
+      .catch(() => {
+        console.error('Could not retain navigation diagnostics');
+      });
+    throw error;
+  }
 });
 test.afterEach(async ({ page }) => {
   expect(errors.get(page)).toEqual([]);

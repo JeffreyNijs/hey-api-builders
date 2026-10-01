@@ -91,6 +91,10 @@ This generic path is deliberately conservative; native TypeBox adapters addition
 
 ## Fresh nested values and derived values
 
+Direct builders can opt into named setters with `fluent(builder, ['name'])`.
+See [named setters](../../docs/fluent-builders.md) for input/output typing and
+release availability. Generated ordinary-record facades already have these methods.
+
 Builder configuration is immutable, but user data is not deep-cloned or frozen. A shared object supplied to `with()` or `replace()` stays shared. Use per-build factories when fixture isolation is needed:
 
 ```ts

@@ -10,6 +10,45 @@ import { report } from './compiled/shrinking.js';
 import { files } from './compiled/codegen.js';
 import { input as zodInput, user as zodUser } from './compiled/zod.js';
 import { input as arkInput, user as arkUser } from './compiled/arktype.js';
+import { input as fluentInput, output as fluentOutput, asynchronous } from './compiled/fluent.js';
+import { runScenarioDemo, replayScenarioDemo } from './compiled/scenario-demo.js';
+
+test('named fluent setters retain encoded input, native output and async behavior', () => {
+  assert.deepEqual(fluentInput, { name: 'Ada', age: '42' });
+  assert.deepEqual(fluentOutput, { name: 'Ada', age: 42 });
+  assert.deepEqual(asynchronous, { name: 'Grace', age: 24 });
+});
+test('the interactive demo uses genuine shrinking and compatible replay with coherent relationships', () => {
+  for (const seed of [12345, 1, 42, 100]) {
+    const result = runScenarioDemo(seed, 40);
+    assert.equal(result.failed, true);
+    assert(result.shrinks > 0);
+    assert.deepEqual(result, runScenarioDemo(seed, 40));
+    for (const order of [result.first, result.shrunk]) {
+      assert.equal(order.order.customerId, order.customer.id);
+      assert(order.lines.every((line) => line.orderId === order.order.id));
+      assert.equal(
+        order.order.totalCents,
+        order.lines.reduce((total, line) => total + line.priceCents, 0)
+      );
+      assert(order.order.totalCents > 40);
+      assert(order.prices.length >= 1 && order.prices.length <= 6);
+      assert(order.prices.every((price) => Number.isInteger(price) && price >= 1 && price <= 100));
+    }
+    assert.deepEqual(replayScenarioDemo(JSON.parse(JSON.stringify(result.replay))), result.shrunk);
+    assert(result.shrunk.order.totalCents <= result.first.order.totalCents);
+    assert.throws(() => replayScenarioDemo({ ...result.replay, budgetCents: 41 }), /identity/);
+  }
+  for (const input of [
+    null,
+    {},
+    { format: 'mimlet/scenario-demo', version: 2 },
+    { format: 'mimlet/scenario-demo', version: 1, budgetCents: 0, replay: {} },
+  ])
+    assert.throws(() => replayScenarioDemo(input));
+  assert.throws(() => runScenarioDemo(1.5, 40), /seed/);
+  assert.throws(() => runScenarioDemo(1, 201), /budget/);
+});
 
 test('dedicated Zod and ArkType recipes preserve encoded and decoded values', () => {
   for (const [input, output] of [

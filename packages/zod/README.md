@@ -2,7 +2,8 @@
 
 Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
-Native builders for **Zod 4.4.3**, including Zod Mini. Input and output types come
+Native builders for **Zod 4**, including Zod Mini. Alpha.1 pins 4.4.3; the
+stabilization branch tests 4.4.3 through 4.6.5 before widening its peer range. Input and output types come
 from the original schema. Automatic generation uses its input JSON Schema;
 validation, transforms, defaults and codecs remain native Zod operations.
 The dependency-free core remains separate.

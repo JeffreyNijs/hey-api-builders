@@ -30,6 +30,11 @@ evidence. [Compatibility](compatibility.md) states exact version/capability boun
 setup, actual publication and downstream production migration. Sections below retain
 the accepted design criteria, not a claim of universal solver or vendor support.
 
+The current stabilization gates and proposed compatibility promises are tracked
+in the [stable release contract](stability.md). The stages below retain the
+accepted product requirements; see [implementation evidence](acceptance.md) for
+what is already present.
+
 ## Stage 1: strengthen the behavioral model
 
 The current runtime is the starting point, not an API freeze. Finish these requirements before stable release:

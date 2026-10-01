@@ -82,6 +82,7 @@ export default defineConfig({
     nav: [
       { text: 'Get started', link: '/guide/getting-started' },
       { text: 'The toolkit', link: '/guide/adapters' },
+      { text: 'Try it', link: '/guide/scenario-demo' },
       { text: 'For agents', link: '/guide/agents' },
     ],
     socialLinks: [{ icon: 'github', link: `https://github.com/${repository}` }],
@@ -91,6 +92,7 @@ export default defineConfig({
         text: 'Start here',
         items: [
           { text: 'Getting started', link: '/guide/getting-started' },
+          { text: 'Interactive demo', link: '/guide/scenario-demo' },
           { text: 'Choose an adapter', link: '/guide/adapters' },
           { text: 'Zod and ArkType', link: '/guide/zod-and-arktype' },
           { text: 'For coding agents', link: '/guide/agents' },
@@ -100,6 +102,8 @@ export default defineConfig({
         text: 'Build your test world',
         items: [
           { text: 'Builders and schemas', link: '/guide/schema-independent-builders' },
+          { text: 'Named setters', link: '/guide/fluent-builders' },
+          { text: 'CLI diagnostics', link: '/guide/cli-diagnostics' },
           { text: 'Correlated scenarios', link: '/guide/correlated-scenarios' },
           { text: 'Sessions and replay', link: '/guide/sessions-and-replay' },
           { text: 'Fixture capture', link: '/guide/fixture-capture' },
@@ -118,6 +122,7 @@ export default defineConfig({
         text: 'Compatibility and releases',
         items: [
           { text: 'Supported versions', link: '/guide/compatibility' },
+          { text: 'Stable release contract', link: '/guide/stability' },
           { text: 'Mimlet migration', link: '/guide/mimlet-migration' },
           { text: 'Hey API migration', link: '/guide/hey-api-migration' },
           { text: 'Roadmap', link: '/guide/product-roadmap' },

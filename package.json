@@ -73,6 +73,7 @@
     "test:coverage": "pnpm test:unit && pnpm test:core && vitest run --project integration --coverage && pnpm test:typebox && pnpm test:optional",
     "test:typebox": "node scripts/test-typebox.mjs",
     "test:optional": "node scripts/test-optional-all.mjs",
+    "test:vendors": "node scripts/test-vendor-versions.mjs",
     "test:tooling": "node --test tests/tooling/*.test.mjs",
     "test:package": "node scripts/validate-package.mjs",
     "test:browser": "node scripts/test-browser.mjs",

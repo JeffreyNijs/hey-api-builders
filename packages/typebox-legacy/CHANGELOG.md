@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-alpha.2
+
+### Patch Changes
+
+- 332085a: Expand native peer ranges only across installed-tarball conformance targets. Record the actual Zod runtime version in provider metadata. Modern TypeBox stays pinned to 1.3.34 because earlier tested patches lose escaped validation paths.
+- Updated dependencies [7fbd5f2]
+  - @mimlet/core@0.1.0-alpha.2
+
 ## 0.1.0-alpha.1
 
 ### Patch Changes

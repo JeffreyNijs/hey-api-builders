@@ -141,25 +141,25 @@ importers:
   packages/adapter:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
 
   packages/api:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
 
   packages/arktype:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
     devDependencies:
       arktype:
@@ -169,7 +169,7 @@ importers:
   packages/avro:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       avsc:
         specifier: 5.7.9
@@ -178,10 +178,10 @@ importers:
   packages/codegen:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
       json-schema-to-typescript:
         specifier: 16.0.0
@@ -197,7 +197,7 @@ importers:
   packages/consumers:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
 
   packages/core: {}
@@ -205,7 +205,7 @@ importers:
   packages/effect:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
     devDependencies:
       effect:
@@ -215,7 +215,7 @@ importers:
   packages/faker:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
     devDependencies:
       '@faker-js/faker':
@@ -225,7 +225,7 @@ importers:
   packages/fast-check:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
     devDependencies:
       fast-check:
@@ -235,7 +235,7 @@ importers:
   packages/graphql:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       graphql:
         specifier: 17.0.2
@@ -259,7 +259,7 @@ importers:
   packages/json-schema:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       ajv:
         specifier: 8.20.0
@@ -274,16 +274,16 @@ importers:
   packages/playground:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
 
   packages/protobuf:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       protobufjs:
         specifier: 8.8.0
@@ -292,7 +292,7 @@ importers:
   packages/typebox:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
     devDependencies:
       typebox:
@@ -302,7 +302,7 @@ importers:
   packages/typebox-legacy:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
     devDependencies:
       '@sinclair/typebox':
@@ -312,10 +312,10 @@ importers:
   packages/valibot:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
       '@valibot/to-json-schema':
         specifier: 1.8.0
@@ -328,10 +328,10 @@ importers:
   packages/zod:
     dependencies:
       '@mimlet/core':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../core
       '@mimlet/json-schema':
-        specifier: 0.1.0-alpha.1
+        specifier: 0.1.0-alpha.2
         version: link:../json-schema
     devDependencies:
       zod:

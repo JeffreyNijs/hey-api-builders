@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-alpha.2
+
+### Patch Changes
+
+- 7902ed1: Run JSON generation in a bounded child process and wait for its exit on cancellation or timeout. This prevents native regex work from retaining generation slots when worker-thread termination stalls. Keep the loopback-only protocol, input/output limits, heap limits and concurrency ceiling unchanged.
+- Updated dependencies [7fbd5f2]
+  - @mimlet/core@0.1.0-alpha.2
+  - @mimlet/json-schema@0.1.0-alpha.2
+
 ## 0.1.0-alpha.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.0-alpha.2
+
+### Minor Changes
+
+- b24be90: Add local dependency diagnostics, schema inspection without sampling, version output and opt-in versioned JSON reports. Preserve legacy generation syntax and non-mutating drift checks.
+
+### Patch Changes
+
+- Updated dependencies [7fbd5f2]
+  - @mimlet/core@0.1.0-alpha.2
+  - @mimlet/json-schema@0.1.0-alpha.2
+
 ## 0.1.0-alpha.1
 
 ### Patch Changes

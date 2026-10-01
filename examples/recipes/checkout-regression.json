@@ -1,0 +1,43 @@
+{
+  "replay": {
+    "format": "mimlet/checkout-example",
+    "version": 1,
+    "replay": {
+      "format": "test-builders/property",
+      "version": 1,
+      "engine": "fast-check@4.10.2",
+      "identity": {
+        "fingerprint": "mimlet/checkout/v1",
+        "provider": "checkout-example@1",
+        "configuration": "total:omits-quantity"
+      },
+      "seed": 12345,
+      "path": "0:0:1:1:1"
+    }
+  },
+  "checkout": {
+    "customer": {
+      "id": "customer-1",
+      "name": "Ada"
+    },
+    "items": [
+      {
+        "quantity": 2,
+        "unitPriceCents": 1
+      }
+    ],
+    "order": {
+      "id": "order-1",
+      "customerId": "customer-1"
+    },
+    "lines": [
+      {
+        "id": "line-1",
+        "orderId": "order-1",
+        "quantity": 2,
+        "unitPriceCents": 1
+      }
+    ]
+  },
+  "expectedTotalCents": 2
+}

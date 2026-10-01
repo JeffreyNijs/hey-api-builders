@@ -168,6 +168,8 @@ export async function prepare(): Promise<void> {
     ],
     ['Scenarios', 'correlated-scenarios', 'Shared identities and recomputed dependent values'],
     ['Interactive demo', 'scenario-demo', 'Run, shrink and replay a coherent order scenario'],
+    ['Checkout regression', 'checkout-example', 'Find, shrink, replay and fix a checkout bug'],
+    ['Fixture comparison', 'checkout-comparison', 'Manual factories, native fast-check and Mimlet'],
     [
       'Zod and ArkType',
       'zod-and-arktype',
@@ -180,6 +182,12 @@ export async function prepare(): Promise<void> {
     ],
     ['Migration', 'mimlet-migration', 'New package names and preserved serialized formats'],
     ['Compatibility', 'compatibility', 'Tested versions and runtime boundaries'],
+    ['Beta readiness', 'beta-readiness', 'Candidate evidence and proposed beta exit criteria'],
+    [
+      'Beta feedback',
+      'beta-feedback',
+      'Two runnable evaluation tasks and a short feedback template',
+    ],
   ];
   await writeChanged(
     resolve(generated, 'public/llms.txt'),

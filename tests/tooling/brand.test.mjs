@@ -84,3 +84,38 @@ test('README, docs navigation, social metadata and story references resolve', as
     assert.ok(references.has(name), `uncovered reference: ${name}`);
   }
 });
+
+test('feature illustrations explain concrete data rather than mascot-only output', async () => {
+  const assets = await renderBrandAssets();
+  const schema = assets.get('schema.svg');
+  for (const label of [
+    'age: integer ≥ 18',
+    'age: 24',
+    'role: &quot;admin&quot;',
+    'active: boolean',
+    'active: true',
+  ]) {
+    assert.ok(schema.includes(label), `missing schema example: ${label}`);
+  }
+  const scenarios = assets.get('scenarios.svg');
+  for (const value of ['C-42', 'O-17']) {
+    assert.equal([...scenarios.matchAll(new RegExp(`>${value}<`, 'g'))].length, 2);
+  }
+  assert.match(scenarios, />customerId</);
+  assert.match(scenarios, />orderId</);
+  const replay = assets.get('replay.svg');
+  for (const value of ['Expected: 2¢', 'Charged: 1¢', 'FAIL · undercharged']) {
+    assert.equal(replay.split(`>${value}<`).length - 1, 2);
+  }
+  assert.match(replay, /Replay record \+ same versions and configuration/);
+  assert.match(replay, /matching fingerprint, provider\/version and configuration/);
+  assert.doesNotMatch(replay, /seed: 42|stroke-dasharray/);
+  for (const name of ['schema', 'scenarios', 'replay']) {
+    const svg = assets.get(`${name}.svg`);
+    assert.match(svg, /viewBox="0 0 640 360"/);
+    // One supporting mascot, with the data itself as the main subject.
+    assert.equal(svg.split('M110.8 132.9').length - 1, 1);
+    const rendered = new Resvg(svg, { fitTo: { mode: 'width', value: 500 } }).render();
+    assert.equal(rendered.width, 500);
+  }
+});

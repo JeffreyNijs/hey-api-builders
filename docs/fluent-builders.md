@@ -22,7 +22,8 @@ const named = fluent(builder, { withUserName: 'user_name' });
 Literal field tuples and alias maps are checked against finite, ordinary object
 records. Runtime-length inventories, index signatures, atomic values, arrays,
 nullable root objects and root object unions cannot acquire unsound partial setters.
-Use `.replace()` for variant transitions and `.at()` for typed nested updates.
+Use `.replace()` for variant transitions. For typed nested updates, use
+[`setPath` inside `.transform()`](generated-facades-and-paths.md#typed-nested-changes).
 Names that collide with builder/prototype methods, `then` or `toJSON` are rejected.
 
 Automatic names capitalize alphanumeric segments, matching standalone codegen.

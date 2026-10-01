@@ -3,28 +3,23 @@
 The stabilization work adds typed opt-in named setters, local JSON diagnostics,
 a tested native-version matrix and an interactive shrinking/replay recipe. It
 also addresses a playground cancellation defect found by repeated browser tests.
-The published train remains alpha.1 until a new release is verified.
+These features are included in the published alpha.2 train.
 
 ## Application trials
 
-Two private application trials use published alpha.1 packages in isolated
+Two private application trials use published alpha.2 packages in isolated
 branches. Their detailed source and validation evidence stay in their own draft
 PRs; these are integration checks, not endorsements or production rollout claims.
 
-| Profile                       | Verified behavior                                                                                                                                                | Toolchain and local evidence                                                                                 |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Native Zod and Temporal forms | Existing form refinements, issue paths, date/time values, API transformation and independent fixture branches                                                    | Zod 4.4.3, TypeScript 6.0.3; type-check, 1,164 tests and production build                                    |
-| Hey API media fixtures        | Offline generation from an actual contract subset, named methods, validation against the existing client, deterministic Faker instances and real srcset behavior | Hey API 0.99.0 / TypeScript 6.0.3 generator; unchanged TypeScript 5.9.3 app; type-check, 110 tests and build |
+| Profile                                | Verified behavior                                                                                                                        | Toolchain and local evidence                                               |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Native Zod and Temporal forms          | Local direct-schema declarations, named setters, native refinements and date/time factory escape hatch, API mapping and isolation        | Zod 4.4.3, TypeScript 6.0.3; type-check, 1,164 tests and build             |
+| Existing Hey API-generated Zod schemas | Direct schema builders with named setters and native validation, fresh nested values and real srcset behavior; no new generated builders | Zod 4.6.5, unchanged TypeScript 5.9.3 app; type-check, 110 tests and build |
 
-The second trial found a vendor limitation: the pinned Hey API Faker generator
-emits string literals for TypeScript runtime enums, which fail compilation.
-The trial uses the supported default literal-union output and explicitly validates
-and resolves enum values through the existing application client. Regeneration
-compares every emitted file in a temporary directory and leaves checked-in output
-unchanged. Generator TypeScript stays in a separate private tools package; its
-upstream declaration barrel references optional frameworks, so that tool's checker
-skips third-party declarations. Application source and generated output are still
-checked by the application's compiler. No cast hides an incompatible fixture.
+The declarations live beside the tests. Pure schemas use `fluent(fromZod(schema),
+fields)`; Temporal values use a local `fromZodFactory` declaration. No separate
+builder modules, copied schema subset, Faker dependency or fixture-generation
+package is needed. The existing application schemas remain authoritative.
 
 ## Cancellation and browser failures
 
@@ -62,6 +57,5 @@ performance advantage claim. Prefer a small selected field list for large schema
 ## Before stable publication
 
 Review the [stability contract](stability.md), complete final-head acceptance,
-prepare a new coordinated release candidate, and verify an actual new-version
-GitHub OIDC publish. Alpha.1's matching-artifact skip run did not exercise that
-publication path. Neither private adoption PR is merged by the toolkit release.
+review the next release candidate and its publication evidence. Alpha.2 exercises
+new-version GitHub OIDC publication; alpha.1's matching-artifact skip run did not. Neither private adoption PR is merged by the toolkit release.

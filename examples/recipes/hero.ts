@@ -1,4 +1,5 @@
 import Type from 'typebox';
+import { fluent } from '@mimlet/core';
 import { fromTypeBox } from '@mimlet/typebox';
 
 const User = Type.Object({
@@ -9,6 +10,5 @@ const User = Type.Object({
   ]),
 });
 
-export const admin = fromTypeBox(User)
-  .with({ role: 'admin' })
-  .buildValidated();
+const users = fluent(fromTypeBox(User), ['id', 'role']);
+export const admin = users.withRole('admin').buildValidated();

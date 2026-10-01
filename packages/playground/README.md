@@ -53,7 +53,7 @@ JSON are rejected before the worker starts. Public JavaScript calls must supply
 ordinary JSON data; Proxy traps and other executable objects are not a separate
 untrusted-code boundary.
 
-In the stabilization source, each generation runs in a fresh Node child process with an empty environment, no inherited
+From alpha.2, each generation runs in a fresh Node child process with an empty environment, no inherited
 Node execution flags, a bounded heap, fixed schema/output budgets, and a default
 5-second wall-clock budget. `timeoutMs` is configurable from 1 to 30,000 and
 includes worker startup. `signal` cancels the process. Cancellation and timeouts send an OS kill and wait
@@ -94,6 +94,6 @@ so its implementation appears in coverage, not just the parent orchestration.
 Browser interaction tests are maintained separately from these Node conformance
 checks; successful HTTP tests alone are not presented as browser verification.
 
-The published alpha.1 uses worker threads. Repeated browser cancellation exposed
-a native-regex termination stall; the source now uses child processes, with a
+Alpha.1 used worker threads. Repeated browser cancellation exposed
+a native-regex termination stall; alpha.2 uses child processes, with a
 regression that cancels already-running pathological patterns repeatedly.

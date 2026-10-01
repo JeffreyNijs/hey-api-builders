@@ -224,11 +224,13 @@ body {
   padding: 22px 22px 12px;
   overflow-x: auto;
 }
-.hero-code div[class*='language-'] {
+.hero-code div[class*='language-'],
+.quickstart-code div[class*='language-'] {
   margin: 0;
   background: transparent;
 }
-.hero-code pre {
+.hero-code pre,
+.quickstart-code pre {
   margin: 0;
   padding: 0;
   font-size: 12px;
@@ -236,11 +238,14 @@ body {
   white-space: pre;
   background: transparent !important;
 }
-.hero-code code {
+.hero-code code,
+.quickstart-code code {
   font-family: var(--vp-font-family-mono);
 }
 .hero-code .lang,
-.hero-code .copy {
+.hero-code .copy,
+.quickstart-code .lang,
+.quickstart-code .copy {
   display: none;
 }
 .fixture-output {
@@ -269,6 +274,157 @@ body {
   color: var(--muted);
   font-size: 12px;
   transform: rotate(-3deg);
+}
+.demo {
+  padding: 10px 0 80px;
+}
+.demo-heading {
+  max-width: 640px;
+  margin-bottom: 30px;
+}
+.demo-heading .eyebrow {
+  margin-bottom: 16px;
+}
+.demo-heading h2 {
+  font-size: clamp(32px, 3.6vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 740;
+  margin: 0;
+}
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 44px;
+  align-items: start;
+}
+.demo-grid > * {
+  min-width: 0;
+}
+.demo-media {
+  margin: 0;
+}
+.demo-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  background: #faf7ee;
+  box-shadow: 8px 9px 0 var(--mint);
+}
+.dark .demo-video {
+  box-shadow: 8px 9px 0 #446c33;
+}
+.demo-media figcaption {
+  margin-top: 26px;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.demo-media figcaption p {
+  margin: 0 0 12px;
+}
+.demo-credit,
+.demo-meta {
+  color: var(--muted);
+}
+.demo-meta {
+  font-size: 12px;
+}
+.demo-meta a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.demo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  padding-top: 6px;
+}
+.quickstart {
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  padding: 26px 26px 28px;
+  background: var(--vp-c-bg-alt);
+}
+.quickstart h3 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0 0 18px;
+}
+.quickstart-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+}
+.quickstart-steps > li {
+  counter-increment: step;
+  margin: 0 0 18px;
+}
+.step-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 8px;
+}
+.step-label::before {
+  content: counter(step) '. ';
+  color: var(--muted);
+}
+.step-label code,
+.quickstart .step-label code {
+  font-size: 12px;
+}
+.quickstart-command {
+  margin: 0;
+  padding: 11px 14px;
+  /* Wrap rather than scroll: narrow screens keep the whole command visible. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--vp-code-block-bg);
+  font: 12px/1.6 var(--vp-font-family-mono);
+}
+.quickstart-code {
+  padding: 14px 16px 6px;
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #ffffff;
+}
+.dark .quickstart-code {
+  background: #152725;
+}
+.quickstart-code pre {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.quickstart-output {
+  margin-top: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.alpha-status {
+  display: flex;
+  gap: 2px;
+  align-items: baseline;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 4px 0 20px;
+}
+.alpha-status .status-dot {
+  flex: none;
+}
+.quickstart-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 22px;
+  align-items: center;
 }
 .ecosystem {
   border-top: 1px solid var(--rule);
@@ -523,6 +679,10 @@ button:focus-visible {
   .story {
     gap: 30px;
   }
+  .demo-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
   .toolkit {
     gap: 35px;
   }
@@ -583,6 +743,18 @@ button:focus-visible {
   }
   .section-heading {
     padding-top: 60px;
+  }
+  .demo {
+    padding-bottom: 55px;
+  }
+  .quickstart {
+    padding: 20px 16px 22px;
+  }
+  .quickstart-code pre {
+    font-size: 10px;
+  }
+  .quickstart-command {
+    font-size: 11px;
   }
   .story,
   .toolkit,

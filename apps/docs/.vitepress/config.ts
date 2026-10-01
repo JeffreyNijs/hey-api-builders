@@ -75,7 +75,7 @@ export default defineConfig({
     ];
   },
   themeConfig: {
-    logo: { src: '/brand/mark.svg', alt: '' },
+    logo: { light: '/brand/mark.svg', dark: '/brand/mark-dark.svg', alt: '' },
     siteTitle: 'mimlet',
     outline: [2, 3],
     search: { provider: 'local' },

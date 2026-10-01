@@ -86,9 +86,9 @@ maintenance compared with a direct factory or native fast-check setup.
 
 ## What the executable checks establish
 
-Both generated examples use one to six lines, quantities 1–10, unit prices
-1–10,000, the same buggy function and oracle, 100 search runs, and zero allowed
-skips. The fixed properties each use 1,000 runs. The tests exercise seeds 12345,
+Both generated examples use one to six lines, quantities from 1 to 10, unit prices
+from 1 to 10,000 cents, the same buggy function and oracle, 100 search runs, and
+zero allowed skips. The fixed properties each use 1,000 runs. The tests exercise seeds 12345,
 1, 42, and 100 and inspect every bug-search candidate's constraints and links.
 
 For these seeds and the pinned engine, both generated approaches discover and

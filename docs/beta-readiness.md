@@ -52,8 +52,9 @@ Existing records, not beta-candidate verification:
       complete artifact set in a fresh consumer rather than relying on workspace imports.
 - [ ] **Plan useful feedback.** Choose native-schema and Hey API evaluation
       workflows and a review point. Use the [beta feedback kit](beta-feedback.md)
-      for the first-run tasks and report format. Success means documented install/build/validate
-      and failure/replay flows work against real application contracts. Record exact
+      for the first-run tasks and its GitHub issue form for reports. Success means
+      documented install/build/validate and failure/replay flows work against real
+      application contracts. Record exact
       candidate/toolchain versions, expected versus actual results and minimal
       synthetic reproductions. Follow [security reporting](../SECURITY.md#reporting-a-vulnerability)
       for sensitive findings; do not require private captures in public reports.

@@ -19,10 +19,11 @@ This is a business regression example, not a rule that rejects valid large order
 ## 1. Generate orders whose relationships survive shrinking
 
 The scenario declares a customer, independent quantity/price inputs, an order
-linked to that customer, and lines linked to that order. `scenarioArbitrary`
-shrinks only the input items and reconstructs every dependent node. Line IDs,
-foreign keys, quantities, and prices stay coherent after an item is removed or
-shrunk. Totals belong to the application under test, not to the fixture factory.
+linked to that customer, and lines linked to that order. fast-check generates and
+shrinks only the input items; `scenarioArbitrary` maps each candidate through the
+scenario, so every dependent node is rebuilt. Line IDs, foreign keys, quantities,
+and prices stay coherent after an item is removed or shrunk. Totals belong to the
+application under test, not to the fixture factory.
 
 Inputs contain one to six lines, quantities from 1 to 10, and unit prices from
 1 to 10,000 integer cents. Quantity 1 remains in the domain: the generator must
@@ -61,10 +62,10 @@ silently change identities to force old replay records through validation.
 ## 3. Check the fix and keep the regression
 
 `checkFixedCheckout(seed)` runs 1,000 generated cases under a new property identity
-for the corrected application. The tests inspect relationships on every bug-search candidate, exercise four seeds, check the saved
-fixture against its explicit expected total in a separate replay-independent test, and verify that the buggy function
-still undercharges that fixture. They also reject malformed or incompatible
-replay records.
+for the corrected application. The tests inspect relationships on every bug-search
+candidate and exercise four seeds. A separate test checks the saved fixture against
+its explicit expected total without replay, and verifies that the buggy function
+still undercharges it. They also reject malformed or incompatible replay records.
 
 The returned report must be inspected: `details.failed === false` is the pass
 condition. In an application test that should fail immediately, use
@@ -84,8 +85,9 @@ const lines = [{ id: 'line-1', orderId: order.id, quantity: 2, unitPriceCents: 1
 ```
 
 It still requires someone to choose quantity 2. Native fast-check can also map
-and shrink these inputs correctly without Mimlet. Mimlet's contribution here is
-the reusable dependency recipe, rebuilding those relationships on every shrink,
-and identity-checked replay plumbing; fast-check supplies generation and shrinking.
+and shrink these inputs correctly without Mimlet, rebuilding the relationships on
+every shrink with `.map`. Mimlet's contribution here is the named, reusable
+dependency recipe and identity-checked replay plumbing. fast-check supplies the
+generation, shrinking and seed/path replay underneath.
 A generator is not proof of correctness, and these four deterministic seeds are
 bounded coverage rather than exhaustive testing.

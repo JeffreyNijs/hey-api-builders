@@ -1,7 +1,10 @@
 # Zod and ArkType builders
 
+<!-- github-only -->
+
 [Read this guide with inline examples](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html),
 or open the tested recipe source links below.
+<!-- /github-only -->
 
 The dedicated `@mimlet/zod` and `@mimlet/arktype` packages are published in
 `0.1.0-alpha.2` on npm's `next` channel. Existing Standard Schema and Standard JSON

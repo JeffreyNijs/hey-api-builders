@@ -20,9 +20,15 @@ remains on v2; opt into the alpha explicitly.
 npm install --save-dev @mimlet/core@0.1.0-alpha.2
 ```
 
-Add only the adapters you need. [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) includes
-copyable native TypeBox and Zod examples and source-development instructions. The workspace root
-is private; each toolkit package is independently installable.
+Add only the adapters you need.
+[Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html)
+includes copyable native TypeBox and Zod examples and source-development
+instructions. The workspace root is private; each toolkit package is
+independently installable.
+
+Mimlet is still alpha. The [checkout example](docs/checkout-example.md) walks
+through a bug that is found, shrunk, replayed and fixed. If something is confusing or blocks you,
+[open a beta feedback issue](https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml).
 
 ## Start with the smallest interface you need
 

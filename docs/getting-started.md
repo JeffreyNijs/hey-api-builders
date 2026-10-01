@@ -7,8 +7,11 @@ Mimlet's core has no runtime dependencies. Schema adapters, generation engines,
 protocols, code generation and the local playground are independently installable
 packages. [Choose an adapter](adapters.md) for the capabilities you need.
 
+<!-- github-only -->
+
 Reading this on GitHub? [Open the rendered quickstart](https://jeffreynijs.github.io/mimlet/guide/getting-started.html)
 for inline examples, or follow the tested recipe source links below.
+<!-- /github-only -->
 
 ## Install the alpha
 
@@ -28,8 +31,8 @@ from `@mimlet/codegen`; the core package does not install a CLI. See
 [compatibility](compatibility.md) for tested runtime and schema-library versions.
 
 Already using Zod? Skip the TypeBox install and go straight to
-[native Zod builders](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html),
-or use the Zod install under [Named fluent helpers](#named-fluent-helpers) below.
+[native Zod builders](zod-and-arktype.md), or use the Zod install under
+[Named fluent helpers](#named-fluent-helpers) below.
 
 ## Your first fixture
 

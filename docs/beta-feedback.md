@@ -1,13 +1,13 @@
 # Beta feedback kit
 
-**Proposal for maintainer review. No beta is published or promised by this kit.**
+**Mimlet is in alpha. No beta is published yet, and this kit does not promise one.**
 Start with the published `0.1.0-alpha.2` baseline below. When a beta candidate is
 approved, replace all Mimlet pins together with that exact candidate version and
 record it in each result. Alpha results do not verify a later beta.
 
 ## Keep the evaluation small
 
-The proposed beta evaluation asks two questions:
+This feedback round asks two questions:
 
 1. Can a tester install Mimlet and make a useful, natively validated Zod fixture
    with an immutable variation, using only the docs?
@@ -116,18 +116,16 @@ process, and understands that a seed is not a cross-version guarantee. Check
 `details.failed` explicitly; a returned report alone is not a passing assertion.
 See [property reports and replay](../packages/fast-check/README.md#reports-assertions-and-replay).
 
-The richer [checkout bug/fix recipe](checkout-example.md) is currently a
-source-checkout, review-only extension. Its documentation and regression coverage
-must be approved and rerun at the candidate SHA before inclusion in beta claims;
-it is not required for either published-alpha task above.
+The [checkout bug/fix recipe](checkout-example.md) goes further. It lives in the
+repository's examples and runs in `pnpm test:examples` against packed workspace
+packages, not as an npm package. Neither task above requires it. Rerun it at the
+exact candidate SHA before citing it as beta evidence.
 
 ## Send one short result
 
-**Proposed destination:** after maintainer approval, one GitHub issue in the
-[Mimlet repository](https://github.com/JeffreyNijs/mimlet) per distinct reproducible
-problem; use this template for successful runs too only if the maintainer chooses
-that collection method. No issue, invitation or outreach is created by this kit.
-Agree the feedback destination before inviting testers.
+[Open a beta feedback issue](https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml).
+Successful runs are welcome too. Open one issue per distinct reproducible problem.
+The form asks for:
 
 - Task and result: completed unassisted / completed with help / blocked
 - Exact Mimlet and native peer versions; Node, OS, package manager; compiler if used
@@ -143,12 +141,12 @@ records and native error causes can contain application information. Reduce the
 case to synthetic data; keep sensitive findings out of public issues and follow
 [private security reporting](../SECURITY.md#reporting-a-vulnerability).
 
-## Review before expanding scope
+## How feedback is reviewed
 
 The maintainer chooses a review point when recruiting testers; there is no fixed
 release date or promised tester count. Record actual attempts and assistance,
 including blocked or missing results. Internal trial evidence is useful but must
-not be described as external adoption. No results are recorded by this proposal.
+not be described as external adoption. No results are recorded on this page yet.
 
 Review each finding as a documented-flow blocker, fix with regression coverage,
 docs clarification, documented limitation, duplicate, or deferred request with a

@@ -2,7 +2,7 @@
 import { useData, withBase } from 'vitepress';
 import { agentBenefits, identity, stories } from '../../content';
 import { heroHtml } from '../../.generated/hero';
-const { theme } = useData();
+const { theme, isDark } = useData();
 </script>
 
 <template>
@@ -30,8 +30,8 @@ const { theme } = useData();
         <div class="stage-grid" aria-hidden="true" />
         <img
           class="hero-mascot"
-          :src="withBase('/brand/mark.svg')"
-          alt="Mimlet, a small mint creature with a hooked tail"
+          :src="withBase(isDark ? '/brand/mark-dark.svg' : '/brand/mark.svg')"
+          alt="Mimlet, a mint folded-corner creature with little feet"
           width="148"
           height="120"
         />
@@ -137,7 +137,12 @@ const { theme } = useData();
     </section>
 
     <footer class="home-footer">
-      <img :src="withBase('/brand/mark.svg')" alt="" width="70" height="57" />
+      <img
+        :src="withBase(isDark ? '/brand/mark-dark.svg' : '/brand/mark.svg')"
+        alt=""
+        width="70"
+        height="57"
+      />
       <div>
         <strong>Give your next test some character.</strong>
         <p>Mimlet · MIT licensed · Made by Jeffrey Nijs</p>

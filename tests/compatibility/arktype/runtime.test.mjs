@@ -181,3 +181,13 @@ test('applies core clone/list configuration once and satisfies public adapter co
     ]
   );
 });
+
+test('draws session-less list items from one default session', () => {
+  const Person = type({ name: 'string', age: '18 <= number.integer <= 99' });
+  const people = fromArkType(Person);
+  const list = people.buildList(3);
+  assert.equal(new Set(list.map((person) => JSON.stringify(person))).size, 3);
+  assert.deepEqual(list, people.buildList(3, arkTypeAdapter(Person).generation().session()));
+  assert.deepEqual(people.buildList(3), list);
+  assert.deepEqual(people.build(), list[0]);
+});

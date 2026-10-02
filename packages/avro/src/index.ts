@@ -94,11 +94,10 @@ export function avroAdapter(schema: AvroSchema, supplied: AvroFixtureOptions = {
     check: (value: unknown) => issues(value).length === 0,
     clone: (value: unknown) => checked(value),
     builder: (): SchemaBuilder<unknown, unknown, [session?: GenerationSession]> =>
-      createSchemaBuilder(standard, create, options) as unknown as SchemaBuilder<
-        unknown,
-        unknown,
-        [session?: GenerationSession]
-      >,
+      createSchemaBuilder(standard, create, {
+        ...options,
+        defaultSession: session,
+      }) as unknown as SchemaBuilder<unknown, unknown, [session?: GenerationSession]>,
     metadata: Object.freeze({
       vendor: 'avsc',
       version: '5.7.9',

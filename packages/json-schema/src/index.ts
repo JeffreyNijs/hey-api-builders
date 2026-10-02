@@ -459,7 +459,7 @@ export function fromJsonSchema(
   return createSchemaBuilder(
     adapter.standard,
     (session?: GenerationSession) => adapter.create(session),
-    options
+    { ...options, defaultSession: adapter.session }
   ) as unknown as SchemaBuilder<unknown, unknown, [session?: GenerationSession]>;
 }
 /** Generate encoded INPUT through Standard JSON Schema and parse once through the native validator. */
@@ -484,6 +484,6 @@ export function fromStandardJsonSchema<S extends StandardJSONSchemaV1 & Standard
   return createSchemaBuilder(
     schema,
     (session?: GenerationSession) => adapter.create(session) as SchemaInput<S>,
-    options
+    { ...options, defaultSession: adapter.session }
   ) as unknown as SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, [session?: GenerationSession]>;
 }

@@ -122,6 +122,15 @@ describe('Effect native adapter', () => {
       age: 1,
     });
   });
+  it('rejects a missing session with an explicit error instead of a native crash', async () => {
+    const missing = { name: 'TypeError', message: /requires an explicit GenerationSession/ };
+    const people = fromEffect(S.Struct({ name: S.String })).with({ name: 'Ada' });
+    assert.throws(() => people.buildValidated(), missing);
+    assert.throws(() => people.build(undefined), missing);
+    assert.throws(() => people.buildList(2), missing);
+    await assert.rejects(fromEffectAsync(S.Int).buildAsync(), missing);
+    assert.deepEqual(people.buildValidated(session()), { name: 'Ada' });
+  });
   it('guards hidden native global configuration without mutating it', () => {
     FC.configureGlobal({ seed: 11 });
     try {

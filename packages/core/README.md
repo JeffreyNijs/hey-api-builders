@@ -120,6 +120,24 @@ const bounded = createBuilder(() => ({ id: 1 }), { maxListSize: 100 });
 
 This budget limits list allocation, not arbitrary factory runtime, recursive schema processing, or total object size. It is not a sandbox.
 
+### Default sessions
+
+A factory whose first parameter is an optional `GenerationSession` can declare the session used when a call omits it:
+
+```ts
+import { createBuilder, createSession, type GenerationSession } from '@mimlet/core';
+
+const session = () =>
+  createSession({ fingerprint: 'users/v1', provider: 'application-fixtures@1', seed: 1 });
+const users = createBuilder(
+  (execution: GenerationSession = session()) => ({ age: execution.integer(18, 80) }),
+  { defaultSession: session }
+);
+const people = users.buildList(3); // equals users.buildList(3, session())
+```
+
+Each build, validated build or list call that omits the leading session (or passes `undefined`) calls `defaultSession` once and passes the result to the factory, patch factories and transforms. List items therefore continue one session instead of restarting it, while repeated session-less calls stay deterministic. An explicit session is never replaced, and an empty list creates no session. The option is type-checked: factories without an optional leading session parameter cannot declare it. Adapters with optional sessions use their own seed-1 `session()` as this default; see [Sessions and replay](../../docs/sessions-and-replay.md#omitted-sessions).
+
 ## Inspection and adapters
 
 `describe()` returns frozen operation names, the list budget, and whether validation is attached. It deliberately excludes fixture values and callbacks. It is a small diagnostic surface. Schema inspection belongs to the adapter SDK; replay state is exposed separately by generation sessions.

@@ -1,25 +1,31 @@
 # Native Effect fixtures (alpha)
 
-This package targets `effect@3.22.2`. Effect 4 has a different native Arbitrary API
-and is not silently treated as compatible. Native Effect 3 schema generation and
-shrinking use its own fast-check 3 dependency, not an unverified conversion to the
-separately tested fast-check 4 adapter.
+From `0.1.0-alpha.4`, this package targets exactly `effect@4.0.0`. Effect 4 replaced
+the bundled fast-check with its own `effect/Arbitrary` engine, which Effect marks as
+unstable, so the peer stays exact. Toolkit `0.1.0-alpha.3` and earlier target
+`effect@3.22.2`; Effect 3 projects should stay on that train.
 
-Install the alpha from npm's `next` tag. Pin exact versions when you need to
-reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+Pin exact versions when you need to reproduce fixtures; see
+[Getting started](../../docs/getting-started.md).
 
 ```sh
-npm install --save-dev @mimlet/core@next @mimlet/effect@next effect@3.22.2
+# Effect 4
+npm install --save-dev @mimlet/core@0.1.0-alpha.4 @mimlet/effect@0.1.0-alpha.4 effect@4.0.0
+# Effect 3
+npm install --save-dev @mimlet/core@0.1.0-alpha.3 @mimlet/effect@0.1.0-alpha.3 effect@3.22.2
 ```
 
-Pin `effect@3.22.2`: a plain `effect` install now resolves to Effect 4, which this package does not support.
+Loaded with Effect 3, this release throws a `TypeError` that names the required
+version, and `mimlet doctor` reports `PEER_VERSION_UNSUPPORTED`. Effect 4's own type
+declarations use `Disposable`: without `skipLibCheck`, add the `ESNext.Disposable` lib
+or `@types/node`.
 
 ```ts
 import * as S from 'effect/Schema';
 import { createSession } from '@mimlet/core';
 import { fromEffect } from '@mimlet/effect';
 const schema = S.Struct({ age: S.NumberFromString });
-const session = createSession({ seed: 123, fingerprint: 'person/v1', provider: 'effect@3.22.2' });
+const session = createSession({ seed: 123, fingerprint: 'person/v1', provider: 'effect@4.0.0' });
 const people = fromEffect(schema);
 const input = people.with({ age: '42' }).build(session);
 const output = people.with({ age: '42' }).buildValidated(session);
@@ -32,28 +38,47 @@ encoder; `fromEffectFactory` accepts an explicit input factory for one-way codec
 unsupported arbitrary derivations and application-specific fixture logic.
 
 `effectAdapter` exposes the original source, native Standard Schema validation,
-input/output checks, sync/async encode/decode, and native input/output arbitraries.
-Input checking checks the encoded shape, not the success of a subsequent decode.
-Input-arbitrary shrinking re-encodes each native output shrink. Transformations
-and arbitrary annotations must remain pure and terminating for property testing.
+input/output checks, sync/async encode/decode, and native Effect 4 input/output
+arbitraries. Input checking checks the encoded shape, not the success of a subsequent
+decode. Input-arbitrary shrinking re-encodes each native output shrink. Property tests
+run through Effect's own `Arbitrary.checkEffect`, which shrinks and returns a replay
+token; these arbitraries are not fast-check arbitraries and are not passed to
+`@mimlet/fast-check`.
+
+```ts
+import * as A from 'effect/Arbitrary';
+import * as E from 'effect/Effect';
+const counts = effectAdapter(S.NumberFromString.pipe(S.decodeTo(S.Int)));
+const report = E.runSync(
+  A.checkEffect(counts.inputArbitrary(), (input) => Number(input) < 5, { seed: 1 })
+);
+// A failing report carries shrunkInput and a replay token for checkEffect({ replay }).
+```
+
+Transformations and arbitrary annotations must remain pure and terminating for property testing.
 Encoding failures propagate, not trigger hidden retries. Validation invokes the
 native Standard Schema entry once per validated build, after builder overrides.
 The original schema owns parsing behavior; excess object properties default to
-errors and can be configured through `parseOptions`.
+errors and can be configured through `parseOptions`. Each adapter converts its own
+Standard Schema wrapper, so two adapters over one schema keep their own parse
+options and the caller's schema object is not modified.
 
 Schemas requiring Effect services are not accepted by these constructors; provide
 services in your own factory/validation wrapper. This restriction is type-tested.
 Async schema execution is supported through async build methods, not detected by
-inspecting private AST nodes. Native failures and issues remain available and may
+inspecting private AST nodes. A schema whose native generation is asynchronous raises
+a `TypeError` from synchronous builds that points to `fromEffectAsync`. Native failures and issues remain available and may
 contain application values; no reports are logged or transmitted by this package.
 
 Sessions are explicit and caller-versioned: include the schema, annotations,
 codec behavior and native dependency versions in your replay identity. Unlike the
 JSON Schema-based adapters, there is no default session. `fromEffect` and
 `fromEffectAsync` require one for every build and list call; omitting it is a type
-error and, from JavaScript, raises a `TypeError` before any generation. Modified
-native fast-check global configuration is rejected for deterministic sampling.
-The adapter does not modify native configuration. Native schemas/annotations are
+error and, from JavaScript, raises a `TypeError` before any generation. Every
+native sampling option (count, size, discards and seed) is passed explicitly, so
+`Arbitrary.configureGlobal` cannot change generated fixtures, and the adapter does
+not modify native configuration. Effect does not promise identical samples across
+releases; include `effect@4.0.0` in your session provider. Native schemas/annotations are
 trusted code; this is not an interruptible worker or a guarantee of arbitrary
 termination for opaque user filters.
 

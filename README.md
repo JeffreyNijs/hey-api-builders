@@ -148,7 +148,7 @@ capabilities you use; schema vendors and generation backends do not enter the co
 | [@mimlet/zod](packages/zod/README.md)                       | Zod 4/Mini builders, native codecs, explicit async validation and typed factories.                               |
 | [@mimlet/arktype](packages/arktype/README.md)               | Native ArkType morphs, scoped Types, input checks and typed factories.                                           |
 | [@mimlet/valibot](packages/valibot/README.md)               | Native Valibot input conversion and parsing.                                                                     |
-| [@mimlet/effect](packages/effect/README.md)                 | Native Effect 3 generation, codecs, and arbitraries/shrinkers.                                                   |
+| [@mimlet/effect](packages/effect/README.md)                 | Native Effect 4 generation, codecs, and arbitraries/shrinkers (Effect 3 through alpha.3).                        |
 | [@mimlet/faker](packages/faker/README.md)                   | Realistic data with session-scoped random streams, locales and reference dates.                                  |
 | [@mimlet/fast-check](packages/fast-check/README.md)         | Shrink-aware fixtures, properties, coherent scenarios and failure replay.                                        |
 | [@mimlet/api](packages/api/README.md)                       | OpenAPI operations and AsyncAPI messages, offline references and explicit serialization.                         |

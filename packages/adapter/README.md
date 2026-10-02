@@ -33,7 +33,7 @@ Asynchronous factories remain async-only in the resulting builder types.
 `adapter.inspect()` describes generation, encoding, pure input checking, cloning,
 field metadata, native arbitrary identity, and explicit limitations. Missing
 field inspection is `null`, not an empty object schema. Native arbitrary handles
-remain opaque: a fast-check 3 arbitrary is not relabelled as fast-check 4, and a
+remain opaque: a native Effect arbitrary is not relabelled as a fast-check arbitrary, and a
 random function is not advertised as a shrinker. Inspection contains no schema,
 fixture, or executable callback. It is suitable for a local inspector; rendering
 code must still escape user-controlled labels.

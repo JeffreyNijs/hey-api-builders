@@ -40,7 +40,7 @@
     "@typescript-eslint/parser": "8.66.0",
     "@vitest/coverage-v8": "4.1.10",
     "arktype": "2.2.5",
-    "effect": "3.22.2",
+    "effect": "4.0.0",
     "eslint": "10.8.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "5.5.6",

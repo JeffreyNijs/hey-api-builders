@@ -51,7 +51,7 @@ application has been migrated. The root remains private and the existing publish
 Hey API v2 package remains unchanged. No packages are released by merging alone.
 
 The alpha is deliberately not a universal-generation or zero-vulnerability claim.
-Future vendor releases, Effect 4, arbitrary custom schema languages, universal
+Future vendor releases, arbitrary custom schema languages, universal
 shrinking, exhaustive solver coverage, hardened OS isolation and every transport or
 framework extension require additional implementation/evidence before advertising
 support. These limits remain visible in the package guides rather than being

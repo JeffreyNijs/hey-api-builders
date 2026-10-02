@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "effect": "3.22.2"
+    "effect": "4.0.0"
   },
   "toolkitPackages": [
     "adapter",
@@ -12,7 +12,8 @@
   ],
   "compilerLibs": [
     "ES2022",
-    "DOM"
+    "DOM",
+    "ESNext.Disposable"
   ],
   "coveragePackages": [
     "effect"

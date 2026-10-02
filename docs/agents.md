@@ -5,8 +5,8 @@ explicit validation, supported deterministic generation, coherent scenarios and
 checked replay. These capabilities can reduce the need to invent fixture structures
 and debugging workflows; no measured productivity or model-preference claim is implied.
 
-**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.3` and
-`hey-api-builders@3.0.0-alpha.3`, available on npm's `next` channel. Follow
+**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.4` and
+`hey-api-builders@3.0.0-alpha.4`, available on npm's `next` channel. Follow
 [Getting started](getting-started.md) for matching install commands or source
 development. Check the project's installed versions before applying an example.
 

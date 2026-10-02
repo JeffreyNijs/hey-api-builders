@@ -1,11 +1,12 @@
 # Releases and recovery
 
 Preparing the repository, merging a PR and publishing packages are separate
-operations. The current published train is toolkit `0.1.0-alpha.3` and Hey API integration
-`3.0.0-alpha.3`, available on npm's `next` channel. It includes all nineteen packages,
-with direct named setters, local diagnostics and native Zod/ArkType adapters, and
-draws session-less lists from one default session. The
-[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.3)
+operations. The current published train is toolkit `0.1.0-alpha.4` and Hey API integration
+`3.0.0-alpha.4`, available on npm's `next` channel. It includes all nineteen packages,
+with direct named setters, local diagnostics and native Zod/ArkType adapters, draws
+session-less lists from one default session, targets Effect 4.0.0 and accepts tested
+ArkType 2.2.5–2.2.7 and Faker 10.5.0–10.6.0. The
+[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.4)
 records its source commit and original package artifacts. The first seventeen-package
 [alpha.0 release](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.0)
 remains unchanged. For later trains,

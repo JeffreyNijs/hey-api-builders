@@ -2,8 +2,8 @@
 
 Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
-Native builders for **ArkType 2.2**. Alpha.3 pins 2.2.5; the next alpha accepts
-2.2.5 through 2.2.7, each tested against the packed adapter. `fromArkType(schema, options)` generates
+Native builders for **ArkType 2.2.5 through 2.2.7**, each release tested against the
+packed adapter (alpha.3 and earlier pin 2.2.5). `fromArkType(schema, options)` generates
 encoded input through ArkType's Standard JSON Schema projection and validates
 through the original Type. Input/output inference, morphs, brands, defaults,
 scoped recursion and native error paths are retained.
@@ -17,7 +17,7 @@ Alpha releases use npm's `next` tag. Pin exact versions when you need to reprodu
 fixtures; see [Getting started](../../docs/getting-started.md).
 
 ```sh
-npm install --save-dev @mimlet/arktype@next arktype@2.2.5
+npm install --save-dev @mimlet/arktype@next arktype@2.2.7
 ```
 
 ## Builders and factories

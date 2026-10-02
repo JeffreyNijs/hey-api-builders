@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.0-alpha.4
+
+### Patch Changes
+
+- @mimlet/core@0.1.0-alpha.4
+
 ## 3.0.0-alpha.3
 
 ### Patch Changes

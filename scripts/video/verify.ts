@@ -14,6 +14,8 @@ export interface Facts {
   packages: Record<string, string>;
   /** An ES module whose standard output the video shows. */
   program: string;
+  /** Extra files written next to the program, such as a repository recipe it imports. */
+  files?: Record<string, string>;
   stdout: string;
   /** Lines appended to `program` that must fail type-checking with `errors`, in order. */
   mistakes?: string;
@@ -51,6 +53,9 @@ try {
     throw new Error(`npm install failed:\n${install.output}`);
   }
 
+  for (const [name, contents] of Object.entries(facts.files ?? {})) {
+    await writeFile(join(directory, name), contents);
+  }
   await writeFile(join(directory, 'example.mjs'), facts.program);
   const example = run('node', ['example.mjs'], directory);
   if (example.code !== 0 || example.output !== facts.stdout) {

@@ -1,13 +1,20 @@
 import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
 import { describe, it } from 'node:test';
 import * as S from 'effect/Schema';
+import * as SAST from 'effect/SchemaAST';
+import * as ST from 'effect/SchemaTransformation';
 import * as E from 'effect/Effect';
-import * as FC from 'effect/FastCheck';
+import * as A from 'effect/Arbitrary';
 import { fromEffect, fromEffectAsync, fromEffectFactory, effectAdapter } from '@mimlet/effect';
 import { createSession, BuilderValidationError } from '@mimlet/core';
 const session = () =>
-  createSession({ seed: 42, fingerprint: 'effect-corpus/v1', provider: 'effect@3.22.2' });
+  createSession({ seed: 42, fingerprint: 'effect-corpus/v1', provider: 'effect@4.0.0' });
 describe('Effect native adapter', () => {
+  it('declares the installed native version it was tested against', () => {
+    const installed = createRequire(import.meta.url)('effect/package.json').version;
+    assert.equal(effectAdapter(S.Int).metadata.version, installed);
+  });
   it('generates input via native output arbitrary and encoder', () => {
     const schema = S.Struct({ age: S.NumberFromString, label: S.NonEmptyString });
     const b = fromEffect(schema);
@@ -20,17 +27,21 @@ describe('Effect native adapter', () => {
   it('retains native Date values and codec operations, without JSON conversion', async () => {
     let decode = 0,
       encode = 0;
-    const schema = S.transform(S.Number, S.DateFromSelf, {
-      strict: true,
-      decode: (v) => {
-        decode++;
-        return new Date(v);
-      },
-      encode: (v) => {
-        encode++;
-        return v.getTime();
-      },
-    });
+    const schema = S.Number.pipe(
+      S.decodeTo(
+        S.Date,
+        ST.transform({
+          decode: (v) => {
+            decode++;
+            return new Date(v);
+          },
+          encode: (v) => {
+            encode++;
+            return v.getTime();
+          },
+        })
+      )
+    );
     const adapter = effectAdapter(schema);
     assert.equal(adapter.source, schema);
     assert.ok(adapter.outputArbitrary() === adapter.outputArbitrary());
@@ -56,27 +67,36 @@ describe('Effect native adapter', () => {
     assert.throws(() => b.buildList(4, session()), RangeError);
   });
   it('preserves real native shrinking and re-encodes shrunk values', () => {
-    const schema = S.compose(S.NumberFromString, S.Int.pipe(S.between(0, 100)));
-    const a = effectAdapter(schema);
-    const report = FC.check(
-      FC.property(a.inputArbitrary(), (input) => Number(input) < 5),
-      { seed: 1, numRuns: 100 }
+    const schema = S.NumberFromString.pipe(
+      S.decodeTo(S.Int.check(S.isBetween({ minimum: 0, maximum: 100 })))
     );
-    assert.equal(report.failed, true);
-    assert.deepEqual(report.counterexample, ['5']);
-    assert.ok(report.numShrinks > 0);
-    assert.equal(a.decode(report.counterexample[0]), 5);
-    assert.equal(a.metadata.shrinking, 'native-fast-check-3');
+    const a = effectAdapter(schema);
+    const report = E.runSync(
+      A.checkEffect(a.inputArbitrary(), (input) => Number(input) < 5, { seed: 1, runs: 100 })
+    );
+    assert.equal(report._tag, 'Falsified');
+    assert.equal(report.shrunkInput, '5');
+    assert.ok(report.shrinks > 0);
+    assert.equal(a.decode(report.shrunkInput), 5);
+    const replay = E.runSync(
+      A.checkEffect(a.inputArbitrary(), (input) => Number(input) < 5, { replay: report.replay })
+    );
+    assert.equal(replay._tag === 'Falsified' && replay.shrunkInput, '5');
+    assert.equal(a.metadata.shrinking, 'native-effect-arbitrary-4');
   });
   it('uses custom factories without eagerly requiring an arbitrary or inverse', () => {
     const failure = new Error('one-way encoder');
-    const schema = S.transform(S.String, S.Number, {
-      strict: true,
-      decode: (v) => Number(v),
-      encode: () => {
-        throw failure;
-      },
-    });
+    const schema = S.String.pipe(
+      S.decodeTo(
+        S.Number,
+        ST.transform({
+          decode: (v) => Number(v),
+          encode: () => {
+            throw failure;
+          },
+        })
+      )
+    );
     assert.equal(fromEffectFactory(schema, (n) => String(n)).buildValidated(42), 42);
     assert.throws(
       () => fromEffect(schema).build(session()),
@@ -84,7 +104,8 @@ describe('Effect native adapter', () => {
     );
   });
   it('retains async custom factory arguments and validation', async () => {
-    const b = fromEffectFactory(S.NumberFromString, async (value) => value);
+    // Effect 4's NumberFromString decodes non-numeric text to NaN; FiniteFromString rejects it.
+    const b = fromEffectFactory(S.FiniteFromString, async (value) => value);
     assert.equal(await b.buildValidatedAsync('42'), 42);
     assert.deepEqual(await b.buildValidatedListAsync(2, '7'), [7, 7]);
     await assert.rejects(b.buildValidatedAsync('no'), BuilderValidationError);
@@ -92,35 +113,60 @@ describe('Effect native adapter', () => {
   it('supports explicit asynchronous native encoding and decoding', async () => {
     let encodes = 0,
       decodes = 0;
-    const schema = S.transformOrFail(S.String, S.Number, {
-      strict: true,
-      decode: (value) =>
-        E.promise(async () => {
-          decodes++;
-          return Number(value);
-        }),
-      encode: (value) =>
-        E.promise(async () => {
-          encodes++;
-          return String(value);
-        }),
-    });
+    const schema = S.String.pipe(
+      S.decodeTo(
+        S.Number,
+        ST.transformEffect({
+          decode: (value) =>
+            E.promise(async () => {
+              decodes++;
+              return Number(value);
+            }),
+          encode: (value) =>
+            E.promise(async () => {
+              encodes++;
+              return String(value);
+            }),
+        })
+      )
+    );
     const b = fromEffectAsync(schema);
     const result = await b.replace('42').buildValidatedAsync(session());
     assert.equal(result, 42);
     assert.equal(encodes, 1);
     assert.equal(decodes, 1);
     assert.equal(typeof (await b.buildAsync(session())), 'string');
+    assert.throws(() => fromEffect(schema).build(session()), Error);
+  });
+  it('routes asynchronous native generation through the async builder', async () => {
+    const Box = S.declare((u) => typeof u === 'object' && u !== null && 'box' in u, {
+      toCodecArbitrary: () =>
+        new SAST.Link(
+          S.Number.ast,
+          ST.transformEffect({
+            decode: (n) => E.promise(async () => ({ box: n })),
+            encode: (b) => E.succeed(b.box),
+          })
+        ),
+    });
+    assert.throws(() => fromEffect(Box).build(session()), {
+      name: 'TypeError',
+      message: /asynchronous; use fromEffectAsync/,
+    });
+    const boxed = await fromEffectAsync(Box).buildAsync(session());
+    assert.deepEqual(await fromEffectAsync(Box).buildAsync(session()), boxed);
   });
   it('rejects invalid overrides and default excess properties without repairing them', () => {
     const schema = S.Struct({ age: S.Number });
     const b = fromEffect(schema);
     assert.throws(() => b.with({ age: 'bad' }).buildValidated(session()), BuilderValidationError);
     assert.throws(() => b.with({ extra: true }).buildValidated(session()), BuilderValidationError);
+    // The same schema object must not inherit the first adapter's Standard Schema options.
     const nativeStrip = fromEffect(schema, { parseOptions: { onExcessProperty: 'ignore' } });
     assert.deepEqual(nativeStrip.replace({ age: 1, extra: true }).buildValidated(session()), {
       age: 1,
     });
+    assert.equal('~standard' in schema, false);
   });
   it('rejects a missing session with an explicit error instead of a native crash', async () => {
     const missing = { name: 'TypeError', message: /requires an explicit GenerationSession/ };
@@ -131,13 +177,18 @@ describe('Effect native adapter', () => {
     await assert.rejects(fromEffectAsync(S.Int).buildAsync(), missing);
     assert.deepEqual(people.buildValidated(session()), { name: 'Ada' });
   });
-  it('guards hidden native global configuration without mutating it', () => {
-    FC.configureGlobal({ seed: 11 });
+  it('is unaffected by native global sampling defaults and does not mutate them', () => {
+    const b = fromEffect(S.Struct({ age: S.Int, name: S.String }));
+    const expected = b.build(session());
+    A.configureGlobal({ sample: { seed: 11, size: 50, count: 5, maxDiscards: 0 } });
     try {
-      assert.throws(() => fromEffect(S.Int).build(session()), /unmodified/);
+      assert.deepEqual(b.build(session()), expected);
     } finally {
-      FC.resetConfigureGlobal();
+      A.configureGlobal({});
     }
-    assert.equal(typeof fromEffect(S.Int).build(session()), 'number');
+  });
+  it('reports exhausted native sampling instead of returning a partial value', () => {
+    const never = S.Int.check(S.makeFilter(() => false));
+    assert.throws(() => fromEffect(never).build(session()), RangeError);
   });
 });

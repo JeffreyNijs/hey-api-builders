@@ -12,7 +12,7 @@ export async function checkPackedFixture(fixture, options = {}) {
   const compilerLibs = manifest.compilerLibs ?? ['ES2022'];
   if (
     !Array.isArray(compilerLibs) ||
-    compilerLibs.some((lib) => !['ES2022', 'DOM'].includes(lib))
+    compilerLibs.some((lib) => !['ES2022', 'DOM', 'ESNext.Disposable'].includes(lib))
   ) {
     throw new Error('Unsupported fixture compiler library');
   }

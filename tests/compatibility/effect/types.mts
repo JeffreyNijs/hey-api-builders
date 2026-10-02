@@ -32,6 +32,9 @@ const adapter = effectAdapter(schema);
 expectType<{ readonly age: string }>(adapter.encode({ age: 42 }));
 // @ts-expect-error Encoding takes decoded output.
 adapter.encode({ age: '42' });
-declare const requiringService: S.Schema<string, string, { readonly service: unique symbol }>;
-// @ts-expect-error Effect runtime requirements must be provided explicitly, not ignored.
-fromEffect(requiringService);
+declare const decodingService: S.Codec<string, string, { readonly service: unique symbol }>;
+// @ts-expect-error Effect decoding requirements must be provided explicitly, not ignored.
+fromEffect(decodingService);
+declare const encodingService: S.Codec<string, string, never, { readonly service: unique symbol }>;
+// @ts-expect-error Effect encoding requirements must be provided explicitly, not ignored.
+fromEffect(encodingService);

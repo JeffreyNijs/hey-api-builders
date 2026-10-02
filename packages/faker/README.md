@@ -23,7 +23,9 @@ const fixtures = users.with({ name: 'Ada' }).buildList(3, session);
 ```
 
 Sessions are required by the builder: there is no hidden generator that survives
-between tests. Save `session.snapshot()` before a batch and use
+between tests, and no default session. Omitting the session is a type error; from
+JavaScript, builds, lists and `provider.instance()` raise a `TypeError` before the
+factory runs. Save `session.snapshot()` before a batch and use
 `restoreSession(snapshot, provider.identity)` to replay it. Include schema/factory
 changes in `fingerprint`, additional settings in `configuration`, and custom locale
 changes and fallback order in `localeIdentity`. Upgrading Faker can change results;

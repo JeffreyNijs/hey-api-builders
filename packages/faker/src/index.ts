@@ -1,5 +1,6 @@
 import { Faker, en } from '@faker-js/faker';
 import type { LocaleDefinition } from '@faker-js/faker';
+import fakerPackage from '@faker-js/faker/package.json' with { type: 'json' };
 import { createBuilder, createSchemaBuilder, createSession } from '@mimlet/core';
 import type {
   BuilderFor,
@@ -58,7 +59,8 @@ export function fakerAdapter(options: FakerOptions) {
   const localeIdentity = options.localeIdentity ?? 'en';
   const identity = Object.freeze({
     fingerprint: options.fingerprint,
-    provider: '@faker-js/faker@10.5.0/session-randomizer-v1',
+    // The loaded release is part of the stream identity, so replays cannot cross Faker versions.
+    provider: `@faker-js/faker@${fakerPackage.version}/session-randomizer-v1`,
     configuration: JSON.stringify([localeIdentity, options.configuration ?? '']),
   });
   return Object.freeze({

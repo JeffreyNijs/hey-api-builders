@@ -40,7 +40,9 @@ export function arkTypeAdapter<S extends ArkTypeSchema>(source: S, options: ArkT
     decode: (value: SchemaInput<S>): SchemaOutput<S> => source.assert(value) as SchemaOutput<S>,
     metadata: Object.freeze({
       vendor: 'arktype',
-      version: '2.2.5',
+      // ArkType exposes no runtime version. Generation identity comes from the
+      // converted input schema, so a projection change cannot reuse a replay.
+      supportedVersions: '>=2.2.5 <=2.2.7',
       generation: 'input-json-schema',
       validation: 'native-standard-schema',
       encoding: false,

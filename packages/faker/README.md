@@ -1,6 +1,8 @@
 # Realistic Faker fixtures
 
-This adapter targets `@faker-js/faker@10.5.0` without making Faker a core dependency.
+This adapter targets `@faker-js/faker` 10 without making Faker a core dependency. Alpha.3
+pins 10.5.0; the next alpha accepts 10.5.0 through 10.6.0, each tested against the packed
+adapter, and records the loaded Faker version in its replay identity.
 Randomness and the reference date belong to a scoped generation session, not the
 process-wide Faker singleton or the wall clock. No fixtures are cryptographic secrets.
 

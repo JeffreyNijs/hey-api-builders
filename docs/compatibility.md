@@ -80,7 +80,10 @@ available when the actual value must survive dependency changes.
 ## Version ranges since alpha.2
 
 Alpha.1 used exact peer pins. Alpha.2 widened Zod to `>=4.4.3 <=4.6.5` and
-legacy TypeBox to `>=0.34.48 <=0.34.52`; alpha.3 keeps both ranges.
+legacy TypeBox to `>=0.34.48 <=0.34.52`; alpha.3 keeps both ranges. The next
+alpha also widens ArkType to `>=2.2.5 <=2.2.7` and Faker to `>=10.5.0 <=10.6.0`;
+alpha.3 keeps both pinned. ArkType brings its own exact `@ark/*` and `arkregex`
+dependencies, so each matrix entry pins that whole set by integrity.
 `tests/vendor-versions.json` pins every currently published version in those
 intervals by tarball integrity. `pnpm test:vendors` reuses the full native
 conformance, negative-type and coverage suites for each version in isolated
@@ -90,7 +93,9 @@ a new reviewed matrix entry.
 Modern TypeBox remains exactly `1.3.34`. Probing 1.3.30–1.3.33 found that a
 property named `a/b~c` is reported as `/a/b~c` rather than the unambiguous JSON
 Pointer `/a~1b~0c`. The existing path-preservation regression fails on those
-versions; the adapter does not guess a repair. ArkType remains pinned to 2.2.5.
+versions; the adapter does not guess a repair.
 
 Zod's provider metadata now records the loaded vendor version, so a range upgrade
 cannot silently reuse a replay identity that describes a different Zod release.
+Faker's replay identity does the same in the next alpha. ArkType exposes no runtime
+version; its generation identity comes from the converted input schema instead.

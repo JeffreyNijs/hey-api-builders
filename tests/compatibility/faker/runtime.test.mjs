@@ -3,6 +3,8 @@ import { describe, it } from 'node:test';
 import { en, nl, faker as globalFaker } from '@faker-js/faker';
 import { fakerAdapter, fromFaker, fromFakerSchema, FakerSessionError } from '@mimlet/faker';
 import { restoreSession, SessionBudgetError, BuilderValidationError } from '@mimlet/core';
+import { createRequire } from 'node:module';
+const fakerVersion = createRequire(import.meta.url)('@faker-js/faker/package.json').version;
 const options = { fingerprint: 'person/v1' };
 const schema = (validate) => ({ '~standard': { version: 1, vendor: 'test', validate } });
 
@@ -25,6 +27,15 @@ describe('real Faker session conformance', () => {
     assert.equal(new Set(values.map((x) => x.id)).size, 5);
     assert.ok(values.every((x) => x.date instanceof Date && x.date < new Date('2026-01-01')));
     assert.notDeepEqual(b.buildList(5, s), values);
+  });
+  it('names the installed Faker release in the replay identity', () => {
+    const p = fakerAdapter(options);
+    assert.equal(p.identity.provider, `@faker-js/faker@${fakerVersion}/session-randomizer-v1`);
+    const other = {
+      ...p.identity,
+      provider: p.identity.provider.replace(fakerVersion, '0.0.0'),
+    };
+    assert.throws(() => restoreSession(p.session(42).snapshot(), other));
   });
   it('separates named fields and locale streams without resetting their sequences', () => {
     const p = fakerAdapter(options),

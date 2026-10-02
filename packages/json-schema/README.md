@@ -3,6 +3,13 @@
 Offline schema-to-fixture generation, with independent Ajv validation, reproducible
 sessions, and the same immutable builder pipeline as the native adapters.
 
+Install the alpha from npm's `next` tag. Pin exact versions when you need to
+reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/json-schema@next
+```
+
 ```ts
 import { jsonSchemaAdapter, fromJsonSchema } from '@mimlet/json-schema';
 

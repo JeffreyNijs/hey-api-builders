@@ -5,6 +5,7 @@ import {
   createSession,
   restoreSession,
   createBuilder,
+  createSchemaBuilder,
   SessionBudgetError,
   SessionReplayError,
 } from '../dist/index.js';
@@ -288,5 +289,110 @@ describe('reproducible execution sessions', () => {
       age: s.scope('age').integer(18, 80),
     }));
     assert.deepEqual(users.buildList(20, make()), users.buildList(20, make()));
+  });
+});
+
+describe('default sessions', () => {
+  const counted = () => {
+    const created = [];
+    const defaultSession = () => {
+      const session = make();
+      created.push(session);
+      return session;
+    };
+    return { created, defaultSession };
+  };
+  const identityOf = (s) => (s === undefined ? 'missing' : s.snapshot().operations);
+  const passthrough = {
+    '~standard': { version: 1, vendor: 'test', validate: (value) => ({ value }) },
+  };
+
+  it('draws successive session-less list items from one default session', () => {
+    const { created, defaultSession } = counted();
+    const users = createBuilder((s) => s?.integer(0, 1_000_000), { defaultSession });
+    const list = users.buildList(5);
+    assert.equal(created.length, 1);
+    assert.equal(new Set(list).size, 5);
+    assert.deepEqual(list, users.buildList(5, make()));
+    assert.deepEqual(users.buildList(5), list);
+    assert.equal(users.build(), list[0]);
+    assert.equal(users.build(), list[0]);
+    assert.equal(created.length, 4);
+  });
+  it('keeps session-less lists replayable from the default session', () => {
+    const { defaultSession } = counted();
+    const users = createBuilder((s) => ({ id: s.sequence('id', 1), age: s.integer(18, 80) }), {
+      defaultSession,
+    });
+    const before = defaultSession().snapshot();
+    const replay = restoreSession(JSON.parse(JSON.stringify(before)), identity);
+    assert.deepEqual(users.buildList(3, replay), users.buildList(3));
+    assert.deepEqual(
+      users.buildList(3).map(({ id }) => id),
+      [1, 2, 3]
+    );
+  });
+  it('shares the default with operations and transforms, and never overrides an explicit session', () => {
+    const { created, defaultSession } = counted();
+    const seen = [];
+    const builder = createBuilder((s, label) => ({ label, at: identityOf(s) }), { defaultSession })
+      .withFactory((s) => ({ patched: identityOf(s) }))
+      .transform((value, s, label) => {
+        seen.push([s, label]);
+        return value;
+      });
+    assert.deepEqual(builder.buildList(2, undefined, 'x'), [
+      { label: 'x', at: 0, patched: 0 },
+      { label: 'x', at: 0, patched: 0 },
+    ]);
+    assert.equal(created.length, 1);
+    assert.ok(seen.every(([s, label]) => s === created[0] && label === 'x'));
+    const explicit = make();
+    builder.build(explicit, 'y');
+    assert.equal(created.length, 1);
+    assert.deepEqual(seen.at(-1), [explicit, 'y']);
+  });
+  it('creates no default session for empty or invalid lists', async () => {
+    const { created, defaultSession } = counted();
+    const builder = createSchemaBuilder(passthrough, (s) => s.random(), { defaultSession });
+    assert.deepEqual(builder.buildList(0), []);
+    assert.deepEqual(builder.buildValidatedList(0), []);
+    assert.deepEqual(await builder.buildListAsync(0), []);
+    assert.deepEqual(await builder.buildValidatedListAsync(0), []);
+    assert.throws(() => builder.buildList(-1), RangeError);
+    await assert.rejects(builder.buildValidatedListAsync(0.5), RangeError);
+    assert.equal(created.length, 0);
+  });
+  it('applies the same default to validated and asynchronous builds', async () => {
+    const { created, defaultSession } = counted();
+    const builder = createSchemaBuilder(passthrough, async (s) => s.integer(0, 1_000_000), {
+      defaultSession,
+    });
+    const expected = await builder.buildListAsync(4, make());
+    assert.equal(new Set(expected).size, 4);
+    assert.deepEqual(await builder.buildListAsync(4), expected);
+    assert.deepEqual(await builder.buildValidatedListAsync(4), expected);
+    assert.equal(await builder.buildAsync(), expected[0]);
+    assert.equal(await builder.buildValidatedAsync(), expected[0]);
+    const sync = createSchemaBuilder(passthrough, (s) => s.integer(0, 1_000_000), {
+      defaultSession,
+    });
+    assert.deepEqual(sync.buildValidatedList(4), expected);
+    assert.equal(sync.buildValidated(), expected[0]);
+    assert.equal(created.length, 6);
+  });
+  it('rejects a non-callable default session and propagates default failures', async () => {
+    assert.throws(
+      () => createBuilder((s) => s, { defaultSession: make() }),
+      /defaultSession requires a factory function/
+    );
+    const failure = new Error('no default');
+    const builder = createBuilder(async (s) => s, {
+      defaultSession: () => {
+        throw failure;
+      },
+    });
+    await assert.rejects(builder.buildAsync(), (error) => error === failure);
+    await assert.rejects(builder.buildListAsync(1), (error) => error === failure);
   });
 });

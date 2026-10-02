@@ -99,7 +99,8 @@ export function graphqlAdapter(
     session,
     errors,
   });
-  const variableBuilder = () => createSchemaBuilder(variableStandard, createVariables, options);
+  const variableBuilder = () =>
+    createSchemaBuilder(variableStandard, createVariables, { ...options, defaultSession: session });
   const execute = createGraphQLExecutor({
     schema,
     document,
@@ -153,7 +154,7 @@ export function graphqlAdapter(
       standard,
       check: (value: unknown) => inspect(value).issues === undefined,
       issues: (value: unknown): readonly ValidationIssue[] => inspect(value).issues ?? [],
-      builder: () => createSchemaBuilder(standard, create, options),
+      builder: () => createSchemaBuilder(standard, create, { ...options, defaultSession: session }),
     });
   };
   return Object.freeze({

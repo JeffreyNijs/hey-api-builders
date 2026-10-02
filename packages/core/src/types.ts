@@ -1,3 +1,4 @@
+import type { GenerationSession } from './session.js';
 import type { StandardSchemaV1 } from './standard-schema.js';
 
 export type ValidationIssue = StandardSchemaV1.Issue;
@@ -58,6 +59,22 @@ export interface SchemaBuilderConfig extends BuilderConfig {
   /** Kept separate from the factory's argument list. */
   readonly validationOptions?: StandardSchemaV1.Options;
 }
+export interface DefaultSessionConfig {
+  /**
+   * Creates the session passed when a build omits its leading session argument. Each
+   * top-level build or list call creates one, so list items draw successive values.
+   */
+  readonly defaultSession?: () => GenerationSession;
+}
+/** Only factories whose first parameter is an optional session accept a default session. */
+export type DefaultSessionFor<F extends AnyFactory> =
+  Parameters<F> extends []
+    ? { readonly defaultSession?: never }
+    : [] extends Parameters<F>
+      ? [GenerationSession] extends [Parameters<F>[0]]
+        ? DefaultSessionConfig
+        : { readonly defaultSession?: never }
+      : { readonly defaultSession?: never };
 export interface BuilderDescription {
   readonly cloneInput: boolean;
   readonly maxListSize: number;

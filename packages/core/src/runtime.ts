@@ -2,6 +2,7 @@ import type { StandardSchemaV1 } from './standard-schema.js';
 import type {
   BuilderConfig,
   BuilderDescription,
+  DefaultSessionConfig,
   SchemaBuilderConfig,
   ValidationIssue,
 } from './types.js';
@@ -44,6 +45,7 @@ type State = {
   readonly standard?: StandardSchemaV1['~standard'];
   readonly validationOptions?: StandardSchemaV1.Options;
   readonly maxListSize: number;
+  readonly defaultSession?: () => unknown;
 };
 
 function plainRecord(value: unknown): value is Record<PropertyKey, unknown> {
@@ -141,7 +143,12 @@ export function makeRuntime(state: State) {
     state.cloneInput
       ? synchronous(invoke(state.cloneInput, [value]), 'a synchronous input clone')
       : value;
-  const build = (...args: unknown[]) => {
+  // An omitted leading session gets a fresh default per top-level call; none outlives the call.
+  const withDefaults = (args: unknown[]) =>
+    state.defaultSession && args[0] === undefined
+      ? [invoke(state.defaultSession, []), ...args.slice(1)]
+      : args;
+  const produce = (args: unknown[]) => {
     if (state.transforms.some((transform) => transform.asynchronous)) {
       throw new TypeError('An asynchronous transform requires buildAsync()');
     }
@@ -152,7 +159,7 @@ export function makeRuntime(state: State) {
     }
     return value;
   };
-  const buildAsync = async (...args: unknown[]) => {
+  const produceAsync = async (args: unknown[]) => {
     let value = prepare(applyOperations(state, await invoke(state.factory, args), args));
     for (const transform of state.transforms) {
       const result = invoke(transform.run, [value, ...args]);
@@ -162,28 +169,31 @@ export function makeRuntime(state: State) {
     }
     return value;
   };
-  const buildValidated = (...args: unknown[]) =>
+  const produceValidated = (args: unknown[]) =>
     unwrap(
       synchronous(
-        validate(build(...args)),
+        validate(produce(args)),
         'buildValidatedAsync()'
       ) as StandardSchemaV1.Result<unknown>
     );
-  const buildValidatedAsync = async (...args: unknown[]) =>
-    unwrap(await validate(await buildAsync(...args)));
-  const list = (factory: (...args: unknown[]) => unknown, count: number, args: unknown[]) => {
+  const produceValidatedAsync = async (args: unknown[]) =>
+    unwrap(await validate(await produceAsync(args)));
+  // List items share one default session, so they continue its streams instead of restarting.
+  const list = (factory: (args: unknown[]) => unknown, count: number, args: unknown[]) => {
     checkCount(count, state.maxListSize);
-    return Array.from({ length: count }, () => factory(...args));
+    const shared = count === 0 ? args : withDefaults(args);
+    return Array.from({ length: count }, () => factory(shared));
   };
   const listAsync = async (
-    factory: (...args: unknown[]) => Promise<unknown>,
+    factory: (args: unknown[]) => Promise<unknown>,
     count: number,
     args: unknown[]
   ) => {
     checkCount(count, state.maxListSize);
+    const shared = count === 0 ? args : withDefaults(args);
     const values: unknown[] = [];
     for (let index = 0; index < count; index += 1) {
-      values.push(await factory(...args));
+      values.push(await factory(shared));
     }
     return values;
   };
@@ -213,13 +223,17 @@ export function makeRuntime(state: State) {
       callable(run, 'transformAsync()');
       return configure({ transforms: [...state.transforms, { asynchronous: true, run }] });
     },
-    build,
-    buildAsync,
+    build(...args: unknown[]) {
+      return produce(withDefaults(args));
+    },
+    async buildAsync(...args: unknown[]) {
+      return produceAsync(withDefaults(args));
+    },
     buildList(count: number, ...args: unknown[]) {
-      return list(build, count, args);
+      return list(produce, count, args);
     },
     buildListAsync(count: number, ...args: unknown[]) {
-      return listAsync(buildAsync, count, args);
+      return listAsync(produceAsync, count, args);
     },
     describe(): BuilderDescription {
       return Object.freeze({
@@ -240,13 +254,17 @@ export function makeRuntime(state: State) {
           usingValidation(options: StandardSchemaV1.Options) {
             return configure({ validationOptions: Object.freeze({ ...options }) });
           },
-          buildValidated,
-          buildValidatedAsync,
+          buildValidated(...args: unknown[]) {
+            return produceValidated(withDefaults(args));
+          },
+          async buildValidatedAsync(...args: unknown[]) {
+            return produceValidatedAsync(withDefaults(args));
+          },
           buildValidatedList(count: number, ...args: unknown[]) {
-            return list(buildValidated, count, args);
+            return list(produceValidated, count, args);
           },
           buildValidatedListAsync(count: number, ...args: unknown[]) {
-            return listAsync(buildValidatedAsync, count, args);
+            return listAsync(produceValidatedAsync, count, args);
           },
         }
       : {}),
@@ -255,12 +273,15 @@ export function makeRuntime(state: State) {
 
 export function initializeRuntime(
   factory: unknown,
-  config: BuilderConfig | SchemaBuilderConfig = {},
+  config: (BuilderConfig | SchemaBuilderConfig) & DefaultSessionConfig = {},
   schema?: StandardSchemaV1
 ) {
   callable(factory, 'A builder');
   if (config.cloneInput !== undefined) {
     callable(config.cloneInput, 'cloneInput');
+  }
+  if (config.defaultSession !== undefined) {
+    callable(config.defaultSession, 'defaultSession');
   }
   const maxListSize = config.maxListSize ?? 10_000;
   checkCount(maxListSize, 0xffffffff);
@@ -278,6 +299,7 @@ export function initializeRuntime(
     transforms: [],
     maxListSize,
     ...(config.cloneInput ? { cloneInput: config.cloneInput } : {}),
+    ...(config.defaultSession ? { defaultSession: config.defaultSession } : {}),
     ...(standard ? { standard } : {}),
     ...(validationOptions ? { validationOptions: Object.freeze({ ...validationOptions }) } : {}),
   });

@@ -83,3 +83,15 @@ it('delegates reversible codecs to the native encoder and decoder', async () => 
   expect(adapter.encode(adapter.decode(input))).toBe(input);
   expect(await adapter.encodeAsync(await adapter.decodeAsync(input))).toBe(input);
 });
+
+it('draws session-less list items from one default session', async () => {
+  const Person = z.object({ name: z.string(), age: z.number().int().min(18).max(99) });
+  const people = fromZod(Person);
+  const list = people.buildList(3);
+  expect(new Set(list.map((person) => JSON.stringify(person))).size).toBe(3);
+  expect(list).toEqual(people.buildList(3, zodAdapter(Person).generation().session()));
+  expect(people.buildList(3)).toEqual(list);
+  expect(people.build()).toEqual(list[0]);
+  expect(people.buildValidatedList(3)).toEqual(list);
+  expect(await fromZodAsync(Person).buildValidatedListAsync(3)).toEqual(list);
+});

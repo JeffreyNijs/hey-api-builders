@@ -53,3 +53,14 @@ it('accepts scoped recursive schemas and preserves native rejection', () => {
     fromArkTypeFactory(type({ age: 'number >= 18' }), () => ({ age: 1 })).buildValidated()
   ).toThrow(BuilderValidationError);
 });
+
+it('draws session-less list items from one default session', () => {
+  const Person = type({ name: 'string', age: '18 <= number.integer <= 99' });
+  const people = fromArkType(Person);
+  const list = people.buildList(3);
+  expect(new Set(list.map((person) => JSON.stringify(person))).size).toBe(3);
+  expect(list).toEqual(people.buildList(3, arkTypeAdapter(Person).generation().session()));
+  expect(people.buildList(3)).toEqual(list);
+  expect(people.build()).toEqual(list[0]);
+  expect(people.buildValidatedList(3)).toEqual(list);
+});

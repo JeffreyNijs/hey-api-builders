@@ -21,8 +21,8 @@ export const demo = {
   title: 'Two units. Charged for one.',
   video: 'demo/mimlet-checkout-demo.mp4',
   poster: 'demo/mimlet-checkout-demo-poster.jpg',
-  duration: '54 seconds',
-  size: '1.8 MB',
+  duration: '46 seconds',
+  size: '2.2 MB',
   label: 'Checkout demo: a planted quantity bug is found, shrunk, replayed and fixed',
   summary:
     'A checkout test passes with one item, but the code forgets to multiply by quantity. Generated orders find the bug, shrink it to 2 units at 1¢ charged as 1¢, replay it from a saved record, and keep it as a regression test.',

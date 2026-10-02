@@ -2,7 +2,8 @@
 
 Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
-Native builders for **ArkType 2.2.5**. `fromArkType(schema, options)` generates
+Native builders for **ArkType 2.2**. Alpha.3 pins 2.2.5; the next alpha accepts
+2.2.5 through 2.2.7, each tested against the packed adapter. `fromArkType(schema, options)` generates
 encoded input through ArkType's Standard JSON Schema projection and validates
 through the original Type. Input/output inference, morphs, brands, defaults,
 scoped recursion and native error paths are retained.

@@ -1,7 +1,7 @@
 # Beta readiness checklist
 
-The published baseline is toolkit **0.1.0-alpha.2** and `hey-api-builders`
-**3.0.0-alpha.2** on `next`. The proposed first beta is **0.1.0-beta.0 /
+The published baseline is toolkit **0.1.0-alpha.3** and `hey-api-builders`
+**3.0.0-alpha.3** on `next`. The proposed first beta is **0.1.0-beta.0 /
 3.0.0-beta.0**, also on `next`, subject to maintainer approval. The repository
 is still in Changesets `alpha` mode; its normal next-alpha step is not a beta
 transition. This document does not change versions or authorize publication.

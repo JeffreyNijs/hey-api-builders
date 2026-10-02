@@ -12,12 +12,12 @@ schema-driven generation, native validation and codecs, related fixtures,
 property-based testing, and generated fluent classes. **Hey API is one integration,
 not a prerequisite.** The schema-free core has no runtime or peer dependencies.
 
-The published alpha is **0.1.0-alpha.2** for the toolkit and **3.0.0-alpha.2** for
+The published alpha is **0.1.0-alpha.3** for the toolkit and **3.0.0-alpha.3** for
 the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`
 remains on v2; opt into the alpha explicitly.
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.2
+npm install --save-dev @mimlet/core@0.1.0-alpha.3
 ```
 
 Add only the adapters you need.
@@ -58,7 +58,7 @@ and opt-in cloning avoid accidentally shared nested fixture data.
 For Zod 4, start with the native adapter (no Hey API or code generation required):
 
 ```sh
-npm install --save-dev @mimlet/zod@0.1.0-alpha.2 zod@4.6.5
+npm install --save-dev @mimlet/zod@0.1.0-alpha.3 zod@4.6.5
 ```
 
 ```ts

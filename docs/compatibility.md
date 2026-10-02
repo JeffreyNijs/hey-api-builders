@@ -77,10 +77,10 @@ future dependency releases. Named-stream isolation applies where a provider uses
 those scopes, not to every field of a third-party generator. Fixture capture is
 available when the actual value must survive dependency changes.
 
-## Version ranges in alpha.2
+## Version ranges since alpha.2
 
-Alpha.1 used exact peer pins. Alpha.2 widens
-Zod to `>=4.4.3 <=4.6.5` and legacy TypeBox to `>=0.34.48 <=0.34.52`.
+Alpha.1 used exact peer pins. Alpha.2 widened Zod to `>=4.4.3 <=4.6.5` and
+legacy TypeBox to `>=0.34.48 <=0.34.52`; alpha.3 keeps both ranges.
 `tests/vendor-versions.json` pins every currently published version in those
 intervals by tarball integrity. `pnpm test:vendors` reuses the full native
 conformance, negative-type and coverage suites for each version in isolated

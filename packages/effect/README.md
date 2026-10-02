@@ -48,7 +48,10 @@ inspecting private AST nodes. Native failures and issues remain available and ma
 contain application values; no reports are logged or transmitted by this package.
 
 Sessions are explicit and caller-versioned: include the schema, annotations,
-codec behavior and native dependency versions in your replay identity. Modified
+codec behavior and native dependency versions in your replay identity. Unlike the
+JSON Schema-based adapters, there is no default session. `fromEffect` and
+`fromEffectAsync` require one for every build and list call; omitting it is a type
+error and, from JavaScript, raises a `TypeError` before any generation. Modified
 native fast-check global configuration is rejected for deterministic sampling.
 The adapter does not modify native configuration. Native schemas/annotations are
 trusted code; this is not an interruptible worker or a guarantee of arbitrary

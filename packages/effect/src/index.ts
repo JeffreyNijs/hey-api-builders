@@ -16,13 +16,19 @@ export interface EffectOptions extends SchemaBuilderConfig {
   /** Native parse options; default rejects excess object properties. */
   readonly parseOptions?: AST.ParseOptions;
 }
-function sample<A>(arbitrary: FastCheck.Arbitrary<A>, session: GenerationSession): A {
+function sample<A>(arbitrary: () => FastCheck.Arbitrary<A>, session: GenerationSession): A {
+  // Native schemas cannot be fingerprinted, so there is no adapter-owned default session.
+  if (typeof (session as Partial<GenerationSession> | undefined)?.integer !== 'function') {
+    throw new TypeError(
+      'Effect generation requires an explicit GenerationSession; pass createSession({ seed, fingerprint, provider }) to each build or list call'
+    );
+  }
   if (Object.keys(FastCheck.readConfigureGlobal()).length !== 0) {
     throw new TypeError(
       'Deterministic Effect sampling requires unmodified native fast-check configuration'
     );
   }
-  return FastCheck.sample(arbitrary, {
+  return FastCheck.sample(arbitrary(), {
     seed: session.integer(-0x80000000, 0x7fffffff),
     numRuns: 1,
   })[0] as A;
@@ -57,8 +63,8 @@ export function effectAdapter<A, I>(
     outputArbitrary,
     /** Native fast-check 3 arbitrary: each shrink is re-encoded through the original schema. */
     inputArbitrary: () => outputArbitrary().map((value) => encode(value)),
-    create: (session: GenerationSession) => encode(sample(outputArbitrary(), session)),
-    createAsync: (session: GenerationSession) => encodeAsync(sample(outputArbitrary(), session)),
+    create: (session: GenerationSession) => encode(sample(outputArbitrary, session)),
+    createAsync: (session: GenerationSession) => encodeAsync(sample(outputArbitrary, session)),
     metadata: Object.freeze({
       vendor: 'effect',
       version: '3.22.2',

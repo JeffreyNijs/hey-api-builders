@@ -11,3 +11,17 @@ it('retains aliases, input defaults and selected response fields', () => {
   expect(response.check({ result: 7 })).toBe(true);
   expect(response.check({ echo: 7 })).toBe(false);
 });
+
+it('shares one default session across session-less variable and response lists', () => {
+  const adapter = graphqlAdapter(
+    'type Query { echo(value: Int!): Int! }',
+    'query($n: Int!) { echo(value: $n) }',
+    { profile: 'random' }
+  );
+  for (const builder of [adapter.variables.builder(), adapter.response({ n: 1 }).builder()]) {
+    const list = builder.buildList(4);
+    expect(new Set(list.map((value) => JSON.stringify(value))).size).toBe(4);
+    expect(list).toEqual(builder.buildList(4, adapter.session()));
+    expect(builder.build()).toEqual(list[0]);
+  }
+});

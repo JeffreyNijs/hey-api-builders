@@ -95,13 +95,12 @@ export function fromZod<S extends z.$ZodType>(
   options: ZodOptions = {}
 ): SchemaBuilder<z.input<S>, z.output<S>, [session?: GenerationSession]> {
   const adapter = zodAdapter(source, options);
-  adapter.generation();
+  const { session: defaultSession } = adapter.generation();
   // Successful JSON preparation guarantees synchronous, non-thenable generation.
-  return createSchemaBuilder(adapter.standard, adapter.create, options) as unknown as SchemaBuilder<
-    z.input<S>,
-    z.output<S>,
-    [session?: GenerationSession]
-  >;
+  return createSchemaBuilder(adapter.standard, adapter.create, {
+    ...options,
+    defaultSession,
+  }) as unknown as SchemaBuilder<z.input<S>, z.output<S>, [session?: GenerationSession]>;
 }
 
 /** Async refinements and codecs run once through safeParseAsync, without a sync probe. */
@@ -110,11 +109,11 @@ export function fromZodAsync<S extends z.$ZodType>(
   options: ZodOptions = {}
 ): AsyncSchemaBuilder<z.input<S>, z.output<S>, [session?: GenerationSession]> {
   const adapter = zodAdapter(source, options);
-  adapter.generation();
+  const { session: defaultSession } = adapter.generation();
   return createSchemaBuilder(
     adapter.standardAsync,
     async (session?: GenerationSession) => adapter.create(session),
-    options
+    { ...options, defaultSession }
   );
 }
 

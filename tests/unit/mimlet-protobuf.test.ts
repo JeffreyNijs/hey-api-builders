@@ -10,3 +10,14 @@ it('preserves 64-bit values and rejects invalid message presence', () => {
   expect(adapter.check({})).toBe(false);
   expect(adapter.check({ id: 9223372036854775808n })).toBe(false);
 });
+
+it('shares one default session across a session-less builder list', () => {
+  const adapter = protobufAdapter('syntax="proto3"; message Event { int32 id = 1; }', 'Event', {
+    profile: 'random',
+  });
+  const builder = adapter.builder();
+  const list = builder.buildList(4);
+  expect(new Set(list.map((event) => JSON.stringify(event))).size).toBe(4);
+  expect(list).toEqual(builder.buildList(4, adapter.session()));
+  expect(builder.build()).toEqual(list[0]);
+});

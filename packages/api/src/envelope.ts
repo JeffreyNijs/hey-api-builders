@@ -137,11 +137,10 @@ export function envelope<I extends object>(
     return result.value!;
   };
   const builder = () =>
-    createSchemaBuilder(standard, create, options) as unknown as SchemaBuilder<
-      I,
-      I,
-      [session?: GenerationSession]
-    >;
+    createSchemaBuilder(standard, create, {
+      ...options,
+      defaultSession: session,
+    }) as unknown as SchemaBuilder<I, I, [session?: GenerationSession]>;
   return Object.freeze({
     identity,
     session,

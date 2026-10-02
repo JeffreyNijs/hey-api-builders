@@ -3,6 +3,7 @@ import type {
   AnyFactory,
   BuilderConfig,
   BuilderFor,
+  DefaultSessionFor,
   SchemaBuilderConfig,
   SchemaBuilderFor,
   SchemaInput,
@@ -16,7 +17,7 @@ export { BuilderGenerationError, BuilderValidationError } from './runtime.js';
 /** Sync and async factories retain their argument tuples and distinct build capabilities. */
 export function createBuilder<F extends AnyFactory>(
   factory: F,
-  config?: BuilderConfig
+  config?: BuilderConfig & DefaultSessionFor<F>
 ): BuilderFor<F> {
   return initializeRuntime(factory, config) as unknown as BuilderFor<F>;
 }
@@ -25,7 +26,11 @@ export function createBuilder<F extends AnyFactory>(
 export function createSchemaBuilder<
   S extends StandardSchemaV1,
   F extends (...args: never[]) => NoInfer<SchemaInput<S>> | PromiseLike<NoInfer<SchemaInput<S>>>,
->(schema: S, factory: F, config?: SchemaBuilderConfig): SchemaBuilderFor<S, F> {
+>(
+  schema: S,
+  factory: F,
+  config?: SchemaBuilderConfig & DefaultSessionFor<F>
+): SchemaBuilderFor<S, F> {
   if (schema === undefined) {
     throw new TypeError('Expected a Standard Schema v1 validator');
   }

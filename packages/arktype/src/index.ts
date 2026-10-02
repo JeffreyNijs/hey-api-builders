@@ -54,13 +54,12 @@ export function fromArkType<S extends ArkTypeSchema>(
   options: ArkTypeOptions = {}
 ): SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, [session?: GenerationSession]> {
   const adapter = arkTypeAdapter(source, options);
-  adapter.generation();
+  const { session: defaultSession } = adapter.generation();
   // Successful JSON preparation guarantees synchronous, non-thenable generation.
-  return createSchemaBuilder(adapter.standard, adapter.create, options) as unknown as SchemaBuilder<
-    SchemaInput<S>,
-    SchemaOutput<S>,
-    [session?: GenerationSession]
-  >;
+  return createSchemaBuilder(adapter.standard, adapter.create, {
+    ...options,
+    defaultSession,
+  }) as unknown as SchemaBuilder<SchemaInput<S>, SchemaOutput<S>, [session?: GenerationSession]>;
 }
 
 /** Factory arguments, native input/output types and known async factories are preserved. */

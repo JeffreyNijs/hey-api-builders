@@ -130,7 +130,7 @@ export function protobufAdapter(
     clone: (value: unknown) => checked(value),
     check: (value: unknown) => issues(value).length === 0,
     issues,
-    builder: () => createSchemaBuilder(standard, create, options),
+    builder: () => createSchemaBuilder(standard, create, { ...options, defaultSession: session }),
     metadata: Object.freeze({
       message: type.fullName,
       nativeVersion: '8.8.0',

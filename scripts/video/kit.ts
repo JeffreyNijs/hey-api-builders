@@ -16,6 +16,9 @@ export const color = {
   mintSoft: '#e4f6d0',
   coral: '#f27b62',
   coralSoft: '#fcdcd3',
+  /** Darker accents for text on light cards, where mint and coral are too faint to read. */
+  mintText: '#3b7a1c',
+  coralText: '#b23a22',
   muted: '#55655e',
   faint: '#8f9b95',
   rule: '#dedacd',

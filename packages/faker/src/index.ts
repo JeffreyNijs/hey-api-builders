@@ -74,6 +74,12 @@ export function fakerAdapter(options: FakerOptions) {
     },
     /** Named fields have independent streams; repeated calls in one namespace advance it. */
     instance(execution: GenerationSession, ...keys: SessionKey[]): Faker {
+      // Builders reach this before the factory, so a missing session fails before generation.
+      if (typeof (execution as Partial<GenerationSession> | undefined)?.scope !== 'function') {
+        throw new TypeError(
+          'Faker generation requires an explicit GenerationSession; pass provider.session(seed) or a restored session to each build or list call'
+        );
+      }
       const stream = execution.scope(
         identity.provider,
         identity.fingerprint,

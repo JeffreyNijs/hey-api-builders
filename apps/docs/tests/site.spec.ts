@@ -108,7 +108,7 @@ test('every documentation route and its Markdown alternate resolve below /mimlet
   const index = await request.get('llms.txt');
   expect(index.status()).toBe(200);
   const text = await index.text();
-  expect(text).toContain('Published alpha: 0.1.0-alpha.1');
+  expect(text).toContain('Published alpha: 0.1.0-alpha.3');
   for (const name of ['zod', 'arktype']) {
     expect(text).toContain(`[@mimlet/${name}](/mimlet/packages/${name}.md)`);
     expect(text).not.toContain(`[@mimlet/${name}](/mimlet/packages/${name}.md): Next-release`);
@@ -191,6 +191,74 @@ test('navigation, local search and clean Markdown work with keyboard input', asy
   expect(
     docAccess.violations.map(({ id, nodes }) => ({ id, targets: nodes.map((node) => node.target) }))
   ).toEqual([]);
+});
+
+test('homepage demo, quickstart and feedback path resolve below /mimlet/', async ({
+  page,
+  request,
+}) => {
+  await page.goto('./');
+  const video = page.locator('video.demo-video');
+  await expect(video).toBeVisible();
+  for (const attribute of ['controls', 'muted', 'playsinline', 'loop']) {
+    await expect(video).toHaveAttribute(attribute, '');
+  }
+  await expect(video).toHaveAttribute('preload', 'metadata');
+  await expect(video).toHaveAttribute('poster', '/mimlet/demo/mimlet-checkout-demo-poster.jpg');
+  await expect(video).toHaveAttribute('aria-describedby', 'demo-summary');
+  const source = video.locator('source');
+  await expect(source).toHaveAttribute('src', '/mimlet/demo/mimlet-checkout-demo.mp4');
+  await expect(source).toHaveAttribute('type', 'video/mp4');
+  await expect(page.locator('#demo-summary')).toContainText('2 units at 1¢ charged as 1¢');
+  await expect(page.locator('.demo-credit')).toContainText('fast-check generates and shrinks');
+  await expect(page.getByRole('link', { name: /Open the MP4/ })).toHaveAttribute(
+    'href',
+    '/mimlet/demo/mimlet-checkout-demo.mp4'
+  );
+
+  const poster = await request.get('demo/mimlet-checkout-demo-poster.jpg');
+  expect(poster.status()).toBe(200);
+  expect(poster.headers()['content-type']).toBe('image/jpeg');
+  const mp4 = await request.get('demo/mimlet-checkout-demo.mp4');
+  expect(mp4.status()).toBe(200);
+  expect(mp4.headers()['content-type']).toBe('video/mp4');
+  const size = (await mp4.body()).length;
+  const partial = await request.get('demo/mimlet-checkout-demo.mp4', {
+    headers: { Range: 'bytes=0-1023' },
+  });
+  expect(partial.status()).toBe(206);
+  expect(partial.headers()['content-range']).toBe(`bytes 0-1023/${size}`);
+  expect((await partial.body()).length).toBe(1024);
+  const unsatisfiable = await request.get('demo/mimlet-checkout-demo.mp4', {
+    headers: { Range: `bytes=${size}-` },
+  });
+  expect(unsatisfiable.status()).toBe(416);
+
+  const recipe = (
+    await readFile(new URL('../../../examples/recipes/zod.ts', import.meta.url), 'utf8')
+  ).trimEnd();
+  expect((await page.locator('.quickstart-code pre code').textContent())?.trimEnd()).toBe(recipe);
+  await expect(page.locator('.quickstart-command').first()).toHaveText(
+    'npm install --save-dev @mimlet/zod@0.1.0-alpha.3 zod@4.6.5'
+  );
+  await expect(page.locator('.alpha-status')).toContainText('Alpha 0.1.0-alpha.3');
+  const feedback = 'https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml';
+  await expect(page.getByRole('link', { name: /Send beta feedback/ })).toHaveAttribute(
+    'href',
+    feedback
+  );
+
+  const overview = await (await request.get('index.md')).text();
+  expect(overview).toContain('(/mimlet/demo/mimlet-checkout-demo.mp4)');
+  expect(overview).toContain(`(${feedback})`);
+  expect(await (await request.get('guide/beta-feedback.md')).text()).toContain(`(${feedback})`);
+  for (const route of ['guide/getting-started', 'guide/zod-and-arktype']) {
+    expect(await (await request.get(`${route}.md`)).text()).not.toMatch(
+      /github-only|Reading this on GitHub|Read this guide with inline examples/
+    );
+    await page.goto(`${route}.html`);
+    await expect(page.locator('.vp-doc')).not.toContainText('Reading this on GitHub');
+  }
 });
 
 test('brand exports and static discovery metadata are present', async ({ page, request }) => {

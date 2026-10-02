@@ -3,6 +3,13 @@
 Offline schema-to-fixture generation, with independent Ajv validation, reproducible
 sessions, and the same immutable builder pipeline as the native adapters.
 
+Install the alpha from npm's `next` tag. Pin exact versions when you need to
+reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/json-schema@next
+```
+
 ```ts
 import { jsonSchemaAdapter, fromJsonSchema } from '@mimlet/json-schema';
 
@@ -55,6 +62,8 @@ Use `jsonSchemaAdapter` to prepare and compile once. `create(session)` supplies
 fixtures; `standard` exposes the JSON validation contract; `check` and `issues`
 inspect candidates. `identity` includes schema/reference/configuration identities
 and exact provider versions. With no session, each call starts from seed 1.
+Builders share that default across a session-less list, so `buildList(3)` equals
+`buildList(3, adapter.session())` instead of repeating one value.
 Caller-supplied sessions advance deterministically and preserve named isolation.
 The entire schema has one stream; field-stability across schema changes is not
 claimed. Snapshots contain generation state, not user callback implementations.

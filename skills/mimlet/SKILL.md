@@ -8,15 +8,17 @@ description: Use Mimlet to create typed test fixtures, native-schema builders, c
 Mimlet is a modular schema-aware test-data toolkit. This is an optional product
 skill, not permission to install dependencies, change unrelated code, or replace
 the user's chosen library. The current alpha is
-`@mimlet/*@0.1.0-alpha.1` on npm's `next` channel. Inspect the installed versions
+`@mimlet/*@0.1.0-alpha.3` on npm's `next` channel. Inspect the installed versions
 and use the matching documented APIs.
 
-Treat `fluent()` and `mimlet doctor`/`inspect` as source previews until the installed
-release includes them. Check `docs/fluent-builders.md` and `docs/cli-diagnostics.md`;
-do not suggest these commands for alpha.1. For available JSON diagnostics, check
-the format/version and branch on codes, not human-readable messages. A successful
-dependency check or schema inspection does not prove an app works or a schema has
-valid generated values.
+Use `fluent(fromZod(schema), ['name'])` for direct named setters when the installed
+train is alpha.2 or newer. Keep small declarations beside tests; do not create
+builder files or a generation step unless the task needs them. Check
+`docs/fluent-builders.md` and `docs/cli-diagnostics.md` for version-specific APIs.
+Do not suggest `fluent()` or `mimlet doctor`/`inspect` for alpha.1. Check diagnostic
+format/version and branch on codes, not human-readable messages. Successful
+metadata checks or schema preparation do not prove application correctness or
+that a schema has valid generated values.
 
 1. Inspect the project's package manifest, schema and nearby tests. Choose the
    smallest relevant package: `@mimlet/core` for the core, `@mimlet/<adapter>` for an

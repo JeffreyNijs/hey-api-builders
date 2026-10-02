@@ -75,7 +75,7 @@ export default defineConfig({
     ];
   },
   themeConfig: {
-    logo: { src: '/brand/mark.svg', alt: '' },
+    logo: { light: '/brand/mark.svg', dark: '/brand/mark-dark.svg', alt: '' },
     siteTitle: 'mimlet',
     outline: [2, 3],
     search: { provider: 'local' },
@@ -93,6 +93,8 @@ export default defineConfig({
         items: [
           { text: 'Getting started', link: '/guide/getting-started' },
           { text: 'Interactive demo', link: '/guide/scenario-demo' },
+          { text: 'Find a checkout bug', link: '/guide/checkout-example' },
+          { text: 'Compare fixture approaches', link: '/guide/checkout-comparison' },
           { text: 'Choose an adapter', link: '/guide/adapters' },
           { text: 'Zod and ArkType', link: '/guide/zod-and-arktype' },
           { text: 'For coding agents', link: '/guide/agents' },
@@ -123,6 +125,8 @@ export default defineConfig({
         items: [
           { text: 'Supported versions', link: '/guide/compatibility' },
           { text: 'Stable release contract', link: '/guide/stability' },
+          { text: 'Beta readiness', link: '/guide/beta-readiness' },
+          { text: 'Beta feedback kit', link: '/guide/beta-feedback' },
           { text: 'Mimlet migration', link: '/guide/mimlet-migration' },
           { text: 'Hey API migration', link: '/guide/hey-api-migration' },
           { text: 'Roadmap', link: '/guide/product-roadmap' },

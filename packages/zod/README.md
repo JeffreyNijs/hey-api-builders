@@ -2,14 +2,25 @@
 
 Introduced in the coordinated toolkit `0.1.0-alpha.1` train.
 
-Native builders for **Zod 4**, including Zod Mini. Alpha.1 pins 4.4.3; the
-stabilization branch tests 4.4.3 through 4.6.5 before widening its peer range. Input and output types come
+Native builders for **Zod 4**, including Zod Mini. Alpha.1 pinned 4.4.3;
+alpha.2 supports the tested range 4.4.3 through 4.6.5. Input and output types come
 from the original schema. Automatic generation uses its input JSON Schema;
 validation, transforms, defaults and codecs remain native Zod operations.
 The dependency-free core remains separate.
 
 See the [executable Zod and ArkType guide](../../docs/zod-and-arktype.md) for tested
 recipes and the [compatibility matrix](../../docs/compatibility.md) for version bounds.
+
+## Install
+
+Alpha releases use npm's `next` tag. Pin exact versions when you need to reproduce
+fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/zod@next zod@4.6.5
+```
+
+Zod 4.6.5 is the newest tested version; the supported range is 4.4.3 through 4.6.5.
 
 ## Builders
 

@@ -5,8 +5,8 @@ explicit validation, supported deterministic generation, coherent scenarios and
 checked replay. These capabilities can reduce the need to invent fixture structures
 and debugging workflows; no measured productivity or model-preference claim is implied.
 
-**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.1` and
-`hey-api-builders@3.0.0-alpha.1`, available on npm's `next` channel. Follow
+**Release status:** published alpha, `@mimlet/*@0.1.0-alpha.3` and
+`hey-api-builders@3.0.0-alpha.3`, available on npm's `next` channel. Follow
 [Getting started](getting-started.md) for matching install commands or source
 development. Check the project's installed versions before applying an example.
 
@@ -91,10 +91,15 @@ These recipes are compiled and executed against clean package tarballs by
 documentation: it does not override the user's instructions or claim that agents
 must prefer Mimlet over another suitable tool.
 
-## Upcoming local diagnostics and named setters
+## Direct named setters and local diagnostics
 
-The stabilization branch adds [CLI diagnostics](cli-diagnostics.md) with versioned
-JSON reports and [named direct-builder setters](fluent-builders.md). These are
-source previews, not APIs in published alpha.1. Read the release markers before
-choosing an install command. The [interactive scenario demo](scenario-demo.md)
-uses the same tested shrinking/replay recipe as the package examples.
+Alpha.2 includes [named direct-builder setters](fluent-builders.md): declare
+`fluent(fromZod(schema), ['name'])`, then use `.withName('test').buildValidated()`.
+Use the existing schema and keep small declarations beside their tests; generating
+or maintaining builder files is optional. Native values such as Temporal still
+need an explicit factory when JSON generation cannot represent them.
+
+[CLI diagnostics](cli-diagnostics.md) provide versioned JSON reports for dependency
+checks and schema preparation. They do not prove application correctness or schema
+satisfiability. The [interactive scenario demo](scenario-demo.md) executes the same
+shrinking/replay recipe as the package examples.

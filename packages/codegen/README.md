@@ -54,6 +54,6 @@ Individual package manifests are prepared for the coordinated alpha release; pub
 
 ## Local diagnostics
 
-The stabilization branch adds `mimlet doctor`, `mimlet inspect`, `--version` and
+Alpha.2 adds `mimlet doctor`, `mimlet inspect`, `--version` and
 opt-in JSON reports. See [CLI diagnostics](../../docs/cli-diagnostics.md) for
-contracts, limitations and source-preview availability.
+contracts, limitations and version-specific availability.

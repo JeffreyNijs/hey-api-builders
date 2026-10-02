@@ -3,9 +3,39 @@ export const identity = {
   tagline: 'Test data, with character.',
   description: 'Typed fixtures. Coherent scenarios. Failures you can replay.',
   releaseStatus: 'Published alpha',
-  releaseVersion: '0.1.0-alpha.1',
+  releaseVersion: '0.1.0-alpha.3',
   introduction:
     'Give your tests a little life. Build fixtures that fit your schemas, keep related data connected, and bring a failing case back on cue.',
+};
+
+export const alphaStatus = `Alpha ${identity.releaseVersion} on npm’s next channel. APIs can still change before a stable release, and there is no production adoption to point to yet.`;
+
+export const feedbackUrl =
+  'https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml';
+
+/**
+ * The homepage video follows the tested examples/recipes/checkout.ts recipe at seed 12345.
+ * Keep these numbers in sync with that recipe and its regression fixture.
+ */
+export const demo = {
+  title: 'Two units. Charged for one.',
+  video: 'demo/mimlet-checkout-demo.mp4',
+  poster: 'demo/mimlet-checkout-demo-poster.jpg',
+  duration: '46 seconds',
+  size: '2.2 MB',
+  label: 'Checkout demo: a planted quantity bug is found, shrunk, replayed and fixed',
+  summary:
+    'A checkout test passes with one item, but the code forgets to multiply by quantity. Generated orders find the bug, shrink it to 2 units at 1¢ charged as 1¢, replay it from a saved record, and keep it as a regression test.',
+  credit:
+    'fast-check generates and shrinks the orders. A Mimlet scenario rebuilds the linked customer, order and lines for every candidate, and a replay record checked against the same versions and configuration brings the failure back.',
+};
+
+/** A copyable first fixture. The code block is rendered from this tested recipe. */
+export const quickstart = {
+  recipe: 'zod',
+  install: `npm install --save-dev @mimlet/zod@${identity.releaseVersion} zod@4.6.5`,
+  run: 'node fixture.mts',
+  output: "{ name: 'Ada', age: '42' } { name: 'Ada', age: 42 }",
 };
 
 /** Implemented in source, but excluded from the currently published release train. */

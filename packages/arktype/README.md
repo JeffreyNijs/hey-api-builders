@@ -10,6 +10,15 @@ scoped recursion and native error paths are retained.
 See the [executable Zod and ArkType guide](../../docs/zod-and-arktype.md) for tested
 recipes and the [compatibility matrix](../../docs/compatibility.md) for version bounds.
 
+## Install
+
+Alpha releases use npm's `next` tag. Pin exact versions when you need to reproduce
+fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/arktype@next arktype@2.2.5
+```
+
 ## Builders and factories
 
 `.build()` creates input; `.buildValidated()` returns native transformed output.

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0-alpha.3
+
+### Patch Changes
+
+- 5bf6cd2: Raise a descriptive `TypeError` when `fromEffect` or `fromEffectAsync` builds without
+  the required explicit session, instead of failing inside native sampling. Effect
+  builders still have no default session; the types continue to require one.
+- Updated dependencies [5bf6cd2]
+  - @mimlet/core@0.1.0-alpha.3
+
+## 0.1.0-alpha.2
+
+### Patch Changes
+
+- Updated dependencies [7fbd5f2]
+  - @mimlet/core@0.1.0-alpha.2
+
 ## 0.1.0-alpha.1
 
 ### Patch Changes

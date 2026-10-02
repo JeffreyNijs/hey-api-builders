@@ -10,6 +10,7 @@ import type {
   BuilderFor,
   BuilderPatch,
   BuilderTransform,
+  DefaultSessionFor,
   OptionalKeys,
   SchemaBuilder,
   SchemaBuilderConfig,
@@ -155,7 +156,7 @@ export function builderClass<B extends { buildAsync: AnyFactory; describe(): Bui
 
 export function createBuilderClass<F extends AnyFactory>(
   factory: F,
-  config?: BuilderConfig
+  config?: BuilderConfig & DefaultSessionFor<F>
 ): BuilderConstructor<BuilderFor<F>> {
   return builderClass(() => initializeRuntime(factory, config)) as unknown as BuilderConstructor<
     BuilderFor<F>
@@ -164,7 +165,11 @@ export function createBuilderClass<F extends AnyFactory>(
 export function createSchemaBuilderClass<
   S extends StandardSchemaV1,
   F extends (...args: never[]) => NoInfer<SchemaInput<S>> | PromiseLike<NoInfer<SchemaInput<S>>>,
->(schema: S, factory: F, config?: SchemaBuilderConfig): BuilderConstructor<SchemaBuilderFor<S, F>> {
+>(
+  schema: S,
+  factory: F,
+  config?: SchemaBuilderConfig & DefaultSessionFor<F>
+): BuilderConstructor<SchemaBuilderFor<S, F>> {
   if (schema === undefined) {
     throw new TypeError('Expected a Standard Schema v1 validator');
   }

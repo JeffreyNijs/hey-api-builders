@@ -26,6 +26,14 @@ Landing-page copy lives in `content.ts`, layout/styles in `.vitepress/theme/`, a
 original artwork in the repository's `assets/brand/`. Run `pnpm brand:render` when
 changing the SVG social card. The public base path is always `/mimlet/`.
 
+The homepage demo video and its poster live in `assets/demo/` and are copied to
+`/mimlet/demo/`. The video is rendered from SVG and code with the approved mascot
+(no generated imagery) by `pnpm video checkout` (see `scripts/video/`), and follows
+`examples/recipes/checkout.ts` at seed 12345; `pnpm video:verify checkout` re-runs that
+recipe against the published packages. Copy `dist/videos/checkout.mp4` here, then take
+the poster from the shrinking scene at 21 seconds:
+`ffmpeg -ss 21 -i mimlet-checkout-demo.mp4 -frames:v 1 -vf scale=1280:720:flags=lanczos -q:v 3 mimlet-checkout-demo-poster.jpg`.
+
 ## Toolchain boundaries
 
 - VitePress stays at stable 1.6.4. Its Vite dependency is pinned to patched 6.4.3.

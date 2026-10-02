@@ -1,3 +1,12 @@
+import * as fc from 'fast-check';
+import {
+  manualCheckout,
+  checkManualCheckoutRegression,
+  nativeCheckouts,
+  findNativeCheckoutBug,
+  replayNativeCheckoutBug,
+  checkNativeFixedCheckout,
+} from './compiled/checkout-comparison.js';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
@@ -12,6 +21,15 @@ import { input as zodInput, user as zodUser } from './compiled/zod.js';
 import { input as arkInput, user as arkUser } from './compiled/arktype.js';
 import { input as fluentInput, output as fluentOutput, asynchronous } from './compiled/fluent.js';
 import { runScenarioDemo, replayScenarioDemo } from './compiled/scenario-demo.js';
+
+import {
+  findCheckoutBug,
+  replayCheckoutBug,
+  checkFixedCheckout,
+  buggyCheckoutTotal,
+  checkoutTotal,
+  expectedCheckoutTotal,
+} from './compiled/checkout.js';
 
 test('named fluent setters retain encoded input, native output and async behavior', () => {
   assert.deepEqual(fluentInput, { name: 'Ada', age: '42' });
@@ -89,4 +107,144 @@ test('installed codegen exposes the renamed executable', async () => {
   );
   assert.equal(result.status, 0);
   assert.match(result.stdout, /^mimlet --config/);
+});
+
+test('checkout quantities expose a real bug and shrink without breaking relationships', () => {
+  for (const seed of [12345, 1, 42, 100]) {
+    const candidates = [];
+    const result = findCheckoutBug(seed, (checkout) => candidates.push(checkout));
+    assert(candidates.length > result.shrinks);
+    candidates.forEach(assertCheckoutRelationships);
+    assert.equal(result.failed, true);
+    assert(result.shrinks > 0);
+    assert.deepEqual(result, findCheckoutBug(seed));
+    for (const checkout of [result.first, result.shrunk]) {
+      assertCheckoutRelationships(checkout);
+      assert.notEqual(buggyCheckoutTotal(checkout), expectedCheckoutTotal(checkout));
+      assert.equal(checkoutTotal(checkout), expectedCheckoutTotal(checkout));
+    }
+    assert.deepEqual(result.shrunk.items, [{ quantity: 2, unitPriceCents: 1 }]);
+    assert.equal(buggyCheckoutTotal(result.shrunk), 1);
+    assert.equal(checkoutTotal(result.shrunk), 2);
+    const serialized = JSON.stringify(result.replay);
+    assert.deepEqual(replayCheckoutBug(JSON.parse(serialized)), result.shrunk);
+    const fixed = checkFixedCheckout(seed);
+    assert.equal(fixed.details.failed, false);
+    assert.equal(fixed.details.numRuns, 1000);
+    assert.equal(fixed.replay, undefined);
+  }
+});
+
+test('the saved checkout failure still replays to its concrete fixture', async () => {
+  const saved = JSON.parse(await readFile('recipes/checkout-regression.json', 'utf8'));
+  const checkout = replayCheckoutBug(saved.replay);
+  assert.deepEqual(checkout, saved.checkout);
+});
+
+test('the fix passes the saved checkout regression independently of seed/path replay', async () => {
+  const saved = JSON.parse(await readFile('recipes/checkout-regression.json', 'utf8'));
+  assertCheckoutRelationships(saved.checkout);
+  assert.equal(saved.expectedTotalCents, 2);
+  assert.equal(buggyCheckoutTotal(saved.checkout), 1);
+  assert.equal(checkoutTotal(saved.checkout), saved.expectedTotalCents);
+  assert.equal(expectedCheckoutTotal(saved.checkout), saved.expectedTotalCents);
+
+  // The conventional one-unit happy path would not catch this bug.
+  const singleUnit = JSON.parse(JSON.stringify(saved.checkout));
+  singleUnit.items[0].quantity = 1;
+  singleUnit.lines[0].quantity = 1;
+  assertCheckoutRelationships(singleUnit);
+  assert.equal(buggyCheckoutTotal(singleUnit), expectedCheckoutTotal(singleUnit));
+});
+
+test('checkout replay rejects malformed or incompatible records', () => {
+  const result = findCheckoutBug();
+  for (const value of [null, {}, [], { ...result.replay, version: 2 }]) {
+    assert.throws(() => replayCheckoutBug(value), /checkout example replay/);
+  }
+  for (const change of [
+    { engine: 'fast-check@0.0.0' },
+    { path: 'not-a-path' },
+    { identity: { ...result.replay.replay.identity, configuration: 'total:includes-quantity' } },
+  ]) {
+    assert.throws(
+      () => replayCheckoutBug({ ...result.replay, replay: { ...result.replay.replay, ...change } }),
+      /replay version, engine, identity, or path/
+    );
+  }
+  assert.throws(() => findCheckoutBug(1.5), /seed/);
+});
+
+function assertCheckoutRelationships(checkout) {
+  assert.equal(checkout.order.customerId, checkout.customer.id);
+  assert.equal(checkout.lines.length, checkout.items.length);
+  assert(checkout.lines.length >= 1 && checkout.lines.length <= 6);
+  assert.equal(new Set(checkout.lines.map((line) => line.id)).size, checkout.lines.length);
+  checkout.lines.forEach((line, index) => {
+    assert.equal(line.orderId, checkout.order.id);
+    assert.equal(line.quantity, checkout.items[index].quantity);
+    assert.equal(line.unitPriceCents, checkout.items[index].unitPriceCents);
+    assert(Number.isInteger(line.quantity) && line.quantity >= 1 && line.quantity <= 10);
+    assert(
+      Number.isInteger(line.unitPriceCents) &&
+        line.unitPriceCents >= 1 &&
+        line.unitPriceCents <= 10_000
+    );
+  });
+}
+
+test('checkout diagnostics cannot mutate fixtures or mask their own failures', () => {
+  const result = findCheckoutBug(12345, (checkout) => {
+    checkout.lines[0].quantity = 999;
+  });
+  assert.deepEqual(result, findCheckoutBug(12345));
+  const failure = new Error('diagnostic assertion failed');
+  assert.throws(
+    () =>
+      findCheckoutBug(12345, () => {
+        throw failure;
+      }),
+    (error) => error === failure
+  );
+});
+
+test('the plain factory regression catches the same quantity bug without generation', () => {
+  const checkout = checkManualCheckoutRegression();
+  assertCheckoutRelationships(checkout);
+  assert.deepEqual(checkout, findCheckoutBug().shrunk);
+  const items = [{ quantity: 2, unitPriceCents: 1 }];
+  const built = manualCheckout(items);
+  items[0].quantity = 9;
+  assert.equal(built.items[0].quantity, 2);
+  assert.equal(built.lines[0].quantity, 2);
+});
+
+test('native fast-check maps, shrinks, and replays the same coherent checkout', () => {
+  for (const seed of [12345, 1, 42, 100]) {
+    // Assert coherence outside the predicate so a diagnostic failure cannot be
+    // mistaken for discovery of the intended application bug.
+    const candidates = [];
+    const observed = fc.check(
+      fc.property(nativeCheckouts, (checkout) => {
+        candidates.push(JSON.parse(JSON.stringify(checkout)));
+        return buggyCheckoutTotal(checkout) === expectedCheckoutTotal(checkout);
+      }),
+      { seed, numRuns: 100, maxSkipsPerRun: 0 }
+    );
+    candidates.forEach(assertCheckoutRelationships);
+    assert(candidates.length > observed.numShrinks);
+    const native = findNativeCheckoutBug(seed);
+    assert.equal(native.details.failed, true);
+    assert(native.details.numShrinks > 0);
+    assert.deepEqual(native.details.counterexample, observed.counterexample);
+    const checkout = native.details.counterexample[0];
+    assert.deepEqual(checkout.items, [{ quantity: 2, unitPriceCents: 1 }]);
+    assert.deepEqual(checkout, findCheckoutBug(seed).shrunk);
+    assert.equal(buggyCheckoutTotal(checkout), 1);
+    assert.equal(expectedCheckoutTotal(checkout), 2);
+    assert.deepEqual(replayNativeCheckoutBug(JSON.parse(JSON.stringify(native.replay))), checkout);
+    const fixed = checkNativeFixedCheckout(seed);
+    assert.equal(fixed.failed, false);
+    assert.equal(fixed.numRuns, 1000);
+  }
 });

@@ -1,30 +1,31 @@
 # Compatibility contract
 
-This describes the published `0.1.0-alpha.1` train and its tested source contracts. A supported interface, a native parser,
+This describes the published `0.1.0-alpha.3` train and its tested source contracts. A supported interface, a native parser,
 an automatic generator and a shrinker are different capabilities. Native package
-versions below are the **exact conformance targets**, not inferred ranges. Fixture
-manifests and lockfiles under `tests/compatibility` are the executable source of truth.
+versions below are explicit conformance targets or exhaustively tested bounded
+ranges. Fixture manifests, lockfiles and `tests/vendor-versions.json` are the
+executable source of truth.
 
-| Input or integration | Tested target               | Generation and types                                                                | Validation, codecs and limits                                                                                         |
-| -------------------- | --------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Typed factories      | Core API                    | Inferred values/arguments, sync or async; caller owns generation.                   | Optional Standard Schema validation; no schema dependency.                                                            |
-| Standard Schema      | v1 interface                | Any conforming validator plus an input factory.                                     | Native input/output distinction; sync/async execution and options. Standards acceptance alone is not auto-generation. |
-| Standard JSON Schema | v1 interface                | Input conversion plus generation; input/output types retained.                      | Must also supply Standard Schema to validate native output; opaque refinements can reject generated input.            |
-| TypeBox              | `typebox` 1.3.34            | Native minimal/default creation, complete anyOf-branch selection, custom factories. | Strict checking, root/field Codec handling, named contexts; no lossy JSON conversion.                                 |
-| Legacy TypeBox       | `@sinclair/typebox` 0.34.52 | Separate native minimal/default creation and anyOf selection.                       | Native Transform, references, recursion, Date and format cases. Native version semantics are not rewritten.           |
-| Zod                  | 4.4.3                       | Dedicated Zod/Mini builders, input JSON generation and typed factories.             | Native parsing/codecs; explicit async path avoids the Standard entry probe.                                           |
-| Valibot              | 1.5.0; converter 1.8.0      | Native adapter converts synchronous schema input.                                   | Original parsing/transformations. Async/native-only schemas use a factory with Standard Schema.                       |
-| ArkType              | 2.2.5                       | Dedicated builders, input JSON generation and native typed factories.               | Native morphs/scopes and input checks retained; no private AST dependency.                                            |
-| Effect               | 3.22.2                      | Native decoded arbitrary re-encoded as input; sync/async factory escape hatches.    | Native input/output arbitraries, codecs and fast-check 3 shrinking. Effect 4 is not represented as compatible.        |
-| JSON Schema          | Draft-07, 2019-09, 2020-12  | `json-schema-faker` 0.6.3; explicit versioned alternative providers.                | Separate Ajv 8.20.0 validators and ajv-formats 3.0.1; checked output, offline references and bounded attempts.        |
-| Faker                | 10.5.0                      | Explicit factories, locale fallback and stable named session streams.               | Native schemas can validate results; fixed reference dates and versioned replay.                                      |
-| fast-check           | 4.10.2                      | Native arbitraries, fixture mappings, parameter/scenario shrinking.                 | Sync/async properties, assertions and replay; arbitrary derivation from every schema is not claimed.                  |
-| OpenAPI              | 3.0, 3.1, 3.2               | Request/response envelope builders and component projection.                        | Directional policy, media/status selection and explicit serializers; not a full document validator or HTTP client.    |
-| AsyncAPI             | 2.0–2.6, 3.0–3.1            | Headers/payload message envelopes.                                                  | Native dialect selection; message identity and offline references. No broker connection.                              |
-| GraphQL              | graphql 17.0.2              | Native inputs and selection-aware output fixtures.                                  | Original schema rules, custom scalars and bounded recursion; not live resolver execution.                             |
-| Protobuf             | protobufjs 8.8.0            | Native message fixtures and lossless integer representation.                        | Explicit offline imports, oneofs, binary codecs and input limits.                                                     |
-| Avro                 | avsc 5.7.9                  | Native fixtures, recursive records and explicit union branches.                     | BigInt-backed signed 64-bit values, defaults and binary codecs; unknown logical semantics need explicit support.      |
-| Hey API              | openapi-ts 0.99.0           | Generated named builders using the shared core.                                     | Real Swagger 2/OpenAPI 3.0/3.1 generation, compilation and installed ESM consumer tests; breaking v3 migration.       |
+| Input or integration | Tested target                       | Generation and types                                                                | Validation, codecs and limits                                                                                         |
+| -------------------- | ----------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Typed factories      | Core API                            | Inferred values/arguments, sync or async; caller owns generation.                   | Optional Standard Schema validation; no schema dependency.                                                            |
+| Standard Schema      | v1 interface                        | Any conforming validator plus an input factory.                                     | Native input/output distinction; sync/async execution and options. Standards acceptance alone is not auto-generation. |
+| Standard JSON Schema | v1 interface                        | Input conversion plus generation; input/output types retained.                      | Must also supply Standard Schema to validate native output; opaque refinements can reject generated input.            |
+| TypeBox              | `typebox` 1.3.34                    | Native minimal/default creation, complete anyOf-branch selection, custom factories. | Strict checking, root/field Codec handling, named contexts; no lossy JSON conversion.                                 |
+| Legacy TypeBox       | `@sinclair/typebox` 0.34.48–0.34.52 | Separate native minimal/default creation and anyOf selection.                       | Native Transform, references, recursion, Date and format cases. Native version semantics are not rewritten.           |
+| Zod                  | 4.4.3–4.6.5                         | Dedicated Zod/Mini builders, input JSON generation and typed factories.             | Native parsing/codecs; explicit async path avoids the Standard entry probe.                                           |
+| Valibot              | 1.5.0; converter 1.8.0              | Native adapter converts synchronous schema input.                                   | Original parsing/transformations. Async/native-only schemas use a factory with Standard Schema.                       |
+| ArkType              | 2.2.5                               | Dedicated builders, input JSON generation and native typed factories.               | Native morphs/scopes and input checks retained; no private AST dependency.                                            |
+| Effect               | 3.22.2                              | Native decoded arbitrary re-encoded as input; sync/async factory escape hatches.    | Native input/output arbitraries, codecs and fast-check 3 shrinking. Effect 4 is not represented as compatible.        |
+| JSON Schema          | Draft-07, 2019-09, 2020-12          | `json-schema-faker` 0.6.3; explicit versioned alternative providers.                | Separate Ajv 8.20.0 validators and ajv-formats 3.0.1; checked output, offline references and bounded attempts.        |
+| Faker                | 10.5.0                              | Explicit factories, locale fallback and stable named session streams.               | Native schemas can validate results; fixed reference dates and versioned replay.                                      |
+| fast-check           | 4.10.2                              | Native arbitraries, fixture mappings, parameter/scenario shrinking.                 | Sync/async properties, assertions and replay; arbitrary derivation from every schema is not claimed.                  |
+| OpenAPI              | 3.0, 3.1, 3.2                       | Request/response envelope builders and component projection.                        | Directional policy, media/status selection and explicit serializers; not a full document validator or HTTP client.    |
+| AsyncAPI             | 2.0–2.6, 3.0–3.1                    | Headers/payload message envelopes.                                                  | Native dialect selection; message identity and offline references. No broker connection.                              |
+| GraphQL              | graphql 17.0.2                      | Native inputs and selection-aware output fixtures.                                  | Original schema rules, custom scalars and bounded recursion; not live resolver execution.                             |
+| Protobuf             | protobufjs 8.8.0                    | Native message fixtures and lossless integer representation.                        | Explicit offline imports, oneofs, binary codecs and input limits.                                                     |
+| Avro                 | avsc 5.7.9                          | Native fixtures, recursive records and explicit union branches.                     | BigInt-backed signed 64-bit values, defaults and binary codecs; unknown logical semantics need explicit support.      |
+| Hey API              | openapi-ts 0.99.0                   | Generated named builders using the shared core.                                     | Real Swagger 2/OpenAPI 3.0/3.1 generation, compilation and installed ESM consumer tests; breaking v3 migration.       |
 
 See each [package guide](../README.md#packages) for its exact constructors and
 unsupported features. Unsupported automatic generation has a factory/provider
@@ -76,10 +77,10 @@ future dependency releases. Named-stream isolation applies where a provider uses
 those scopes, not to every field of a third-party generator. Fixture capture is
 available when the actual value must survive dependency changes.
 
-## Version ranges proposed by the stabilization branch
+## Version ranges since alpha.2
 
-The published alpha.1 keeps its original exact peer pins. The next release widens
-Zod to `>=4.4.3 <=4.6.5` and legacy TypeBox to `>=0.34.48 <=0.34.52`.
+Alpha.1 used exact peer pins. Alpha.2 widened Zod to `>=4.4.3 <=4.6.5` and
+legacy TypeBox to `>=0.34.48 <=0.34.52`; alpha.3 keeps both ranges.
 `tests/vendor-versions.json` pins every currently published version in those
 intervals by tarball integrity. `pnpm test:vendors` reuses the full native
 conformance, negative-type and coverage suites for each version in isolated

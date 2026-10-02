@@ -5,6 +5,15 @@ and is not silently treated as compatible. Native Effect 3 schema generation and
 shrinking use its own fast-check 3 dependency, not an unverified conversion to the
 separately tested fast-check 4 adapter.
 
+Install the alpha from npm's `next` tag. Pin exact versions when you need to
+reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+
+```sh
+npm install --save-dev @mimlet/core@next @mimlet/effect@next effect@3.22.2
+```
+
+Pin `effect@3.22.2`: a plain `effect` install now resolves to Effect 4, which this package does not support.
+
 ```ts
 import * as S from 'effect/Schema';
 import { createSession } from '@mimlet/core';
@@ -39,7 +48,10 @@ inspecting private AST nodes. Native failures and issues remain available and ma
 contain application values; no reports are logged or transmitted by this package.
 
 Sessions are explicit and caller-versioned: include the schema, annotations,
-codec behavior and native dependency versions in your replay identity. Modified
+codec behavior and native dependency versions in your replay identity. Unlike the
+JSON Schema-based adapters, there is no default session. `fromEffect` and
+`fromEffectAsync` require one for every build and list call; omitting it is a type
+error and, from JavaScript, raises a `TypeError` before any generation. Modified
 native fast-check global configuration is rejected for deterministic sampling.
 The adapter does not modify native configuration. Native schemas/annotations are
 trusted code; this is not an interruptible worker or a guarantee of arbitrary

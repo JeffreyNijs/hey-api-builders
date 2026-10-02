@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { useData, withBase } from 'vitepress';
-import { agentBenefits, identity, stories } from '../../content';
-import { heroHtml } from '../../.generated/hero';
-const { theme } = useData();
+import {
+  agentBenefits,
+  alphaStatus,
+  demo,
+  feedbackUrl,
+  identity,
+  quickstart,
+  stories,
+} from '../../content';
+import { heroHtml, quickstartHtml } from '../../.generated/hero';
+const { theme, isDark } = useData();
 </script>
 
 <template>
@@ -30,8 +38,8 @@ const { theme } = useData();
         <div class="stage-grid" aria-hidden="true" />
         <img
           class="hero-mascot"
-          :src="withBase('/brand/mark.svg')"
-          alt="Mimlet, a small mint creature with a hooked tail"
+          :src="withBase(isDark ? '/brand/mark-dark.svg' : '/brand/mark.svg')"
+          alt="Mimlet, a mint folded-corner creature with little feet"
           width="148"
           height="120"
         />
@@ -48,6 +56,88 @@ const { theme } = useData();
           </div>
         </div>
         <span class="stage-note" aria-hidden="true">a fixture with a familiar face</span>
+      </div>
+    </section>
+
+    <section class="demo" aria-labelledby="demo-title">
+      <div class="demo-heading">
+        <p class="eyebrow">See it catch a bug</p>
+        <h2 id="demo-title">{{ demo.title }}</h2>
+      </div>
+      <div class="demo-grid">
+        <figure class="demo-media">
+          <video
+            class="demo-video"
+            controls
+            muted
+            playsinline
+            loop
+            preload="metadata"
+            width="1920"
+            height="1080"
+            :poster="withBase(`/${demo.poster}`)"
+            :aria-label="demo.label"
+            aria-describedby="demo-summary"
+          >
+            <source :src="withBase(`/${demo.video}`)" type="video/mp4" />
+            <p>
+              Your browser cannot play this video.
+              <a :href="withBase(`/${demo.video}`)"
+                >Download the checkout demo (MP4, {{ demo.size }})</a
+              >.
+            </p>
+          </video>
+          <figcaption>
+            <p id="demo-summary">{{ demo.summary }}</p>
+            <p class="demo-credit">{{ demo.credit }}</p>
+            <p class="demo-meta">
+              {{ demo.duration }} · on-screen captions · sound cues only, starts muted ·
+              <a :href="withBase(`/${demo.video}`)">Open the MP4 ({{ demo.size }})</a>
+            </p>
+            <p class="demo-links">
+              <a class="text-link" :href="withBase('/guide/checkout-example.html')"
+                >Read the tested example <span aria-hidden="true">↗</span></a
+              >
+              <a class="text-link" :href="withBase('/guide/checkout-comparison.html')"
+                >Compare with plain fast-check <span aria-hidden="true">↗</span></a
+              >
+            </p>
+          </figcaption>
+        </figure>
+        <div class="quickstart" aria-labelledby="quickstart-title">
+          <h3 id="quickstart-title">Quickstart with Zod</h3>
+          <ol class="quickstart-steps">
+            <li>
+              <span class="step-label">Install the alpha</span>
+              <pre class="quickstart-command"><code>{{ quickstart.install }}</code></pre>
+            </li>
+            <li>
+              <span class="step-label">Save as <code>fixture.mts</code></span>
+              <!-- Generated from an executable, typechecked recipe; no user HTML enters this value. -->
+              <div class="quickstart-code" v-html="quickstartHtml" />
+            </li>
+            <li>
+              <span class="step-label"
+                >Add <code>console.log(input, user)</code>, then run on Node 22.18+</span
+              >
+              <pre class="quickstart-command"><code>{{ quickstart.run }}</code></pre>
+              <div class="fixture-output quickstart-output">
+                <span aria-hidden="true">↳</span><code>{{ quickstart.output }}</code>
+              </div>
+            </li>
+          </ol>
+          <p class="alpha-status">
+            <span class="status-dot" aria-hidden="true" />{{ alphaStatus }}
+          </p>
+          <div class="quickstart-actions">
+            <a class="button primary" :href="feedbackUrl"
+              >Send beta feedback <span aria-hidden="true">↗</span></a
+            >
+            <a class="text-link" :href="withBase('/guide/beta-feedback.html')"
+              >Two short tasks to try first <span aria-hidden="true">↗</span></a
+            >
+          </div>
+        </div>
       </div>
     </section>
 
@@ -137,7 +227,12 @@ const { theme } = useData();
     </section>
 
     <footer class="home-footer">
-      <img :src="withBase('/brand/mark.svg')" alt="" width="70" height="57" />
+      <img
+        :src="withBase(isDark ? '/brand/mark-dark.svg' : '/brand/mark.svg')"
+        alt=""
+        width="70"
+        height="57"
+      />
       <div>
         <strong>Give your next test some character.</strong>
         <p>Mimlet · MIT licensed · Made by Jeffrey Nijs</p>

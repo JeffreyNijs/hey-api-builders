@@ -144,6 +144,28 @@ describe('real Faker session conformance', () => {
     );
     assert.equal(calls, 1);
   });
+  it('rejects a missing session with an explicit error before invoking the factory', async () => {
+    const missing = { name: 'TypeError', message: /requires an explicit GenerationSession/ };
+    let calls = 0;
+    const b = fromFaker((f) => {
+      calls++;
+      return { name: f.person.firstName() };
+    }, options);
+    assert.throws(() => b.build(), missing);
+    assert.throws(() => b.build(undefined), missing);
+    assert.throws(() => b.buildList(2), missing);
+    await assert.rejects(b.buildListAsync(2), missing);
+    assert.throws(() => fakerAdapter(options).instance(), missing);
+    const validated = fromFakerSchema(
+      schema((v) => ({ value: v })),
+      (f) => ({ name: f.person.firstName() }),
+      options
+    );
+    assert.throws(() => validated.buildValidated(), missing);
+    assert.throws(() => validated.buildValidatedList(2), missing);
+    assert.equal(calls, 0);
+    assert.equal(typeof b.build(fakerAdapter(options).session()).name, 'string');
+  });
   it('checks configuration and callbacks before doing any generation', () => {
     for (const value of [undefined, {}, { fingerprint: '' }, { fingerprint: 1 }])
       assert.throws(() => fakerAdapter(value), /fingerprint/);

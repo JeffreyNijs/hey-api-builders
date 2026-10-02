@@ -1,8 +1,12 @@
 import {
   createBuilder,
+  createBuilderClass,
+  createSchemaBuilder,
+  createSchemaBuilderClass,
   createSession,
   restoreSession,
   type GenerationSession,
+  type StandardSchemaV1,
 } from '../src/index.js';
 declare function expectType<T>(value: T): void;
 const options = { seed: 'fixed', fingerprint: 'user/v1', provider: 'fixture@1' };
@@ -19,3 +23,33 @@ restoreSession(session.snapshot());
 createSession({});
 // @ts-expect-error A reproducible factory explicitly requires a session.
 users.build();
+
+const defaultSession = () => createSession({ ...options, seed: 1 });
+const defaulted = createBuilder((session?: GenerationSession) => session?.integer(0, 9) ?? -1, {
+  defaultSession,
+});
+expectType<number[]>(defaulted.buildList(3));
+expectType<number[]>(defaulted.buildList(3, session));
+declare const personSchema: StandardSchemaV1<{ age: number }>;
+const people = createSchemaBuilder(
+  personSchema,
+  (session?: GenerationSession, label?: string) => ({ age: session ? 1 : label ? 2 : 3 }),
+  { defaultSession, maxListSize: 10 }
+);
+expectType<Array<{ age: number }>>(people.buildValidatedList(2));
+expectType<number>(new (createBuilderClass(defaulted.build, { defaultSession }))().build());
+createSchemaBuilderClass(
+  personSchema,
+  (session?: GenerationSession) => ({ age: session ? 1 : 0 }),
+  {
+    defaultSession,
+  }
+);
+// @ts-expect-error A default session would replace an unrelated first argument.
+createBuilder((id?: string) => ({ id }), { defaultSession });
+// @ts-expect-error Factories requiring a session must receive it explicitly.
+createBuilder((session: GenerationSession) => session.random(), { defaultSession });
+// @ts-expect-error A factory without parameters has no session to default.
+createSchemaBuilder(personSchema, () => ({ age: 1 }), { defaultSession });
+// @ts-expect-error The default is a session factory, not a shared session.
+createBuilder((session?: GenerationSession) => session, { defaultSession: session });

@@ -23,6 +23,8 @@ const types: Record<string, string> = {
   '.txt': 'text/plain; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.mp4': 'video/mp4',
   '.woff2': 'font/woff2',
   '.xml': 'application/xml; charset=utf-8',
 };
@@ -52,7 +54,28 @@ const server = createServer(async (request, response) => {
       throw new Error('Outside site');
     }
     const body = await readFile(file);
-    response.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' });
+    const headers = {
+      'Accept-Ranges': 'bytes',
+      'Content-Type': types[extname(file)] ?? 'application/octet-stream',
+    };
+    // Safari only plays video from servers that honour a single byte range, as Pages does.
+    const range = /^bytes=(\d*)-(\d*)$/.exec(request.headers.range ?? '');
+    if (range && (range[1] || range[2])) {
+      const start = range[1] ? Number(range[1]) : Math.max(body.length - Number(range[2]), 0);
+      const end =
+        range[1] && range[2] ? Math.min(Number(range[2]), body.length - 1) : body.length - 1;
+      if (start > end || start >= body.length) {
+        response.writeHead(416, { 'Content-Range': `bytes */${body.length}` }).end();
+        return;
+      }
+      response.writeHead(206, {
+        ...headers,
+        'Content-Range': `bytes ${start}-${end}/${body.length}`,
+      });
+      response.end(request.method === 'HEAD' ? undefined : body.subarray(start, end + 1));
+      return;
+    }
+    response.writeHead(200, headers);
     response.end(request.method === 'HEAD' ? undefined : body);
   } catch {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');

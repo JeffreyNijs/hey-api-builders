@@ -12,17 +12,23 @@ schema-driven generation, native validation and codecs, related fixtures,
 property-based testing, and generated fluent classes. **Hey API is one integration,
 not a prerequisite.** The schema-free core has no runtime or peer dependencies.
 
-The published alpha is **0.1.0-alpha.1** for the toolkit and **3.0.0-alpha.1** for
+The published alpha is **0.1.0-alpha.3** for the toolkit and **3.0.0-alpha.3** for
 the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`
 remains on v2; opt into the alpha explicitly.
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.1
+npm install --save-dev @mimlet/core@0.1.0-alpha.3
 ```
 
-Add only the adapters you need. [Getting started](docs/getting-started.md) includes
-a native TypeBox example and source-development instructions. The workspace root
-is private; each toolkit package is independently installable.
+Add only the adapters you need.
+[Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html)
+includes copyable native TypeBox and Zod examples and source-development
+instructions. The workspace root is private; each toolkit package is
+independently installable.
+
+Mimlet is still alpha. The [checkout example](docs/checkout-example.md) walks
+through a bug that is found, shrunk, replayed and fixed. If something is confusing or blocks you,
+[open a beta feedback issue](https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml).
 
 ## Start with the smallest interface you need
 
@@ -46,6 +52,29 @@ Factories retain their arguments. Async factories and explicit async transforms
 expose async build methods. Patches are shallow; changing a union variant requires
 complete replacement or explicit schema-aware selection. Fresh override factories
 and opt-in cloning avoid accidentally shared nested fixture data.
+
+### An existing Zod schema
+
+For Zod 4, start with the native adapter (no Hey API or code generation required):
+
+```sh
+npm install --save-dev @mimlet/zod@0.1.0-alpha.3 zod@4.6.5
+```
+
+```ts
+import { z } from 'zod';
+import { fromZod } from '@mimlet/zod';
+
+const User = z.object({ name: z.string(), age: z.string().transform(Number) });
+const users = fromZod(User).with({ name: 'Ada', age: '42' });
+const input = users.build(); // age: string
+const user = users.buildValidated(); // age: number
+```
+
+The adapter installs its matching Mimlet dependencies. Add `@mimlet/core` directly
+when importing helpers such as `fluent` or `restoreSession` in your own code.
+[Native Zod recipes](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html)
+cover async validation, factory escape hatches and the path to replay.
 
 ### A native TypeBox schema
 

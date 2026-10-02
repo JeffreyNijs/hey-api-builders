@@ -592,7 +592,10 @@ export function asyncApi(source: unknown, supplied: AsyncApiOptions = {}) {
       check: (value: unknown) => inspect(value).issues === undefined,
       issues: (value: unknown) => inspect(value).issues ?? [],
       builder: () =>
-        createSchemaBuilder(standard, create, options) as unknown as SchemaBuilder<
+        createSchemaBuilder(standard, create, {
+          ...options,
+          defaultSession: session,
+        }) as unknown as SchemaBuilder<
           MessageFixture,
           MessageFixture,
           [session?: GenerationSession]

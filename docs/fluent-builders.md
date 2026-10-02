@@ -1,8 +1,7 @@
 # Named setters on direct builders
 
-**Source preview:** `fluent()` is introduced by the stabilization branch. It is
-not part of the published `0.1.0-alpha.1` packages. Build matching source tarballs
-or use the next verified release that includes this change.
+Available since `0.1.0-alpha.2`. Use [matching published packages](getting-started.md)
+and declare a builder beside your test; no builder file or code generation is required.
 
 Generated ordinary-record builders already have named methods such as
 `withName()`. For direct builders, opt into the fields you want:
@@ -23,7 +22,8 @@ const named = fluent(builder, { withUserName: 'user_name' });
 Literal field tuples and alias maps are checked against finite, ordinary object
 records. Runtime-length inventories, index signatures, atomic values, arrays,
 nullable root objects and root object unions cannot acquire unsound partial setters.
-Use `.replace()` for variant transitions and `.at()` for typed nested updates.
+Use `.replace()` for variant transitions. For typed nested updates, use
+[`setPath` inside `.transform()`](generated-facades-and-paths.md#typed-nested-changes).
 Names that collide with builder/prototype methods, `then` or `toJSON` are rejected.
 
 Automatic names capitalize alphanumeric segments, matching standalone codegen.

@@ -7,22 +7,32 @@ Mimlet's core has no runtime dependencies. Schema adapters, generation engines,
 protocols, code generation and the local playground are independently installable
 packages. [Choose an adapter](adapters.md) for the capabilities you need.
 
+<!-- github-only -->
+
+Reading this on GitHub? [Open the rendered quickstart](https://jeffreynijs.github.io/mimlet/guide/getting-started.html)
+for inline examples, or follow the tested recipe source links below.
+<!-- /github-only -->
+
 ## Install the alpha
 
 The coordinated alpha is available on npm's `next` channel: `@mimlet/*` packages
-at `0.1.0-alpha.1`, alongside `hey-api-builders@3.0.0-alpha.1`. Pin matching versions
+at `0.1.0-alpha.3`, alongside `hey-api-builders@3.0.0-alpha.3`. Pin matching versions
 when reproducing fixtures or generated clients. The existing Hey API `latest` tag
 remains on v2.
 
 For the TypeBox example below, use Node **22.18 or newer** and install:
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.1 @mimlet/typebox@0.1.0-alpha.1 typebox@1.3.34
+npm install --save-dev @mimlet/core@0.1.0-alpha.3 @mimlet/typebox@0.1.0-alpha.3 typebox@1.3.34
 ```
 
 For a plain factory, only `@mimlet/core` is needed. The `mimlet` executable comes
 from `@mimlet/codegen`; the core package does not install a CLI. See
 [compatibility](compatibility.md) for tested runtime and schema-library versions.
+
+Already using Zod? Skip the TypeBox install and go straight to
+[native Zod builders](zod-and-arktype.md), or use the Zod install under
+[Named fluent helpers](#named-fluent-helpers) below.
 
 ## Your first fixture
 
@@ -31,6 +41,8 @@ source compiled and executed by `pnpm test:examples` and shown on the home page.
 
 <!-- recipe:hero -->
 
+[View the tested TypeBox first fixture source](../examples/recipes/hero.ts).
+
 The original builder remains unchanged when you call `.with()`. `.build()` creates
 schema input; `.buildValidated()` validates that input and returns decoded output.
 Those types can differ when your schema has a codec or transform. Use the async
@@ -38,10 +50,27 @@ methods when validation or the factory is asynchronous.
 
 ## Named fluent helpers
 
-Direct builders use `.with({ name: 'Ada' })`. Named methods such as `.withName()`
-come from [generated builders](../packages/codegen/README.md), the Hey API plugin,
-or a [custom builder class](generated-facades-and-paths.md). They are additional
-fluent helpers; direct schema adapters do not add them automatically.
+Use `fluent()` to add selected named setters directly to a schema builder. Declare
+it once beside the test, then create the variations you need. No builder file or
+code-generation step is required:
+
+```sh
+npm install --save-dev @mimlet/core@0.1.0-alpha.3 @mimlet/zod@0.1.0-alpha.3 zod@4.6.5
+```
+
+<!-- recipe:fluent -->
+
+[View the tested Zod named setters source](../examples/recipes/fluent.ts).
+
+To run this example in a fresh project, save the linked source as `fixture.mts`,
+append `console.log(output)`, and run `node fixture.mts` with Node 22.18 or newer.
+It prints `{ name: 'Ada', age: 42 }`. Node executes TypeScript by stripping types;
+use your project's TypeScript check as well to verify the input/output types.
+
+The field tuple is checked against the schema's input. Generic `.with()` remains
+available. For finite ordinary records, [named setters](fluent-builders.md) retain
+native validation, immutable branches and async capabilities. Existing generated
+classes and the Hey API plugin remain optional alternatives.
 
 ## Build from source
 
@@ -70,7 +99,7 @@ In a separate test project, install the core and TypeBox adapter tarballs togeth
 ```sh
 npm init -y
 npm pkg set type=module
-npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.1.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.1.tgz typebox@1.3.34
+npm install /absolute/path/to/checkout/release/mimlet-core-0.1.0-alpha.3.tgz /absolute/path/to/checkout/release/mimlet-typebox-0.1.0-alpha.3.tgz typebox@1.3.34
 ```
 
 Replace the absolute paths with the checkout you built. Add only the adapters you
@@ -82,6 +111,8 @@ Automatic generation has a supported capability set. A native refinement, custom
 format or callback may need an explicit factory:
 
 <!-- recipe:factory -->
+
+[View the tested explicit factory source](../examples/recipes/factory.ts).
 
 Use a factory to express meaningful domain data while retaining native validation.
 A generation failure does not prove that a schema has no valid values.

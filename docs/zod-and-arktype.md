@@ -1,20 +1,28 @@
 # Zod and ArkType builders
 
+<!-- github-only -->
+
+[Read this guide with inline examples](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html),
+or open the tested recipe source links below.
+<!-- /github-only -->
+
 The dedicated `@mimlet/zod` and `@mimlet/arktype` packages are published in
-`0.1.0-alpha.1` on npm's `next` channel. Existing Standard Schema and Standard JSON
+`0.1.0-alpha.3` on npm's `next` channel. Existing Standard Schema and Standard JSON
 Schema entry points remain supported. Install the adapter you use, with its tested peer:
 
 ```sh
 # Zod, including Zod Mini
-npm install --save-dev @mimlet/zod@0.1.0-alpha.1 zod@4.4.3
+npm install --save-dev @mimlet/zod@0.1.0-alpha.3 zod@4.6.5
 
 # ArkType
-npm install --save-dev @mimlet/arktype@0.1.0-alpha.1 arktype@2.2.5
+npm install --save-dev @mimlet/arktype@0.1.0-alpha.3 arktype@2.2.5
 ```
 
 ## Zod: typed input, native output
 
 <!-- recipe:zod -->
+
+[View the tested native Zod recipe](../examples/recipes/zod.ts).
 
 The encoded age is a string. Native validation produces a number. The original
 schema keeps control over coercion, defaults, object stripping and codec behavior.
@@ -33,6 +41,8 @@ See the [Zod package contract](../packages/zod/README.md).
 ## ArkType: preserve morphs and scopes
 
 <!-- recipe:arktype -->
+
+[View the tested native ArkType recipe](../examples/recipes/arktype.ts).
 
 ArkType's original Type remains the validator. Its `allows()` input check does not
 execute morphs; validated builds do. Scoped and recursive Types retain their input
@@ -53,6 +63,16 @@ Factories do not require conversion, so schemas involving Date, bigint, custom
 predicates or application-owned objects can retain their native behavior. Keep the
 schema and supply meaningful input through `fromZodFactory`,
 `fromZodFactoryAsync` or `fromArkTypeFactory`.
+
+## Next: replay a generated fixture
+
+The [session replay guide](sessions-and-replay.md) shows the complete
+snapshot-before-build and restore flow, including a copyable core example.
+For native Zod generation, `zodAdapter(schema, options).generation()` exposes the
+prepared generator's `session(seed)` and `identity`. Pass that session to
+`fromZod(schema, options).buildValidated(session)`; keep schema and options the same
+for both. Restore with `restoreSession(snapshot, generator.identity)` from
+`@mimlet/core`, and pass the restored session to the same builder.
 
 For replay, preserve the generator identity and the application's schema/codec
 version. The existing [scenario](correlated-scenarios.md),

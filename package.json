@@ -93,6 +93,8 @@
     "test:integration": "vitest run --project integration",
     "audit:production": "node scripts/audit-production.ts",
     "brand:render": "node scripts/render-brand.ts",
+    "video": "node scripts/video/render.ts",
+    "video:verify": "node scripts/video/verify.ts",
     "docs:dev": "pnpm --dir apps/docs docs:dev",
     "docs:build": "pnpm --dir apps/docs docs:build",
     "docs:preview": "pnpm --dir apps/docs docs:preview",

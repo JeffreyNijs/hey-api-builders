@@ -1,8 +1,7 @@
 # Diagnostics for people and coding agents
 
-**Source preview:** `doctor`, `inspect`, JSON diagnostics and `--version` are new
-in the stabilization branch, not in published `0.1.0-alpha.1`. Use matching
-source tarballs until a release containing them is verified.
+Available in `@mimlet/codegen@0.1.0-alpha.2` and later. The earlier alpha.1
+executable only provides generation commands.
 
 ```sh
 mimlet doctor --project . --json

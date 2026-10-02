@@ -220,3 +220,13 @@ test('supports Mini, complete union replacement and the public adapter conforman
     ]
   );
 });
+
+test('draws session-less list items from one default session', () => {
+  const Person = z.object({ name: z.string(), age: z.number().int().min(18).max(99) });
+  const people = fromZod(Person);
+  const list = people.buildList(3);
+  assert.equal(new Set(list.map((person) => JSON.stringify(person))).size, 3);
+  assert.deepEqual(list, people.buildList(3, zodAdapter(Person).generation().session()));
+  assert.deepEqual(people.buildList(3), list);
+  assert.deepEqual(people.build(), list[0]);
+});

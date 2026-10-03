@@ -116,3 +116,23 @@ This is a fixture-focused reader, not a complete AsyncAPI document validator or
 protocol binding implementation. Request/reply generation requires an explicit
 reply channel with message definitions. The message APIs and serialization paths
 are tested against installed package artifacts alongside the HTTP cases.
+
+## Other exports
+
+- `fromOpenApiRequest(source, selector, options?)` and
+  `fromOpenApiResponse(source, selector, options?)` return the same builders as
+  `openApi(source, options).request(selector).builder()` and
+  `.response(selector).builder()`. Use `openApi()` when you also need `serialize`,
+  `check` or `metadata`.
+- `serializeParameter({ name, in, style?, explode?, allowReserved? }, value)` returns
+  `{ value, pairs }`, as described above.
+- `encodeContent(contentType, value, codecs?)` returns a `string` or `Uint8Array`
+  using a matching entry in `codecs` or the built-in JSON, text and URL-encoded form
+  codecs, and throws for other media types.
+- `mediaType(value)` returns the lowercase media type without parameters, for
+  example `application/json` for `Application/JSON; charset=utf-8`.
+- `headerName(name)` validates an HTTP header name and returns it in lowercase.
+- `headerValue(value)` returns the value unchanged and rejects control characters.
+- `messageExpression(expression, fixture)` returns the value that a
+  `$message.header#/...` or `$message.payload#/...` runtime expression selects from a
+  `{ headers, payload }` message fixture, and throws when it is absent.

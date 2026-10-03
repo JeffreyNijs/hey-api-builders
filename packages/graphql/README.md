@@ -76,3 +76,12 @@ retain their cause for deliberate diagnostics.
 The compatibility suite installs built tarballs in an isolated consumer, checks
 public declarations without DOM types, and tests the native runtime rather than a
 mock. Individual packages are prepared for coordinated publication; no publication is implied by this source.
+
+## Other exports
+
+- `fromGraphQLVariables(schemaSDL, operationText, options?)` returns
+  `graphqlAdapter(schemaSDL, operationText, options).variables.builder()`.
+- `fromGraphQLResponse(schemaSDL, operationText, variables?, options?)` returns
+  `graphqlAdapter(schemaSDL, operationText, options).response(variables).builder()`.
+  The variables are the third positional argument and must be encoded, as for
+  `response()`.

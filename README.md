@@ -4,13 +4,21 @@
 
 Typed fixtures. Coherent scenarios. Failures you can replay.
 
-Mimlet is the schema-aware toolkit behind `@mimlet/core`, `@mimlet/*`, and the
-`hey-api-builders` integration. The coordinated **alpha is published on npm’s `next` channel**. The [documentation website](https://jeffreynijs.github.io/mimlet/) is live.
+Mimlet makes test data from the schemas you already have. Give it a Zod, Valibot,
+ArkType, TypeBox, Effect or JSON Schema schema, or an OpenAPI, GraphQL, Protobuf or
+Avro contract, and it builds typed fixtures that pass your own validation.
 
-A modular TypeScript toolkit for reproducible test data: immutable builders,
-schema-driven generation, native validation and codecs, related fixtures,
-property-based testing, and generated fluent classes. **Hey API is one integration,
-not a prerequisite.** The schema-free core has no runtime or peer dependencies.
+- **Set only what the test cares about.** Override a field or two; Mimlet fills in
+  the rest, and the original builder stays untouched for the next test.
+- **Keep related records consistent.** Link a customer, their orders and the order
+  lines once; change one and everything that depends on it follows.
+- **Replay failures.** With property-based tests, a failing case shrinks to a small
+  example you can save and run again later.
+
+Install only what you use: the core has no dependencies, and each schema library has
+its own small adapter. Hey API users can also generate builder classes from an OpenAPI
+spec with `hey-api-builders`. Releases are published on npm's `next` channel, and the
+[documentation website](https://jeffreynijs.github.io/mimlet/) has guides and a live demo.
 
 The published alpha is **0.1.0-alpha.4** for the toolkit and **3.0.0-alpha.4** for
 the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`

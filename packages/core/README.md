@@ -1,8 +1,8 @@
-# Mimlet core (alpha)
+# Mimlet core
 
-A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
+The heart of Mimlet: builders that make test data from a factory function or, through an adapter package, from your schema. Every change such as `.with()` returns a new builder and leaves the original untouched, so one test's variation never leaks into another's. Any Standard Schema validator (Zod, Valibot, ArkType and others) can check a built value and return its parsed output. Hey API, Faker, Zod and TypeBox are not dependencies of this package.
 
-The package name is `@mimlet/core`. Alpha releases use the `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
+The package name is `@mimlet/core`. Prereleases use npm's `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
 
 ```sh
 pnpm build:core
@@ -92,7 +92,7 @@ This generic path is deliberately conservative; native TypeBox adapters addition
 ## Fresh nested values and derived values
 
 Direct builders can opt into named setters with `fluent(builder, ['name'])`.
-See [named setters](../../docs/fluent-builders.md) for input/output typing and
+See [named setters](https://jeffreynijs.github.io/mimlet/guide/fluent-builders.html) for input/output typing and
 release availability. Generated ordinary-record facades already have these methods.
 
 Builder configuration is immutable, but user data is not deep-cloned or frozen. A shared object supplied to `with()` or `replace()` stays shared. Use per-build factories when fixture isolation is needed:
@@ -136,7 +136,7 @@ const users = createBuilder(
 const people = users.buildList(3); // equals users.buildList(3, session())
 ```
 
-Each build, validated build or list call that omits the leading session (or passes `undefined`) calls `defaultSession` once and passes the result to the factory, patch factories and transforms. List items therefore continue one session instead of restarting it, while repeated session-less calls stay deterministic. An explicit session is never replaced, and an empty list creates no session. The option is type-checked: factories without an optional leading session parameter cannot declare it. Adapters with optional sessions use their own seed-1 `session()` as this default; see [Sessions and replay](../../docs/sessions-and-replay.md#omitted-sessions).
+Each build, validated build or list call that omits the leading session (or passes `undefined`) calls `defaultSession` once and passes the result to the factory, patch factories and transforms. List items therefore continue one session instead of restarting it, while repeated session-less calls stay deterministic. An explicit session is never replaced, and an empty list creates no session. The option is type-checked: factories without an optional leading session parameter cannot declare it. Adapters with optional sessions use their own seed-1 `session()` as this default; see [Sessions and replay](https://jeffreynijs.github.io/mimlet/guide/sessions-and-replay.html#omitted-sessions).
 
 ## Inspection and adapters
 

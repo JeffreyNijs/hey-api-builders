@@ -1,4 +1,4 @@
-# Native GraphQL fixtures (alpha)
+# Native GraphQL fixtures
 
 `graphqlAdapter(schemaSDL, operationText, options)` prepares GraphQL variable and
 response fixtures with the pinned `graphql@17.0.2` reference implementation. The
@@ -14,7 +14,7 @@ const operation = graphqlAdapter(
     fields: { 'Query.user': ({ args }) => ({ id: args.id, name: 'Ada' }) },
   }
 );
-const variables = operation.variables.builder().buildValidated();
+const variables = operation.variables.builder().build();
 const response = operation.response(variables).builder().buildValidated();
 ```
 
@@ -25,7 +25,11 @@ are distinct. Runtime SDL does not establish a TypeScript application model: map
 remain `Record<string, unknown>`. Use generated application types explicitly at
 an independently checked boundary, rather than an unchecked generic cast.
 
-`response(encodedVariables)` offers `create`, `check`, `issues`, `standard`, and
+`response(encodedVariables)` takes the encoded variables returned by `build()` or
+`create()`, not the coerced output of `buildValidated()`: coerced custom-scalar
+values such as a `Date` are rejected with "Expected a variable or response object".
+Use `variables.check()` to validate encoded variables, for example after `.with()`
+overrides. The returned object offers `create`, `check`, `issues`, `standard`, and
 `builder`. The native executor implements aliases, fragments, include/skip,
 argument coercion, enum serialization and null propagation. Explicit field-factory
 results retain supplied child values and relationships. Missing child values use
@@ -72,3 +76,12 @@ retain their cause for deliberate diagnostics.
 The compatibility suite installs built tarballs in an isolated consumer, checks
 public declarations without DOM types, and tests the native runtime rather than a
 mock. Individual packages are prepared for coordinated publication; no publication is implied by this source.
+
+## Other exports
+
+- `fromGraphQLVariables(schemaSDL, operationText, options?)` returns
+  `graphqlAdapter(schemaSDL, operationText, options).variables.builder()`.
+- `fromGraphQLResponse(schemaSDL, operationText, variables?, options?)` returns
+  `graphqlAdapter(schemaSDL, operationText, options).response(variables).builder()`.
+  The variables are the third positional argument and must be encoded, as for
+  `response()`.

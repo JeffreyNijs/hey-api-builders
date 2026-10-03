@@ -1,11 +1,11 @@
 # Meet Mimlet
 
-**Test data, with character.** Build typed fixtures, keep scenarios connected, and
-reproduce failures with explicit seeds and compatible replay records.
+**Test data, with character.** Build typed fixtures from your schemas, keep related
+records consistent, and save a failing case so you can replay it later.
 
-Mimlet's core has no runtime dependencies. Schema adapters, generation engines,
-protocols, code generation and the local playground are independently installable
-packages. [Choose an adapter](adapters.md) for the capabilities you need.
+Mimlet's core has no dependencies. Everything else is a separate package, so you
+install only the adapters you use. [Choose an adapter](adapters.md) for your schema
+library.
 
 <!-- github-only -->
 

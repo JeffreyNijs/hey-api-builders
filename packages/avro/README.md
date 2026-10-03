@@ -1,4 +1,4 @@
-# Native Avro fixtures (alpha)
+# Native Avro fixtures
 
 `avroAdapter(schema, options)` prepares a bounded in-memory Avro schema using
 `avsc@5.7.9`. `fromAvro` provides the shared immutable builder. Nothing is loaded
@@ -35,9 +35,13 @@ Unions always use explicit branch wrappers, except `null`. For example,
 `['int', 'long']` accepts `{ int: 1 }` or `{ long: 1n }`. Named union branches use
 fully qualified names. A record field is required even when the schema supplies
 a default. Validated builds do not insert fields, drop extras, or coerce input.
-Logical types retain their underlying wire representation and are identified as
-such in metadata; no Date/decimal conversion is invented. Executable logical-type
-hooks are deliberately not read from a schema document.
+Logical types retain their underlying wire representation; no Date/decimal
+conversion is invented. Metadata does not identify them: `metadata.logicalTypes` is
+`'underlying-wire-representation'`, and each field reports its underlying type, such
+as `abstract:long` for `timestamp-millis` (as for any long), `int` for `date` and
+`bytes` for `decimal`. Logical-type constraints are not enforced; for example,
+`check()` accepts a `decimal` whose unscaled value exceeds its `precision`.
+Executable logical-type hooks are deliberately not read from a schema document.
 
 ## Binary and resource boundaries
 

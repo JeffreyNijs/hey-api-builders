@@ -64,7 +64,7 @@ export const stories = [
     number: '03',
     title: 'That failure? Bring it back.',
     description:
-      'Use explicit seeds and compatible replay records to reproduce a run. Shrink the inputs and recompute the relationships as the case gets smaller.',
+      'When a generated test fails, shrink it to the smallest failing case and save it. Replaying the record brings back the same failure, relationships intact.',
     illustration: 'replay.svg',
     link: '/guide/sessions-and-replay',
     action: 'Meet replay and shrinking',

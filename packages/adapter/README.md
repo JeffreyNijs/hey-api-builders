@@ -1,4 +1,4 @@
-# Adapter SDK and conformance (alpha)
+# Adapter SDK and conformance
 
 Declare an integration's actual operations while retaining its native schema and
 Standard Schema input/output types. The core and this SDK do not import or
@@ -60,3 +60,11 @@ These tests are reusable evidence, not a compatibility certificate. An adapter
 still needs vendor/version-specific tests for references, codecs, unsupported
 constructs, recursion, generation, encoding and shrink semantics. Report tested
 versions and limitations separately rather than publishing a universal badge.
+
+## Other exports
+
+- `checkAdapterConformance(adapter, cases)` from `@mimlet/adapter/testing` runs the
+  same suite without throwing on failed cases and resolves to
+  `{ adapter, passed, cases: [{ name, passed, reason? }] }`, where `adapter` is the
+  inspected adapter id. Reasons are fixed descriptions and never contain fixture
+  values or native exception text.

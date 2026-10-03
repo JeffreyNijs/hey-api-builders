@@ -1,4 +1,4 @@
-# Standalone code generation (alpha)
+# Standalone code generation
 
 Emit deterministic named builder classes from typed factory modules, configured
 builder modules, Standard Schema plus a factory, Standard JSON Schema, TypeBox
@@ -55,5 +55,13 @@ Individual package manifests are versioned with the coordinated release train; p
 ## Local diagnostics
 
 Alpha.2 adds `mimlet doctor`, `mimlet inspect`, `--version` and
-opt-in JSON reports. See [CLI diagnostics](../../docs/cli-diagnostics.md) for
+opt-in JSON reports. See [CLI diagnostics](https://jeffreynijs.github.io/mimlet/guide/cli-diagnostics.html) for
 contracts, limitations and version-specific availability.
+
+## Other exports
+
+- `selfContainedRuntime(prefix = 'builder-runtime')` (advanced) returns the files
+  that `--self-contained` adds: the installed `@mimlet/core` JavaScript,
+  declarations, `LICENSE` and `THIRD_PARTY_NOTICES.md` under `<prefix>/`. Write them
+  with `writeGenerated` next to builders emitted with
+  `{ runtimeModule: './builder-runtime/index.js' }`.

@@ -1,4 +1,4 @@
-# API contract fixtures (alpha)
+# API contract fixtures
 
 OpenAPI 3.0, 3.1 and 3.2 operation fixtures independent of Hey API. Inputs are
 bounded JSON documents; nothing is fetched from their URLs or executed from their
@@ -37,6 +37,29 @@ JSON, JSON suffix media types, text, and ordinary URL-encoded forms. Binary/XML/
 multipart or other content requires a caller-supplied synchronous codec. Custom
 per-property encoding and streaming bodies need a transport-specific adapter.
 No HTTP request is ever made.
+
+`serialize()` validates the fixture first and throws `BuilderValidationError`, so it
+cannot produce deliberately invalid requests. For negative tests, assemble the parts
+with `serializeParameter(parameter, value)`, which does not check schemas and returns
+`{ value, pairs }`: path and header parameters fill `value`, query and cookie
+parameters fill percent-encoded `pairs`. Nested values are rejected. Encode a body
+with `encodeContent`.
+
+```ts
+import { serializeParameter } from '@mimlet/api';
+const id = serializeParameter({ name: 'id', in: 'path' }, -1);
+// { value: '-1', pairs: [] }
+const tags = serializeParameter({ name: 'tags', in: 'query' }, ['a b', 'c']);
+// { value: '', pairs: [['tags', 'a%20b'], ['tags', 'c']] }
+```
+
+`check()` and `issues()` reject headers that the contract does not declare; declared
+names are matched in lowercase. `content-type` is never part of the `headers` group,
+even when a response declares it, because the selected media type covers it, and a
+response with no declared headers rejects any `headers` group. To check a captured response, keep
+only its declared headers under lowercase names (drop transport headers such as
+`content-type`, `content-length` and `date`) and convert their values to the schema
+types: an integer header must be a number, not `'3'`.
 
 Inline component references, recursive schemas, external in-memory references,
 webhook metadata, schema-only preparation, error paths, bounded sessions and replay
@@ -93,3 +116,23 @@ This is a fixture-focused reader, not a complete AsyncAPI document validator or
 protocol binding implementation. Request/reply generation requires an explicit
 reply channel with message definitions. The message APIs and serialization paths
 are tested against installed package artifacts alongside the HTTP cases.
+
+## Other exports
+
+- `fromOpenApiRequest(source, selector, options?)` and
+  `fromOpenApiResponse(source, selector, options?)` return the same builders as
+  `openApi(source, options).request(selector).builder()` and
+  `.response(selector).builder()`. Use `openApi()` when you also need `serialize`,
+  `check` or `metadata`.
+- `serializeParameter({ name, in, style?, explode?, allowReserved? }, value)` returns
+  `{ value, pairs }`, as described above.
+- `encodeContent(contentType, value, codecs?)` returns a `string` or `Uint8Array`
+  using a matching entry in `codecs` or the built-in JSON, text and URL-encoded form
+  codecs, and throws for other media types.
+- `mediaType(value)` returns the lowercase media type without parameters, for
+  example `application/json` for `Application/JSON; charset=utf-8`.
+- `headerName(name)` validates an HTTP header name and returns it in lowercase.
+- `headerValue(value)` returns the value unchanged and rejects control characters.
+- `messageExpression(expression, fixture)` returns the value that a
+  `$message.header#/...` or `$message.payload#/...` runtime expression selects from a
+  `{ headers, payload }` message fixture, and throws when it is absent.

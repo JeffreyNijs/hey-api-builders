@@ -8,13 +8,13 @@ encoded input through ArkType's Standard JSON Schema projection and validates
 through the original Type. Input/output inference, morphs, brands, defaults,
 scoped recursion and native error paths are retained.
 
-See the [executable Zod and ArkType guide](../../docs/zod-and-arktype.md) for tested
-recipes and the [compatibility matrix](../../docs/compatibility.md) for version bounds.
+See the [executable Zod and ArkType guide](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html) for tested
+recipes and the [compatibility matrix](https://jeffreynijs.github.io/mimlet/guide/compatibility.html) for version bounds.
 
 ## Install
 
-Alpha releases use npm's `next` tag. Pin exact versions when you need to reproduce
-fixtures; see [Getting started](../../docs/getting-started.md).
+Prereleases use npm's `next` tag. Pin exact versions when you need to reproduce
+fixtures; see [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh
 npm install --save-dev @mimlet/arktype@next arktype@2.2.7

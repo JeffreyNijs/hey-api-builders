@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.0.0-beta.0
+
+### Patch Changes
+
+- Promote the coordinated train from alpha to beta for structured evaluation. The beta
+  scope, known limits and feedback workflows are recorded in the beta readiness checklist.
+- eba145d: Generate `withX()` helpers for model properties that come from `allOf` members and
+  references, as response builders already did. `oneOf`/`anyOf` models still get none,
+  because a shared discriminant setter would allow a partial variant transition.
+- Updated dependencies
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+
 ## 3.0.0-alpha.4
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- eba145d: Honour `readOnly` and `writeOnly` written beside `$ref` in OpenAPI 3.1, as other `$ref`
+  siblings already were. Request fixtures and checks no longer require server-assigned
+  fields declared as `{ $ref, readOnly: true }`, and response checks drop `writeOnly` ones.
+  OpenAPI 3.0 still ignores `$ref` siblings, as its specification requires.
+- Updated dependencies
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+  - @mimlet/json-schema@0.1.0-beta.0
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes

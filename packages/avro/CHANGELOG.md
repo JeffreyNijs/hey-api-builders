@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes

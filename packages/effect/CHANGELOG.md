@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- eba145d: Raise a `TypeError` that points to `fromEffectAsync` when a synchronous build or
+  `inputArbitrary()` meets an asynchronous encoder, instead of Effect's internal
+  "Sync adapter can only throw schema errors". Ordinary schema failures still surface as
+  Effect's `SchemaError`. Exhausted sampling now suggests `fromEffectFactory`.
+- Updated dependencies
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes

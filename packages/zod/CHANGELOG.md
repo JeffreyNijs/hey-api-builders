@@ -1,5 +1,19 @@
 # @mimlet/zod
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- 25de9f6: Type `zodAdapter().metadata.version` as `string`. It reports the loaded Zod release,
+  but its type was narrowed to the compile-time `4.4.x`, which mistyped Zod 4.5 and 4.6
+  consumers.
+- Updated dependencies
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+  - @mimlet/json-schema@0.1.0-beta.0
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes

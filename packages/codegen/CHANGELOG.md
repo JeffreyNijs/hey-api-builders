@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- eba145d: Report hand-edited generated files as drift in `mimlet generate --check`: exit 1 with
+  `GENERATED_FILES_OUTDATED` naming the edited files, instead of exit 2 with
+  `COMMAND_FAILED`. A normal `generate` still refuses to overwrite them. `writeGenerated()`
+  results gain a `modified` list.
+- Updated dependencies
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+- Updated dependencies [eba145d]
+  - @mimlet/core@0.1.0-beta.0
+  - @mimlet/json-schema@0.1.0-beta.0
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes

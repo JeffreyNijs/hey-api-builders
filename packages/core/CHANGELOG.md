@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-beta.0
+
+### Patch Changes
+
+- Promote the coordinated train from alpha to beta for structured evaluation. The beta
+  scope, known limits and feedback workflows are recorded in the beta readiness checklist.
+- eba145d: Type `fluent()` setters with exactly what `.with()` accepts for that field. Under
+  `exactOptionalPropertyTypes`, an optional key such as `body?: string` no longer accepts
+  `withBody(undefined)`, which built a present-but-undefined field the type forbids.
+  Properties that include `undefined` explicitly still accept it.
+
 ## 0.1.0-alpha.4
 
 No changes in this release.

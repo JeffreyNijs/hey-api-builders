@@ -81,7 +81,8 @@ export function zodAdapter<S extends z.$ZodType>(source: S, options: ZodOptions 
     encodeAsync: (value: Output): Promise<Input> => z.encodeAsync(source, value, parseOptions),
     metadata: Object.freeze({
       vendor: 'zod',
-      version: `${z.version.major}.${z.version.minor}.${z.version.patch}`,
+      // Zod types its version as the compile-time release; report any loaded release.
+      version: `${z.version.major}.${z.version.minor}.${z.version.patch}` as string,
       generation: 'input-json-schema',
       validation: 'explicit-native-sync-or-async',
       encoding: 'native-supported-schemas-only',

@@ -13,7 +13,7 @@ recipes and the [compatibility matrix](https://jeffreynijs.github.io/mimlet/guid
 
 ## Install
 
-Alpha releases use npm's `next` tag. Pin exact versions when you need to reproduce
+Prereleases use npm's `next` tag. Pin exact versions when you need to reproduce
 fixtures; see [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh

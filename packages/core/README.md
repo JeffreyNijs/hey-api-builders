@@ -2,7 +2,7 @@
 
 A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
 
-The package name is `@mimlet/core`. Alpha releases use the `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
+The package name is `@mimlet/core`. Prereleases use npm's `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
 
 ```sh
 pnpm build:core

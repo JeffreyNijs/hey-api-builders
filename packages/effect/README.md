@@ -35,8 +35,8 @@ const output = people.with({ age: '42' }).buildValidated(session);
 A native arbitrary generates a **decoded output** and the original encoder turns
 it into fixture input. This retains native declarations and transformation rules
 instead of forcing them through JSON. `fromEffectAsync` uses the native asynchronous
-encoder; use it for codecs with asynchronous encoding, which synchronous builds cannot
-run. `fromEffectFactory` accepts an explicit input factory for one-way codecs,
+encoder; use it for codecs with asynchronous encoding. Synchronous builds over such a
+codec raise a `TypeError` that points to `fromEffectAsync`. `fromEffectFactory` accepts an explicit input factory for one-way codecs,
 unsupported arbitrary derivations and application-specific fixture logic.
 
 Generated values come from Effect's arbitrary engine, which favors edge cases:

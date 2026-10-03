@@ -5,7 +5,7 @@ through the pinned `@valibot/to-json-schema@1.8.0` converter. The original nativ
 parser retains its output transformations and is invoked once per validated build.
 Conversion failures are not suppressed or downgraded to warnings.
 
-Install the alpha from npm's `next` tag. Pin exact versions when you need to
+Install from npm's `next` tag. Pin exact versions when you need to
 reproduce fixtures; see [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh
@@ -21,9 +21,12 @@ const input = people.with({ age: '42' }).build();
 const output = people.with({ age: '42' }).buildValidated();
 ```
 
-`valibotAdapter(schema)` retains the original source and exposes a combined
-Standard Schema/Standard JSON Schema handle. Generation profiles, explicit
-references, budgets, and seeded sessions use the JSON Schema package contract.
+`valibotAdapter(schema, options)` retains the original source and exposes a combined
+Standard Schema/Standard JSON Schema handle. Its `generation()` is the JSON Schema
+generator that session-less `fromValibot` builds use, with `session()` and `identity`
+for replay, so `buildList(n)` equals `buildList(n, valibotAdapter(schema).generation().session())`.
+Generation profiles, explicit references, budgets, and seeded sessions use the JSON
+Schema package contract.
 Native parsing may strip properties or normalize data as specified by the supplied
 schema; this adapter does not add repair behavior of its own.
 

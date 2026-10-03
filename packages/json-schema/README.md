@@ -3,7 +3,7 @@
 Offline schema-to-fixture generation, with independent Ajv validation, reproducible
 sessions, and the same immutable builder pipeline as the native adapters.
 
-Install the alpha from npm's `next` tag. Pin exact versions when you need to
+Install from npm's `next` tag. Pin exact versions when you need to
 reproduce fixtures; see [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh
@@ -74,12 +74,10 @@ are candidate preferences, never validation guarantees; an invalid candidate can
 fall back to ordinary sampling. Overrides are applied only after base generation
 and never participate in automatic retry/repair.
 
-For `format: date-time`, the provider receives the session's reference date as both
-its minimum and maximum, so every generated date-time value is the same: that date's
-calendar day, in the host time zone, at `T01:01:01.0Z`. With the default reference
-date that is `2000-01-01T01:01:01.0Z` in UTC and east of it, and
-`1999-12-31T01:01:01.0Z` west of UTC. All date-time fields in a fixture, and across
-list items, are equal. Use `.with()` or a factory when ordering or ranges matter.
+Generated `format: date-time` values are UTC instants within a year of the session's
+reference time, so they don't depend on the machine's time zone. Fields are generated
+independently: use `.with()` or a factory when one date must follow another, such as
+an end after a start.
 
 Use `jsonSchemaAdapter` to prepare and compile once. `create(session)` supplies
 fixtures; `standard` exposes the JSON validation contract; `check` and `issues`

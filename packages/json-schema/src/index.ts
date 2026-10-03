@@ -82,6 +82,20 @@ export interface JsonSchemaIssue extends ValidationIssue {
 export { NegativeCaseError } from './cases.js';
 export type { NegativeTarget } from './cases.js';
 import { boundaryHints, checkedNegative, synchronous } from './cases.js';
+
+const YEAR_SECONDS = 365 * 24 * 60 * 60;
+/**
+ * UTC date-times within a year of the session reference instant. The provider's own
+ * min/max path formats the calendar day in the machine's local time zone with a fixed
+ * time of day, so the same seed differed across time zones and every value was equal.
+ */
+function referenceDateTime(reference: Date): (random: SampleRandom) => string {
+  const origin = Math.floor(reference.getTime() / 1000) * 1000;
+  return (random) =>
+    new Date(origin + random.int(-YEAR_SECONDS, YEAR_SECONDS) * 1000)
+      .toISOString()
+      .replace('.000Z', 'Z');
+}
 import type { NegativeTarget } from './cases.js';
 function issues(errors: ErrorObject[] | null | undefined): JsonSchemaIssue[] {
   return (errors ?? []).map((error) => ({
@@ -255,6 +269,13 @@ export function jsonSchemaAdapter(schema: JsonSchema, options: JsonSchemaOptions
       selected,
       maximum,
       formats: options.formatsIdentity ?? '',
+      // Present only for schemas using the built-in date-time generator, so replays recorded
+      // with the old time-zone-dependent values fail explicitly and others stay valid.
+      ...(!provider &&
+      !customFormats['date-time'] &&
+      JSON.stringify([source, references]).includes('"date-time"')
+        ? { dateTime: 'reference-window-utc-v1' }
+        : {}),
       extensions: options.extensionIdentity ?? '',
       keywords: Object.keys(keywords).sort(),
       annotations: annotations.slice().sort(),
@@ -334,9 +355,10 @@ export function jsonSchemaAdapter(schema: JsonSchema, options: JsonSchemaOptions
                 useExamplesValue: profile === 'examples' && attempt === 0,
                 failOnInvalidTypes: true,
                 validateSchemaVersion: true,
-                minDateTime: execution.referenceDate().toISOString(),
-                maxDateTime: execution.referenceDate().toISOString(),
-                formats: generators,
+                formats: {
+                  'date-time': referenceDateTime(execution.referenceDate()),
+                  ...generators,
+                },
                 outputTransform(value, node) {
                   if (
                     !node ||

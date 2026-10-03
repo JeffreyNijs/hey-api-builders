@@ -2,13 +2,13 @@ export const identity = {
   name: 'Mimlet',
   tagline: 'Test data, with character.',
   description: 'Typed fixtures. Coherent scenarios. Failures you can replay.',
-  releaseStatus: 'Published alpha',
-  releaseVersion: '0.1.0-alpha.4',
+  releaseStatus: 'Published beta',
+  releaseVersion: '0.1.0-beta.0',
   introduction:
     'Give your tests a little life. Build fixtures that fit your schemas, keep related data connected, and bring a failing case back on cue.',
 };
 
-export const alphaStatus = `Alpha ${identity.releaseVersion} on npm’s next channel. APIs can still change before a stable release, and there is no production adoption to point to yet.`;
+export const alphaStatus = `Beta ${identity.releaseVersion} on npm’s next channel. APIs can still change before a stable release, and there is no production adoption to point to yet.`;
 
 export const feedbackUrl =
   'https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml';

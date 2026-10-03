@@ -1,12 +1,12 @@
 # Releases and recovery
 
 Preparing the repository, merging a PR and publishing packages are separate
-operations. The current published train is toolkit `0.1.0-alpha.4` and Hey API integration
-`3.0.0-alpha.4`, available on npm's `next` channel. It includes all nineteen packages,
-with direct named setters, local diagnostics and native Zod/ArkType adapters, draws
-session-less lists from one default session, targets Effect 4.0.0 and accepts tested
-ArkType 2.2.5–2.2.7 and Faker 10.5.0–10.6.0. The
-[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.4)
+operations. The current published train is the first beta: toolkit `0.1.0-beta.0` and Hey API
+integration `3.0.0-beta.0`, available on npm's `next` channel. It includes all nineteen
+packages, with direct named setters, local diagnostics and native Zod/ArkType adapters,
+targets Effect 4.0.0, accepts tested ArkType 2.2.5–2.2.7 and Faker 10.5.0–10.6.0, and
+documents its error and diagnostic codes as contracts. The
+[GitHub prerelease](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-beta.0)
 records its source commit and original package artifacts. The first seventeen-package
 [alpha.0 release](https://github.com/JeffreyNijs/mimlet/releases/tag/toolkit-v0.1.0-alpha.0)
 remains unchanged. For later trains,
@@ -22,8 +22,11 @@ missing internal packages, version drift, dependency cycles, unexpected exports,
 core vendor dependencies and incorrect release channels before installation.
 
 Add a changeset for subsequent changes. The repository is in Changesets prerelease
-mode (`.changeset/pre.json`), so run `pnpm version-packages` for the next alpha.
-Only use `pnpm changeset pre enter alpha` when starting a new prerelease cycle.
+mode (`.changeset/pre.json`, tag `beta`), so run `pnpm version-packages` for the next
+beta. To move to a new prerelease tag (for example `rc`), run `pnpm changeset pre exit`
+and then `pnpm changeset pre enter <tag>`. Changesets continues the prerelease number
+across tags, so rename the first versions on the new tag to `.0` before
+`pnpm check:workspace`, as was done for `0.1.0-beta.0`.
 Review the
 version plan, generated changelogs, exact internal dependency versions and package
 `publishConfig.tag` fields. They must be `next` for prereleases and `latest` only

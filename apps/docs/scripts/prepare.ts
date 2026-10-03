@@ -159,7 +159,7 @@ export async function prepare(): Promise<void> {
     `---\nlayout: page\nsidebar: false\ntitle: ${identity.name} — ${identity.tagline}\ndescription: ${identity.description}\n---\n\n<MimletHome />\n`
   );
   const overview =
-    `# ${identity.name}\n\n${identity.tagline}\n\n${identity.description}\n\n${identity.introduction}\n\nStatus: published alpha ${identity.releaseVersion}, available on npm’s next channel.\n\n[Get started](${base}guide/getting-started.md) · [Choose an adapter](${base}guide/adapters.md)\n\n` +
+    `# ${identity.name}\n\n${identity.tagline}\n\n${identity.description}\n\n${identity.introduction}\n\nStatus: published beta ${identity.releaseVersion}, available on npm’s next channel.\n\n[Get started](${base}guide/getting-started.md) · [Choose an adapter](${base}guide/adapters.md)\n\n` +
     stories
       .map(
         (story) =>
@@ -177,7 +177,7 @@ export async function prepare(): Promise<void> {
     [
       'Getting started',
       'getting-started',
-      'Install the alpha and build an executable first fixture',
+      'Install the beta and build an executable first fixture',
     ],
     [
       'Adapter selection',
@@ -214,7 +214,7 @@ export async function prepare(): Promise<void> {
   ];
   await writeChanged(
     resolve(generated, 'public/llms.txt'),
-    `# Mimlet\n\n> ${identity.description} A modular schema-aware test-data toolkit with a dependency-free core.\n\nPublished alpha: ${identity.releaseVersion}, available on npm’s next channel. Install @mimlet/core and only the adapters you need; see Getting started for matching versions. Generation is capability-specific; arbitrary validators may require a factory.\n\n## Guides\n\n` +
+    `# Mimlet\n\n> ${identity.description} A modular schema-aware test-data toolkit with a dependency-free core.\n\nPublished beta: ${identity.releaseVersion}, available on npm’s next channel. Install @mimlet/core and only the adapters you need; see Getting started for matching versions. Generation is capability-specific; arbitrary validators may require a factory.\n\n## Guides\n\n` +
       guides
         .map(
           ([title, slug, description]) => `- [${title}](${base}guide/${slug}.md): ${description}`

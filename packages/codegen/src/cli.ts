@@ -195,8 +195,12 @@ async function main(): Promise<void> {
                     {
                       code: 'GENERATED_FILES_OUTDATED',
                       severity: 'error',
-                      message: 'Generated output differs from the declared configuration.',
-                      hint: 'Regenerate the owned output and review the diff.',
+                      message: result.modified.length
+                        ? `Generated files were edited by hand: ${result.modified.join(', ')}.`
+                        : 'Generated output differs from the declared configuration.',
+                      hint: result.modified.length
+                        ? 'Move the edits out of the generated files, delete them, then regenerate.'
+                        : 'Regenerate the owned output and review the diff.',
                     },
                   ]
                 : [],

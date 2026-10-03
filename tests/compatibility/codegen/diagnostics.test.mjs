@@ -288,5 +288,15 @@ describe('data-only schema inspection and CLI diagnostics', () => {
       assert.equal(drift.status, 1);
       assert.equal(JSON.parse(drift.stdout).diagnostics[0].code, 'GENERATED_FILES_OUTDATED');
       assert.equal(await readFile(join(out, 'UserBuilder.ts'), 'utf8'), before);
+      // A hand edit is drift for --check, not an invocation error; a write still refuses it.
+      await writeFile(join(out, 'UserBuilder.ts'), before + '// edited\n');
+      const edited = invoke('--config', config, '--out', out, '--check', '--json');
+      assert.equal(edited.status, 1, edited.stdout);
+      const report = JSON.parse(edited.stdout);
+      assert.equal(report.diagnostics[0].code, 'GENERATED_FILES_OUTDATED');
+      assert.deepEqual(report.result.modified, ['UserBuilder.ts']);
+      assert.match(report.diagnostics[0].message, /edited by hand: UserBuilder\.ts/);
+      assert.equal(invoke('--config', config, '--out', out).status, 2);
+      assert.equal(await readFile(join(out, 'UserBuilder.ts'), 'utf8'), before + '// edited\n');
     }));
 });

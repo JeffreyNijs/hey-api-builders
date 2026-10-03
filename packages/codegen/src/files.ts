@@ -77,6 +77,8 @@ export interface WriteResult {
   readonly clean: boolean;
   readonly changed: readonly string[];
   readonly removed: readonly string[];
+  /** Owned files edited since generation. A write refuses them; --check reports them as drift. */
+  readonly modified: readonly string[];
 }
 /** Hash-based ownership avoids overwriting handwritten or edited generated files. --check is non-mutating. */
 export async function writeGenerated(
@@ -138,12 +140,16 @@ export async function writeGenerated(
   const paths = [...new Set([...Object.keys(desired), ...Object.keys(previous)])].sort();
   const changed: string[] = [];
   const removed: string[] = [];
+  const modified: string[] = [];
   for (const path of paths) {
     await directories(root, join(root, path), false);
     const existing = await read(join(root, path));
     const hash = existing === undefined ? undefined : digest(existing);
     if (hash !== undefined && hash !== desired[path] && hash !== previous[path]) {
-      throw new CodegenError(`Refusing to overwrite a non-owned or modified file: ${path}`);
+      if (!options.check) {
+        throw new CodegenError(`Refusing to overwrite a non-owned or modified file: ${path}`);
+      }
+      modified.push(path);
     }
     if (Object.hasOwn(desired, path)) {
       if (hash !== desired[path]) {
@@ -166,7 +172,8 @@ export async function writeGenerated(
       null,
       2
     ) + '\n';
-  const clean = changed.length === 0 && removed.length === 0 && previousText === next;
+  const clean =
+    changed.length === 0 && removed.length === 0 && modified.length === 0 && previousText === next;
   if (!options.check && !clean) {
     await directories(root, join(root, manifestName), true);
     for (const path of changed) {
@@ -184,7 +191,7 @@ export async function writeGenerated(
     }
     await atomic(join(root, manifestName), next);
   }
-  return { clean, changed, removed };
+  return { clean, changed, removed, modified };
 }
 /** Copy the installed canonical runtime plus its declarations and attribution, never reimplement it. */
 export async function selfContainedRuntime(prefix = 'builder-runtime'): Promise<GeneratedFile[]> {

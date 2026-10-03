@@ -1,4 +1,4 @@
-# Local schema playground (alpha)
+# Local schema playground
 
 A loopback-only browser application for JSON Schema fixture generation, with a
 reusable interruptible generation API. The package is optional; the core never starts

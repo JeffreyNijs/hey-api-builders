@@ -1,4 +1,4 @@
-# API contract fixtures (alpha)
+# API contract fixtures
 
 OpenAPI 3.0, 3.1 and 3.2 operation fixtures independent of Hey API. Inputs are
 bounded JSON documents; nothing is fetched from their URLs or executed from their

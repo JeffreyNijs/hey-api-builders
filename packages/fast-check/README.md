@@ -1,4 +1,4 @@
-# Shrink-aware property fixtures (alpha)
+# Shrink-aware property fixtures
 
 This optional package targets exactly `fast-check@4.10.2` and the accompanying
 version-matched Mimlet core. Alpha releases use the `next` tag.

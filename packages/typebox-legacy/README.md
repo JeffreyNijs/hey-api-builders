@@ -1,4 +1,4 @@
-# Legacy TypeBox builders (alpha)
+# Legacy TypeBox builders
 
 `@mimlet/typebox-legacy` is the native adapter for `@sinclair/typebox`. Alpha releases use the `next` tag. The tested compatibility range is `@sinclair/typebox` 0.34.48 through 0.34.52; this does not claim compatibility with every 0.x release.
 

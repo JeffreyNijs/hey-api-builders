@@ -1,4 +1,4 @@
-# Native TypeBox builders (alpha)
+# Native TypeBox builders
 
 `@mimlet/typebox` accepts native `typebox` schemas. Alpha releases use the `next` tag. Its current compatibility target is exactly `typebox@1.3.34`; broader ranges require additional matrix testing.
 

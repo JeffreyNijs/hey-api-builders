@@ -1,4 +1,4 @@
-# Mimlet core (alpha)
+# Mimlet core
 
 A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
 

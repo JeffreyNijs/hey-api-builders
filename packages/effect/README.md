@@ -1,4 +1,4 @@
-# Native Effect fixtures (alpha)
+# Native Effect fixtures
 
 From `0.1.0-alpha.4`, this package targets exactly `effect@4.0.0`. Effect 4 replaced
 the bundled fast-check with its own `effect/Arbitrary` engine, which Effect marks as

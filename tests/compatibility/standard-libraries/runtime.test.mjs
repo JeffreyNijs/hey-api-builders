@@ -96,6 +96,14 @@ describe('real schema library generation and parsing', () => {
     assert.deepEqual(b.buildValidated(), { age: 42 });
     assert.equal(calls, 1);
   });
+  it('Valibot: exposes the generation session that session-less builds use', () => {
+    const schema = v.object({ id: v.pipe(v.string(), v.uuid()), seats: v.number() });
+    const generation = valibotAdapter(schema).generation();
+    const list = fromValibot(schema).buildList(3);
+    assert.deepEqual(list, fromValibot(schema).buildList(3, generation.session()));
+    assert.equal(new Set(list.map((item) => item.id)).size, 3);
+    assert.deepEqual(valibotAdapter(schema).generation().identity, generation.identity);
+  });
   it('uses native invalid paths, defaults and optional semantics', () => {
     const schema = v.object({
       age: v.pipe(v.number(), v.minValue(18)),

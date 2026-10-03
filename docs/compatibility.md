@@ -95,7 +95,8 @@ property named `a/b~c` is reported as `/a/b~c` rather than the unambiguous JSON
 Pointer `/a~1b~0c`. The existing path-preservation regression fails on those
 versions; the adapter does not guess a repair.
 
-Zod's provider metadata now records the loaded vendor version, so a range upgrade
-cannot silently reuse a replay identity that describes a different Zod release.
-Faker's replay identity does the same from alpha.4. ArkType exposes no runtime
+Zod adapter metadata records the loaded Zod version. Generation identity comes from
+the converted input schema and the JSON Schema provider, so a Zod upgrade that changes
+the converted schema cannot reuse an older replay. Faker's replay identity names the
+loaded Faker release from alpha.4. ArkType exposes no runtime
 version; its generation identity comes from the converted input schema instead.

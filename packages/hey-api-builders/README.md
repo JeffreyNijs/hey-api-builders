@@ -1,7 +1,7 @@
 # Hey API Builders
 
-Hey API integration for the schema-independent Mimlet toolkit. This
-`3.0.0-alpha.4` line is a major-version migration on the `next` channel.
+Hey API integration for the schema-independent Mimlet toolkit. The `3.x`
+prerelease line is a major-version migration on the `next` channel.
 The stable v2 line remains available separately.
 
 The plugin discovers generated model, request and response factories from
@@ -48,6 +48,23 @@ casing overrides the shared `case`. `includeInEntry` and the vendor's plugin
 hooks remain available. `runtimeModule` changes the generated runtime import
 specifier for controlled package layouts; it does not select a second runtime
 implementation or fetch that module during emission.
+
+## What generated builders do and don't do
+
+Each generated class wraps a factory emitted by Hey API's Faker plugin. It has no
+schema attached, so it builds the generated TypeScript type with no
+`buildValidated()` and no native validation. Validate in your test with your own
+schema (for example the Zod plugin's output) when that matters. For named setters
+over a Zod schema without generation, use
+[`fluent(fromZod(schema), fields)`](https://jeffreynijs.github.io/mimlet/guide/fluent-builders.html).
+
+Generated factories use the global `faker` unless you pass a seeded instance, for
+example `build({ faker })`; reproducibility comes from that Faker instance, not from a
+Mimlet session or replay record.
+
+The peer ranges (`@hey-api/openapi-ts ^0.99.0`, `@faker-js/faker ^10.0.0`,
+`typescript ^6.0.0`) are wider than the verified toolchain above; other versions in
+those ranges are not tested.
 
 ## Migration from v2
 

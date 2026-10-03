@@ -1,5 +1,5 @@
 import { expect, expectTypeOf, it } from 'vitest';
-import { fluent } from '../../packages/core/src/index.js';
+import { createBuilder, fluent } from '../../packages/core/src/index.js';
 import { fromZodFactory, fromZodFactoryAsync } from '../../packages/zod/src/index.js';
 import { fromArkTypeFactory } from '../../packages/arktype/src/index.js';
 import { z } from 'zod';
@@ -23,4 +23,28 @@ it('adds input-typed setters to native Zod and ArkType builders', async () => {
     ['name']
   );
   expect(await asynchronous.withName('Ada').buildValidatedAsync()).toEqual({ name: 'Ada' });
+});
+
+it('accepts undefined in setters only where the property itself does', () => {
+  interface Note {
+    title: string;
+    body?: string;
+    draft?: string | undefined;
+    due: Date | undefined;
+  }
+  const notes = fluent(
+    createBuilder((): Note => ({ title: 'Plan', due: undefined })),
+    ['title', 'body', 'draft', 'due']
+  );
+  // The exact-optional case (`withBody(undefined)` rejected) needs exactOptionalPropertyTypes,
+  // so it is type-checked in the packed Zod fixture; this project compiles without it.
+  expectTypeOf(notes.withTitle).parameter(0).toEqualTypeOf<string>();
+  expectTypeOf(notes.withDraft).parameter(0).toEqualTypeOf<string | undefined>();
+  expectTypeOf(notes.withDue).parameter(0).toEqualTypeOf<Date | undefined>();
+  expect(notes.withDraft(undefined).withBody('Notes').build()).toEqual({
+    title: 'Plan',
+    due: undefined,
+    draft: undefined,
+    body: 'Notes',
+  });
 });

@@ -7,6 +7,7 @@ import {
   fromZodFactoryAsync,
   zodAdapter,
 } from '@mimlet/zod';
+import { createBuilder, fluent } from '@mimlet/core';
 declare function expectType<T>(value: T): void;
 
 const schema = z.object({ age: z.string() }).transform(({ age }) => ({ age: Number(age) }));
@@ -68,3 +69,22 @@ const union = fromZod(
 union.replace({ kind: 'dog', bark: true });
 // @ts-expect-error A partial discriminant switch cannot leave stale variant fields.
 union.with({ kind: 'dog' });
+
+// Named setters accept exactly what .with() accepts under exactOptionalPropertyTypes.
+interface Note {
+  title: string;
+  body?: string;
+  draft?: string | undefined;
+  due: Date | undefined;
+}
+const notes = fluent(
+  createBuilder((): Note => ({ title: 'Plan', due: undefined })),
+  ['title', 'body', 'draft', 'due']
+);
+notes.withBody('Notes').withDraft(undefined).withDue(undefined);
+// @ts-expect-error An exact optional key is omitted, never set to undefined.
+notes.withBody(undefined);
+// @ts-expect-error .with() rejects the same patch.
+notes.with({ body: undefined });
+const nicknames = fluent(fromZod(z.object({ nickname: z.string().optional() })), ['nickname']);
+nicknames.withNickname(undefined);

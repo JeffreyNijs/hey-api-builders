@@ -84,8 +84,8 @@ core's default 10,000-item allocation budget. All patches run before transforms.
 Async chains retain property helpers but do not expose synchronous build methods
 in TypeScript. Native Date/Map values are not spread into plain objects.
 
-The repository's [migration guide](../../docs/hey-api-migration.md) explains these
-contracts. The [archived v2 guide](../../docs/hey-api-v2.md) is retained only as
+The repository's [migration guide](https://jeffreynijs.github.io/mimlet/guide/hey-api-migration.html) explains these
+contracts. The [archived v2 guide](https://jeffreynijs.github.io/mimlet/guide/hey-api-v2.html) is retained only as
 historical configuration/reference documentation, not current installation advice.
 
 ## Verification

@@ -55,5 +55,5 @@ Individual package manifests are versioned with the coordinated release train; p
 ## Local diagnostics
 
 Alpha.2 adds `mimlet doctor`, `mimlet inspect`, `--version` and
-opt-in JSON reports. See [CLI diagnostics](../../docs/cli-diagnostics.md) for
+opt-in JSON reports. See [CLI diagnostics](https://jeffreynijs.github.io/mimlet/guide/cli-diagnostics.html) for
 contracts, limitations and version-specific availability.

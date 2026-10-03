@@ -6,7 +6,7 @@ unstable, so the peer stays exact. Toolkit `0.1.0-alpha.3` and earlier target
 `effect@3.22.2`; Effect 3 projects should stay on that train.
 
 Pin exact versions when you need to reproduce fixtures; see
-[Getting started](../../docs/getting-started.md).
+[Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh
 # Effect 4

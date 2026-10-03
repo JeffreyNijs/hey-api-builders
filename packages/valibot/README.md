@@ -6,7 +6,7 @@ parser retains its output transformations and is invoked once per validated buil
 Conversion failures are not suppressed or downgraded to warnings.
 
 Install the alpha from npm's `next` tag. Pin exact versions when you need to
-reproduce fixtures; see [Getting started](../../docs/getting-started.md).
+reproduce fixtures; see [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html).
 
 ```sh
 npm install --save-dev @mimlet/valibot@next valibot@1.5.0
@@ -34,7 +34,7 @@ validation, but do not acquire a JSON-generation capability merely by being vali
 Standard Schema implementations. No inverse transform or shrinker is invented.
 
 Zod 4.4.3 and ArkType 2.2.5 also support `fromStandardJsonSchema`. Dedicated
-[Zod and ArkType builders](../../docs/zod-and-arktype.md) add native operation
+[Zod and ArkType builders](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html) add native operation
 handles, typed factory helpers and an explicit Zod async validation path.
 The compatibility suite executes all three real libraries with built package
 artifacts rather than relying only on structural mock schemas.

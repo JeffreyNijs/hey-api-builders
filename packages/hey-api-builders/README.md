@@ -49,13 +49,37 @@ hooks remain available. `runtimeModule` changes the generated runtime import
 specifier for controlled package layouts; it does not select a second runtime
 implementation or fetch that module during emission.
 
+`includeInEntry` defaults to `true`: the client's `index.ts` re-exports the builders,
+so any import from the client entry also loads `@faker-js/faker` and `@mimlet/core`.
+If application code imports the client entry in production, set
+`includeInEntry: false` and import builders in tests from the generated
+`hey-api-builders.gen.ts` file.
+
+Builder names come from the schema name, or the operation name plus `Request` or
+`Response<status>`. When two names collide, for example schema `CreateOrderRequest`
+and the request of operation `createOrder`, Hey API gives the later builder a numeric
+suffix (`CreateOrderRequestBuilder2`). A distinct naming template for one category,
+such as `requests: '{{name}}Fixture'`, avoids the suffix.
+
 ## What generated builders do and don't do
 
 Each generated class wraps a factory emitted by Hey API's Faker plugin. It has no
 schema attached, so it builds the generated TypeScript type with no
 `buildValidated()` and no native validation. Validate in your test with your own
-schema (for example the Zod plugin's output) when that matters. For named setters
-over a Zod schema without generation, use
+schema (for example the Zod plugin's output) when that matters.
+
+Hey API's Faker plugin does not always satisfy the spec's constraints. For example,
+it passes anchored patterns such as `^[A-Z]{3}-[0-9]{4}$` to `fromRegExp`, which
+keeps the `^` and `$` characters, and it generates decimals for integer fields named
+`amount` or `price`. Validate fixtures against your schemas, and set fields that must
+be valid with constructor patches, `with()` or `withFactory()`:
+
+```ts
+const request = new CreateOrderRequestBuilder({ sku: 'ABC-1234' }).build();
+zCreateOrderRequest.parse(request); // the Zod plugin's schema
+```
+
+For named setters over a Zod schema without generation, use
 [`fluent(fromZod(schema), fields)`](https://jeffreynijs.github.io/mimlet/guide/fluent-builders.html).
 
 Generated factories use the global `faker` unless you pass a seeded instance, for

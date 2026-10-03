@@ -35,6 +35,22 @@ representation, and retains the native input/output types. Native validation is
 called once for each validated fixture, after overrides and transformations.
 Opaque refinements can reject a fixture; they are not silently retried or repaired.
 
+When you have a TypeScript type for a raw schema, state it with a cast. TypeScript
+does not compare the type with the schema, but `buildValidated()` still validates
+against the schema at runtime. `emitJsonSchemaBuilders` in `@mimlet/codegen` emits
+the declarations from the schema instead.
+
+```ts
+import type { GenerationSession, SchemaBuilder } from '@mimlet/core';
+interface User {
+  id: number;
+  name: string;
+}
+type UserBuilder = SchemaBuilder<User, User, [session?: GenerationSession]>;
+const typedUsers = fromJsonSchema(schema) as UserBuilder;
+const user = typedUsers.with({ name: 'Ada' }).buildValidated();
+```
+
 ## Supported generation path
 
 The pinned provider is `json-schema-faker@0.6.3`, independently checked by
@@ -57,6 +73,13 @@ Profiles include `boundary` (valid candidates biased toward declared endpoints),
 are candidate preferences, never validation guarantees; an invalid candidate can
 fall back to ordinary sampling. Overrides are applied only after base generation
 and never participate in automatic retry/repair.
+
+For `format: date-time`, the provider receives the session's reference date as both
+its minimum and maximum, so every generated date-time value is the same: that date's
+calendar day, in the host time zone, at `T01:01:01.0Z`. With the default reference
+date that is `2000-01-01T01:01:01.0Z` in UTC and east of it, and
+`1999-12-31T01:01:01.0Z` west of UTC. All date-time fields in a fixture, and across
+list items, are equal. Use `.with()` or a factory when ordering or ranges matter.
 
 Use `jsonSchemaAdapter` to prepare and compile once. `create(session)` supplies
 fixtures; `standard` exposes the JSON validation contract; `check` and `issues`

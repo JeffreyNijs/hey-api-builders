@@ -14,7 +14,7 @@ const operation = graphqlAdapter(
     fields: { 'Query.user': ({ args }) => ({ id: args.id, name: 'Ada' }) },
   }
 );
-const variables = operation.variables.builder().buildValidated();
+const variables = operation.variables.builder().build();
 const response = operation.response(variables).builder().buildValidated();
 ```
 
@@ -25,7 +25,11 @@ are distinct. Runtime SDL does not establish a TypeScript application model: map
 remain `Record<string, unknown>`. Use generated application types explicitly at
 an independently checked boundary, rather than an unchecked generic cast.
 
-`response(encodedVariables)` offers `create`, `check`, `issues`, `standard`, and
+`response(encodedVariables)` takes the encoded variables returned by `build()` or
+`create()`, not the coerced output of `buildValidated()`: coerced custom-scalar
+values such as a `Date` are rejected with "Expected a variable or response object".
+Use `variables.check()` to validate encoded variables, for example after `.with()`
+overrides. The returned object offers `create`, `check`, `issues`, `standard`, and
 `builder`. The native executor implements aliases, fragments, include/skip,
 argument coercion, enum serialization and null propagation. Explicit field-factory
 results retain supplied child values and relationships. Missing child values use

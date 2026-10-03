@@ -28,10 +28,19 @@ Native parsing may strip properties or normalize data as specified by the suppli
 schema; this adapter does not add repair behavior of its own.
 
 Automatic conversion currently accepts synchronous Valibot schema definitions.
-Asynchronous schemas, Date/Map/Set and opaque refinements are fully usable with
+Asynchronous schemas, Date/Map/Set, opaque refinements such as `v.check()`, and
+actions with no JSON Schema equivalent such as `v.trim()`, `v.toLowerCase()`,
+`v.brand()` and `v.readonly()` are fully usable with
 `createSchemaBuilder(schema, factory)` in the core, including async factories and
 validation, but do not acquire a JSON-generation capability merely by being valid
-Standard Schema implementations. No inverse transform or shrinker is invented.
+Standard Schema implementations. For Date/Map/Set, refinements and those actions,
+`fromValibot` throws the converter's "cannot be converted" error instead of dropping
+the rule. No inverse transform or shrinker is invented.
+
+`v.isoDateTime()` and `v.isoTime()` convert to JSON Schema `date-time` and `time`,
+which require seconds and a UTC offset. Valibot's formats (`2026-01-02T03:04`,
+`03:04`) allow neither, so generated values fail `buildValidated()`. Set those
+fields with `.with()`, or build the object with `createSchemaBuilder(schema, factory)`.
 
 Zod 4.4.3 and ArkType 2.2.5 also support `fromStandardJsonSchema`. Dedicated
 [Zod and ArkType builders](https://jeffreynijs.github.io/mimlet/guide/zod-and-arktype.html) add native operation

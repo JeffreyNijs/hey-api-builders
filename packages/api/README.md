@@ -38,6 +38,29 @@ multipart or other content requires a caller-supplied synchronous codec. Custom
 per-property encoding and streaming bodies need a transport-specific adapter.
 No HTTP request is ever made.
 
+`serialize()` validates the fixture first and throws `BuilderValidationError`, so it
+cannot produce deliberately invalid requests. For negative tests, assemble the parts
+with `serializeParameter(parameter, value)`, which does not check schemas and returns
+`{ value, pairs }`: path and header parameters fill `value`, query and cookie
+parameters fill percent-encoded `pairs`. Nested values are rejected. Encode a body
+with `encodeContent`.
+
+```ts
+import { serializeParameter } from '@mimlet/api';
+const id = serializeParameter({ name: 'id', in: 'path' }, -1);
+// { value: '-1', pairs: [] }
+const tags = serializeParameter({ name: 'tags', in: 'query' }, ['a b', 'c']);
+// { value: '', pairs: [['tags', 'a%20b'], ['tags', 'c']] }
+```
+
+`check()` and `issues()` reject headers that the contract does not declare; declared
+names are matched in lowercase. `content-type` is never part of the `headers` group,
+even when a response declares it, because the selected media type covers it, and a
+response with no declared headers rejects any `headers` group. To check a captured response, keep
+only its declared headers under lowercase names (drop transport headers such as
+`content-type`, `content-length` and `date`) and convert their values to the schema
+types: an integer header must be a number, not `'3'`.
+
 Inline component references, recursive schemas, external in-memory references,
 webhook metadata, schema-only preparation, error paths, bounded sessions and replay
 are covered by the packed-consumer suite. Embedded JSON Schema resource IDs/anchors

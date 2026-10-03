@@ -66,12 +66,16 @@ validated builder as `source` to catch fixture errors before database writes.
 ```ts
 await persistFixtureBatch(
   10,
-  (index, { session }) => users.buildValidated(session.scope('user', index)),
+  (_index, { session }) => users.buildValidated(session),
   (values, { database }) => database.transaction((tx) => tx.insertUsers(values)),
   { session: provider.session(42), database: testDatabase },
   { maxItems: 100, signal: controller.signal }
 );
 ```
+
+Pass the shared session so `sequence()` and `unique()` continue across the batch. A
+per-item `session.scope('user', index)` has its own counters, so ids built with
+`sequence()` would repeat.
 
 Only the explicitly supplied sink can write. Transactions, rollback, connections,
 credentials and schema migrations belong to that sink; this utility does not imply

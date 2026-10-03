@@ -17,8 +17,9 @@ npm install --save-dev @mimlet/core@0.1.0-alpha.3 @mimlet/effect@0.1.0-alpha.3 e
 
 Loaded with Effect 3, this release throws a `TypeError` that names the required
 version, and `mimlet doctor` reports `PEER_VERSION_UNSUPPORTED`. Effect 4's own type
-declarations use `Disposable`: without `skipLibCheck`, add the `ESNext.Disposable` lib
-or `@types/node`.
+declarations reference DOM types and `Disposable`. Without `skipLibCheck`, a project
+needs the `DOM` lib plus either the `ESNext.Disposable` lib or `@types/node`; either of
+those alone is not enough in a project without `DOM`.
 
 ```ts
 import * as S from 'effect/Schema';
@@ -34,8 +35,24 @@ const output = people.with({ age: '42' }).buildValidated(session);
 A native arbitrary generates a **decoded output** and the original encoder turns
 it into fixture input. This retains native declarations and transformation rules
 instead of forcing them through JSON. `fromEffectAsync` uses the native asynchronous
-encoder; `fromEffectFactory` accepts an explicit input factory for one-way codecs,
+encoder; use it for codecs with asynchronous encoding, which synchronous builds cannot
+run. `fromEffectFactory` accepts an explicit input factory for one-way codecs,
 unsupported arbitrary derivations and application-specific fixture logic.
+
+Generated values come from Effect's arbitrary engine, which favors edge cases:
+strings such as `__proto__`, `toString`, empty strings, lone surrogates and control
+characters, and dates at the limits of the `Date` range. For presentable or
+persisted data, set fields with `.with()` or use `fromEffectFactory`. Annotate the
+factory's session parameter; unannotated, TypeScript infers it as `never`.
+
+```ts
+import type { GenerationSession } from '@mimlet/core';
+import { fromEffectFactory } from '@mimlet/effect';
+const adults = fromEffectFactory(schema, (session: GenerationSession) => ({
+  age: String(session.integer(18, 99)),
+}));
+const adult = adults.buildValidated(session);
+```
 
 `effectAdapter` exposes the original source, native Standard Schema validation,
 input/output checks, sync/async encode/decode, and native Effect 4 input/output
@@ -48,12 +65,18 @@ token; these arbitraries are not fast-check arbitraries and are not passed to
 ```ts
 import * as A from 'effect/Arbitrary';
 import * as E from 'effect/Effect';
+import * as S from 'effect/Schema';
+import { effectAdapter } from '@mimlet/effect';
 const counts = effectAdapter(S.NumberFromString.pipe(S.decodeTo(S.Int)));
 const report = E.runSync(
   A.checkEffect(counts.inputArbitrary(), (input) => Number(input) < 5, { seed: 1 })
 );
 // A failing report carries shrunkInput and a replay token for checkEffect({ replay }).
 ```
+
+`inputArbitrary()` encodes each sample synchronously, so it cannot be used with
+codecs that encode asynchronously. For those, check `outputArbitrary()` with an
+effectful property that calls `adapter.encodeAsync`, and run it with `E.runPromise`.
 
 Transformations and arbitrary annotations must remain pure and terminating for property testing.
 Encoding failures propagate, not trigger hidden retries. Validation invokes the

@@ -54,7 +54,7 @@ the format and version, branch on codes, and tolerate added fields/codes.
 
 ### Diagnostic codes
 
-Branch on these codes, not on message text. New codes may be added.
+Branch on these codes, not on message text. New codes may be added. Errors thrown by the packages themselves are listed in [error codes](error-codes.md).
 
 | Code                          | Command    | Severity | Meaning                                                                        |
 | ----------------------------- | ---------- | -------- | ------------------------------------------------------------------------------ |

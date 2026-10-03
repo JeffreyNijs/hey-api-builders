@@ -23,7 +23,7 @@ an ordinary `with()` value intentionally retains its supplied reference.
 recover erased TypeScript properties or safely invent partial setters for root
 unions. Its field list is explicit and checked. See [named builders](fluent-builders.md).
 
-Documented error classes and diagnostic codes are machine-readable contracts.
+Documented [error classes](error-codes.md) and [diagnostic codes](cli-diagnostics.md#diagnostic-codes) are machine-readable contracts.
 Human-readable message wording and stack traces are not stable parsing interfaces.
 Agents should branch on a code and check the report format/version, never scrape
 prose. See [CLI diagnostics](cli-diagnostics.md).

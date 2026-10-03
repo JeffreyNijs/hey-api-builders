@@ -1,6 +1,7 @@
 import { expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import * as mini from 'zod/mini';
+import { version as zodVersion } from 'zod/v4/core';
 import {
   fromZod,
   fromZodAsync,
@@ -94,4 +95,10 @@ it('draws session-less list items from one default session', async () => {
   expect(people.build()).toEqual(list[0]);
   expect(people.buildValidatedList(3)).toEqual(list);
   expect(await fromZodAsync(Person).buildValidatedListAsync(3)).toEqual(list);
+});
+
+it('types the loaded Zod version as any release in the supported range', () => {
+  const { version } = zodAdapter(z.string()).metadata;
+  expectTypeOf(version).toEqualTypeOf<string>();
+  expect(version).toBe(`${zodVersion.major}.${zodVersion.minor}.${zodVersion.patch}`);
 });

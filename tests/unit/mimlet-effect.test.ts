@@ -114,3 +114,18 @@ it('routes natively asynchronous generation through the async builder', async ()
   expect(typeof boxed.box).toBe('number');
   expect(await fromEffectAsync(Box).buildAsync(session())).toEqual(boxed);
 });
+
+it('points synchronous builds over an asynchronous encoder to fromEffectAsync', async () => {
+  const slow = ST.transformEffect({
+    decode: (value: string) => E.promise(async () => value),
+    encode: (value: string) => E.promise(async () => value),
+  });
+  const Signed = S.String.pipe(S.decodeTo(S.String, slow));
+  expect(() => fromEffect(Signed).build(session())).toThrow(
+    /encoding for this schema is asynchronous; use fromEffectAsync/
+  );
+  expect(typeof (await fromEffectAsync(Signed).buildAsync(session()))).toBe('string');
+  // Ordinary schema failures still surface as Effect's own SchemaError.
+  const unit = effectAdapter(S.Number.check(S.isBetween({ minimum: 0, maximum: 1 })));
+  expect(() => unit.encode(5)).toThrow(expect.objectContaining({ name: 'SchemaError' }));
+});

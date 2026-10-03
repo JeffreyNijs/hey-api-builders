@@ -308,6 +308,32 @@ describe('schema edge cases', () => {
     expectSchemaAccepts(openApi31, schemaName, value);
   });
 
+  it('adds property helpers for allOf members but not for oneOf variants', () => {
+    const DetailedPetBuilder = builder<Record<string, unknown>>(openApi31, 'DetailedPetBuilder');
+    expect(
+      Object.getOwnPropertyNames(DetailedPetBuilder.prototype).filter((key) =>
+        /^with[A-Z]/.test(key)
+      )
+    ).toEqual(expect.arrayContaining(['withId', 'withCreatedAt', 'withDisplayName', 'withNotes']));
+    const base = new DetailedPetBuilder();
+    const withNotes = callBuilderMethod(base, 'withNotes', 'Calm with children');
+    const withCreated = callBuilderMethod(withNotes, 'withCreatedAt', '2026-01-01T00:00:00.000Z');
+    const detailed = callBuilderMethod(withCreated, 'withDisplayName', 'Ada Lovelace');
+    const value = detailed.build({ faker: seededFaker(), includeOptional: true });
+    expect(value).toMatchObject({
+      notes: 'Calm with children',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      'display-name': 'Ada Lovelace',
+    });
+    expectSchemaAccepts(openApi31, 'zDetailedPet', value);
+
+    const AnimalBuilder = builder<Record<string, unknown>>(openApi31, 'AnimalBuilder');
+    const helpers = Object.getOwnPropertyNames(AnimalBuilder.prototype).filter((key) =>
+      /^with[A-Z]/.test(key)
+    );
+    expect(helpers).toEqual([]);
+  });
+
   it('terminates circular references and produces a Zod-valid tree', () => {
     const TreeNodeBuilder = builder<Record<string, unknown>>(openApi31, 'TreeNodeBuilder');
     const tree = new TreeNodeBuilder().build({

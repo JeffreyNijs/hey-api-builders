@@ -111,7 +111,7 @@ export function emitDefinitionBuilder({
       factorySymbol,
       modelSymbol,
       naming,
-      properties: Object.keys(event.schema.properties ?? {}),
+      properties: collectDefinitionProperties(event.schema, plugin, new Set()),
       resource: 'definition',
       resourceId: event.pointer,
     },
@@ -230,6 +230,34 @@ function collectResponseProperties({
   }
   const schema = operation.responses?.[statusCode]?.schema;
   return schema ? collectSchemaProperties(schema, plugin, new Set()) : [];
+}
+
+/**
+ * Object properties of a model, including `allOf` members and references. Unlike responses,
+ * `oneOf`/`anyOf` models get no setters: a shared discriminant setter would allow a partial
+ * variant transition, which builders require as a complete `replace()`.
+ */
+function collectDefinitionProperties(
+  schema: IR.SchemaObject,
+  plugin: PluginInstance,
+  seen: Set<string>
+): ReadonlyArray<string> {
+  if (schema.properties) {
+    return Object.keys(schema.properties);
+  }
+  if (schema.$ref && !seen.has(schema.$ref)) {
+    seen.add(schema.$ref);
+    const referenced = plugin.context.resolveIrRef<IR.SchemaObject>(schema.$ref);
+    return collectDefinitionProperties(referenced, plugin, seen);
+  }
+  if (schema.logicalOperator !== 'and' || !schema.items?.length) {
+    return [];
+  }
+  return [
+    ...new Set(
+      schema.items.flatMap((item) => collectDefinitionProperties(item, plugin, new Set(seen)))
+    ),
+  ];
 }
 
 function collectSchemaProperties(

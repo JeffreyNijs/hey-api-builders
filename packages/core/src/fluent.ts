@@ -77,10 +77,17 @@ type LiteralSelection<S> = S extends readonly string[]
     ? never
     : { readonly [K in keyof S]: Single<S[K]> };
 
+/**
+ * What a patch may assign to one field. Indexed access adds `undefined` to every optional key,
+ * so keep it only where the property accepts it (respecting `exactOptionalPropertyTypes`).
+ */
+type SetterValue<T, K extends keyof T> =
+  { [P in K]: undefined } extends Pick<T, K> ? T[K] : Exclude<T[K], undefined>;
+
 /** Named input setters over the same immutable runtime and native validation contract. */
 export type FluentBuilder<B extends Source, S extends Selection<Input<B>>> = FacadeFor<B> & {
   [M in keyof FieldMap<S>]: (
-    value: Input<B>[FieldMap<S>[M] & keyof Input<B>]
+    value: SetterValue<Input<B>, FieldMap<S>[M] & keyof Input<B>>
   ) => FluentBuilder<B, S>;
 };
 

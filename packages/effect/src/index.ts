@@ -47,7 +47,7 @@ function failure(cause: Cause.Cause<Arbitrary.SampleError>): unknown {
   const error = Cause.findErrorOption(cause);
   if (error._tag === 'Some') {
     return new RangeError(
-      `Native Effect sampling discarded ${error.value.discards} candidates without a value`,
+      `Native Effect sampling discarded ${error.value.discards} candidates without a value; use fromEffectFactory when filters reject most samples`,
       { cause: error.value }
     );
   }
@@ -81,6 +81,23 @@ async function sampleAsync<A>(
   }
   throw failure(exit.cause);
 }
+/** A sync encode of an async codec fails inside Effect; point callers to the async builder. */
+function synchronous<A, I>(encode: (value: A) => I): (value: A) => I {
+  return (value) => {
+    try {
+      return encode(value);
+    } catch (error) {
+      const cause = (error as { readonly cause?: unknown } | null)?.cause;
+      if (Cause.isCause(cause) && Cause.isAsyncFiberError(Cause.squash(cause))) {
+        throw new TypeError(
+          'Native Effect encoding for this schema is asynchronous; use fromEffectAsync',
+          { cause: error }
+        );
+      }
+      throw error;
+    }
+  };
+}
 /** `Schema.is` takes no parse options in Effect 4; schema issues are false, defects still throw. */
 function guard(schema: Schema.Decoder<unknown>, options: AST.ParseOptions) {
   const decode = Schema.decodeUnknownResult(schema, options);
@@ -100,7 +117,7 @@ export function effectAdapter<A, I>(source: Schema.Codec<A, I>, options: EffectO
   );
   const decode = Schema.decodeUnknownSync(source, parseOptions);
   const decodeAsync = Schema.decodeUnknownPromise(source, parseOptions);
-  const encode = Schema.encodeSync(source, parseOptions);
+  const encode = synchronous(Schema.encodeSync(source, parseOptions));
   const encodeAsync = Schema.encodePromise(source, parseOptions);
   // Lazy preparation keeps arbitrary derivation optional for custom-factory consumers.
   let output: Arbitrary.Arbitrary<A> | undefined;

@@ -291,12 +291,20 @@ export function projectSchema(
         for (const name of Object.keys(object(item, node.pointer))) {
           const child = documents.child(documents.child(node, key), name);
           const resolved = documents.resolve(child).value;
+          // OpenAPI 3.1 applies keywords beside $ref, so `{ $ref, readOnly: true }` counts;
+          // 3.0 ignores $ref siblings, so only the referenced schema decides there.
+          const flagged = (flag: 'readOnly' | 'writeOnly') =>
+            [mode === 'openapi-3.1' ? child.value : undefined, resolved].some(
+              (schema) =>
+                !!schema &&
+                typeof schema === 'object' &&
+                !Array.isArray(schema) &&
+                (schema as JsonObject)[flag] === true
+            );
           const omitted =
             key === 'properties' &&
-            resolved &&
-            typeof resolved === 'object' &&
-            ((direction === 'request' && (resolved as JsonObject).readOnly === true) ||
-              (direction === 'response' && (resolved as JsonObject).writeOnly === true));
+            ((direction === 'request' && flagged('readOnly')) ||
+              (direction === 'response' && flagged('writeOnly')));
           if (omitted) {
             omittedFields.add(name);
           }

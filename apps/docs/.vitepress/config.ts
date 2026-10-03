@@ -106,6 +106,7 @@ export default defineConfig({
           { text: 'Builders and schemas', link: '/guide/schema-independent-builders' },
           { text: 'Named setters', link: '/guide/fluent-builders' },
           { text: 'CLI diagnostics', link: '/guide/cli-diagnostics' },
+          { text: 'Error codes', link: '/guide/error-codes' },
           { text: 'Correlated scenarios', link: '/guide/correlated-scenarios' },
           { text: 'Sessions and replay', link: '/guide/sessions-and-replay' },
           { text: 'Fixture capture', link: '/guide/fixture-capture' },

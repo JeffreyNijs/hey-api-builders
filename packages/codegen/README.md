@@ -50,7 +50,7 @@ the output directory; concurrent writers and hostile filesystem races are not
 supported. Paths are bounded, relative and checked for symlinks. Do not edit the
 manifest to bypass ownership protection.
 
-Individual package manifests are prepared for the coordinated alpha release; publication is a separate operation.
+Individual package manifests are versioned with the coordinated release train; publication is a separate operation.
 
 ## Local diagnostics
 

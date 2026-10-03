@@ -35,8 +35,7 @@ Standard Schema implementations. No inverse transform or shrinker is invented.
 
 Zod 4.4.3 and ArkType 2.2.5 also support `fromStandardJsonSchema`. Dedicated
 [Zod and ArkType builders](../../docs/zod-and-arktype.md) add native operation
-handles, typed factory helpers and an explicit Zod async validation path in the
-next release.
+handles, typed factory helpers and an explicit Zod async validation path.
 The compatibility suite executes all three real libraries with built package
 artifacts rather than relying only on structural mock schemas.
 

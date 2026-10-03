@@ -88,7 +88,7 @@ bound inside a third-party provider. Exhaustion is not a proof of unsatisfiabili
 No schema rules are widened to make a candidate pass. Public declarations do not
 require DOM types even though the private provider's declarations reference them.
 
-Individual package manifests are prepared for the coordinated alpha release; publication is a separate operation.
+Individual package manifests are versioned with the coordinated release train; publication is a separate operation.
 
 ## Custom providers and negative cases
 

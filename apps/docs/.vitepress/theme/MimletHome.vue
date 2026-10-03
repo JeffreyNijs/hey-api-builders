@@ -108,7 +108,7 @@ const { theme, isDark } = useData();
           <h3 id="quickstart-title">Quickstart with Zod</h3>
           <ol class="quickstart-steps">
             <li>
-              <span class="step-label">Install the alpha</span>
+              <span class="step-label">Install the beta</span>
               <pre class="quickstart-command"><code>{{ quickstart.install }}</code></pre>
             </li>
             <li>

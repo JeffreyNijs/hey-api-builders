@@ -1,10 +1,10 @@
 # Beta readiness checklist
 
-The published baseline is toolkit **0.1.0-alpha.4** and `hey-api-builders`
-**3.0.0-alpha.4** on `next`. The proposed first beta is **0.1.0-beta.0 /
-3.0.0-beta.0**, also on `next`, subject to maintainer approval. The repository
-is still in Changesets `alpha` mode; its normal next-alpha step is not a beta
-transition. This document does not change versions or authorize publication.
+The first beta, toolkit **0.1.0-beta.0** and `hey-api-builders` **3.0.0-beta.0**, was
+published on `next` on 2026-10-03 after this checklist's entry items passed. The
+candidate record (evidence for each item) is in
+[the release PR](https://github.com/JeffreyNijs/mimlet/pull/55). The repository is in
+Changesets `beta` mode. This document does not change versions or authorize publication.
 
 Beta opens selected workflows to structured evaluation. It does not claim the
 full [stable contract](stability.md), production adoption, universal schema

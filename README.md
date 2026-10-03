@@ -20,12 +20,12 @@ its own small adapter. Hey API users can also generate builder classes from an O
 spec with `hey-api-builders`. Releases are published on npm's `next` channel, and the
 [documentation website](https://jeffreynijs.github.io/mimlet/) has guides and a live demo.
 
-The published alpha is **0.1.0-alpha.4** for the toolkit and **3.0.0-alpha.4** for
+The published beta is **0.1.0-beta.0** for the toolkit and **3.0.0-beta.0** for
 the Hey API integration. Use matching versions. Existing `hey-api-builders@latest`
-remains on v2; opt into the alpha explicitly.
+remains on v2; opt into the beta explicitly.
 
 ```sh
-npm install --save-dev @mimlet/core@0.1.0-alpha.4
+npm install --save-dev @mimlet/core@0.1.0-beta.0
 ```
 
 Add only the adapters you need.
@@ -34,7 +34,7 @@ includes copyable native TypeBox and Zod examples and source-development
 instructions. The workspace root is private; each toolkit package is
 independently installable.
 
-Mimlet is still alpha. The [checkout example](docs/checkout-example.md) walks
+Mimlet is in beta: APIs can still change before a stable release. The [checkout example](docs/checkout-example.md) walks
 through a bug that is found, shrunk, replayed and fixed. If something is confusing or blocks you,
 [open a beta feedback issue](https://github.com/JeffreyNijs/mimlet/issues/new?template=beta-feedback.yml).
 
@@ -66,7 +66,7 @@ and opt-in cloning avoid accidentally shared nested fixture data.
 For Zod 4, start with the native adapter (no Hey API or code generation required):
 
 ```sh
-npm install --save-dev @mimlet/zod@0.1.0-alpha.4 zod@4.6.5
+npm install --save-dev @mimlet/zod@0.1.0-beta.0 zod@4.6.5
 ```
 
 ```ts

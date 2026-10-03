@@ -1,9 +1,8 @@
 # Beta feedback kit
 
-**Mimlet is in alpha. No beta is published yet, and this kit does not promise one.**
-Start with the published `0.1.0-alpha.4` baseline below. When a beta candidate is
-approved, replace all Mimlet pins together with that exact candidate version and
-record it in each result. Alpha results do not verify a later beta.
+**Mimlet `0.1.0-beta.0` is the first beta.** Use the exact pins below and record the
+version in each result. When a later beta is published, update all Mimlet pins
+together; results from one beta do not verify another.
 
 ## Keep the evaluation small
 
@@ -33,7 +32,7 @@ record compiler versions separately if adapting them in a TypeScript application
 mkdir mimlet-feedback
 cd mimlet-feedback
 npm init -y
-npm install --save-dev @mimlet/core@0.1.0-alpha.4 @mimlet/zod@0.1.0-alpha.4 @mimlet/fast-check@0.1.0-alpha.4 zod@4.6.5 fast-check@4.10.2
+npm install --save-dev @mimlet/core@0.1.0-beta.0 @mimlet/zod@0.1.0-beta.0 @mimlet/fast-check@0.1.0-beta.0 zod@4.6.5 fast-check@4.10.2
 ```
 
 Keep `package-lock.json`. Do not substitute floating `next` tags in a reproduction.

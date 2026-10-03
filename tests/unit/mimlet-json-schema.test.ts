@@ -26,3 +26,20 @@ it('shares one default session across a session-less builder list', () => {
   expect(builder.build()).toBe(adapter.create());
   expect(builder.build()).toBe(list[0]);
 });
+
+it('generates every string enum value, including values longer than the sampling hint', () => {
+  const status = fromJsonSchema({ type: 'string', enum: ['IN_TRANSIT', 'DELIVERED_ON_TIME'] });
+  expect(new Set(status.buildList(40))).toEqual(new Set(['IN_TRANSIT', 'DELIVERED_ON_TIME']));
+  const event = fromJsonSchema({ type: 'string', enum: ['SHIPMENT_DELIVERED_TO_RECIPIENT'] });
+  expect(event.build()).toBe('SHIPMENT_DELIVERED_TO_RECIPIENT');
+  expect(fromJsonSchema({ type: 'string', const: 'A_VERY_LONG_CONSTANT_VALUE' }).build()).toBe(
+    'A_VERY_LONG_CONSTANT_VALUE'
+  );
+  // An explicit maxLength is an original constraint and still applies.
+  const bounded = fromJsonSchema({
+    type: 'string',
+    enum: ['short', 'much_too_long_value'],
+    maxLength: 5,
+  });
+  expect(new Set(bounded.buildList(20))).toEqual(new Set(['short']));
+});

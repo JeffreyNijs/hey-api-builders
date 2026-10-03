@@ -432,7 +432,12 @@ export function prepare(
         maximum.maxArrayLength
       );
     }
-    if (schema.type === 'string' || schema.pattern !== undefined || schema.format !== undefined) {
+    // An enum or const already fixes the values; a length hint would only drop valid ones.
+    const finite = schema.enum !== undefined || schema.const !== undefined;
+    if (
+      !finite &&
+      (schema.type === 'string' || schema.pattern !== undefined || schema.format !== undefined)
+    ) {
       result.maxLength = Math.min(
         schema.maxLength ??
           (schema.pattern !== undefined || schema.format !== undefined

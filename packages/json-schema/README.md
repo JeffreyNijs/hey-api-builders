@@ -61,12 +61,19 @@ semantics are normalized only in the provider copy; validation retains draft-07 
 Standard type constraints, compositions, conditionals, explicit references, and
 collection/string/number constraints are accepted. Every returned candidate must
 pass the original validator. This is bounded sampling, not a complete solver;
-valid schemas can exhaust the sampling budget. Dynamic/recursive references,
-anchors, unknown vocabularies, extension keywords, and other unsupported keywords
-fail preparation explicitly rather than being silently dropped. The provider-unsafe
+valid schemas can exhaust the sampling budget. The `$dynamicRef`/`$recursiveRef`
+keywords, anchors, unknown vocabularies, extension keywords, and other unsupported
+keywords fail preparation explicitly rather than being silently dropped. The provider-unsafe
 `__proto__` schema-map key is also rejected explicitly; the schema-free core does
 not have that provider restriction. Content metadata
 is treated as annotations, not an encoding or content-validation guarantee.
+
+Recursive schemas that use ordinary `$ref`, such as a tree node with a `children`
+array of nodes, are supported. The default `minimal` profile leaves optional fields
+out, so recursion stops at the first level; `random` varies the depth. Nesting is
+capped by `maxValueDepth` (default 12, at most 64). A recursive field that is required
+at every level has no finite value, so generation fails with `SCHEMA_GENERATION_FAILED`
+after its attempts (default 20) instead of hanging; use a factory for it.
 
 Profiles include `boundary` (valid candidates biased toward declared endpoints), `minimal` (required shape, not a proof of globally minimal values),
 `random` (optional-field variation), `defaults`, and `examples`. Defaults/examples

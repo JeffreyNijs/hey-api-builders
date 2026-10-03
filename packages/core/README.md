@@ -1,6 +1,6 @@
 # Mimlet core
 
-A schema-independent immutable builder runtime. Factories or optional native adapters generate input fixtures; Standard Schema validators optionally validate them and return schema output. Hey API, Faker, Zod, and TypeBox are not dependencies of this package.
+The heart of Mimlet: builders that make test data from a factory function or, through an adapter package, from your schema. Every change such as `.with()` returns a new builder and leaves the original untouched, so one test's variation never leaks into another's. Any Standard Schema validator (Zod, Valibot, ArkType and others) can check a built value and return its parsed output. Hey API, Faker, Zod and TypeBox are not dependencies of this package.
 
 The package name is `@mimlet/core`. Prereleases use npm's `next` tag. See [Getting started](https://jeffreynijs.github.io/mimlet/guide/getting-started.html) for current availability and installation. To build and pack from a checkout:
 
